@@ -10,9 +10,10 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation "junit:junit:4.12"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
+
 buildscript {
     ext.kotlin_version = '1.2.20'
     repositories {

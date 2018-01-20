@@ -1,1 +1,0 @@
-data class HelloWorld(val hello: String)

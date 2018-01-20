@@ -10,14 +10,24 @@ import java.io.ByteArrayOutputStream
 class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
 
     private val fileReader = ResourceFileReader()
-    private val jsonConverter = DataClassJsonConverter()
+    private val jsonConverter = KotlinJsonConverter()
 
     companion object {
         @JvmStatic
         @Parameterized.Parameters
         fun filenamePairs(): Collection<Array<String>> {
             return listOf(
-                    arrayOf("HelloWorld.kt", "hello_world.json")
+
+                    // invalid data should not change the outputstream
+                    arrayOf("invalid/Empty.kt", "invalid/empty.json"),
+                    arrayOf("invalid/Empty.kt", "invalid/invalid.json"),
+
+                    // name-value pair primitives
+                    arrayOf("nvpair/BoolExample.kt", "nvpair/boolean.json"),
+                    arrayOf("nvpair/DoubleExample.kt", "nvpair/double.json"),
+                    arrayOf("nvpair/IntExample.kt", "nvpair/int.json"),
+                    arrayOf("nvpair/NullExample.kt", "nvpair/null.json"),
+                    arrayOf("nvpair/StringExample.kt", "nvpair/string.json")
             )
         }
     }
