@@ -1,6 +1,6 @@
 package com.fractalwrench.json2kotlin
 
-import com.google.gson.Gson
+import com.google.gson.JsonParser
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -11,24 +11,19 @@ import java.io.ByteArrayOutputStream
 class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
 
     private val fileReader = ResourceFileReader()
-    private val jsonConverter = KotlinJsonConverter(Gson())
+    private val jsonConverter = KotlinJsonConverter(JsonParser())
 
     companion object {
         @JvmStatic
         @Parameterized.Parameters(name = "File {0}")
         fun filenamePairs(): Collection<Array<String>> {
             return listOf(
-
-                    // invalid data should not change the outputstream
-                    arrayOf("invalid/Empty.kt", "invalid/empty.json"),
-                    arrayOf("invalid/Empty.kt", "invalid/invalid.json"),
-
                     // name-value pair primitives
                     arrayOf("nvpair/BoolExample.kt", "nvpair/boolean.json"),
                     arrayOf("nvpair/DoubleExample.kt", "nvpair/double.json"),
                     arrayOf("nvpair/IntExample.kt", "nvpair/int.json"),
                     arrayOf("nvpair/NullExample.kt", "nvpair/null.json"),
-                    arrayOf("nvpair/StringExample.kt", "nvpair/string.json")
+                    arrayOf("nvpair/StrExample.kt", "nvpair/string.json")
             )
         }
     }
@@ -40,7 +35,7 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
     fun testJsonToKotlinConversion() {
         val json = fileReader.readContents(jsonFilename)
         val outputStream = ByteArrayOutputStream()
-        jsonConverter.convert(json, outputStream)
+        jsonConverter.convert(json, outputStream, jsonFilename.replace(".kt", ""))
 
         val generatedSource = String(outputStream.toByteArray())
         val expectedContents = fileReader.readContents(expectedFilename)
