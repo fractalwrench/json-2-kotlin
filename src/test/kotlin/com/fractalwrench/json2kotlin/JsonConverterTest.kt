@@ -23,11 +23,11 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
         fun filenamePairs(): Collection<Array<String>> {
             return listOf(
                     // name-value pair primitives
-                    arrayOf("BoolObjExample.kt", "boolean_obj.json"),
-                    arrayOf("NumberObjExample.kt", "number_obj.json"),
-                    arrayOf("NullObjExample.kt", "null_obj.json"),
-                    arrayOf("StrObjExample.kt", "string_obj.json"),
-                    arrayOf("MultiPrimitiveObjExample.kt", "multi_primitive_obj.json")
+                    arrayOf("valid/primitives/BoolObjExample.kt", "valid/primitives/boolean_obj.json"),
+                    arrayOf("valid/primitives/NumberObjExample.kt", "valid/primitives/number_obj.json"),
+                    arrayOf("valid/primitives/NullObjExample.kt", "valid/primitives/null_obj.json"),
+                    arrayOf("valid/primitives/StrObjExample.kt", "valid/primitives/string_obj.json"),
+                    arrayOf("valid/primitives/MultiPrimitiveObjExample.kt", "valid/primitives/multi_primitive_obj.json")
             )
         }
     }
@@ -37,12 +37,13 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
      */
     @Test
     fun testJsonToKotlinConversion() {
-        val json = fileReader.readContents("valid/$jsonFilename")
+        val json = fileReader.readContents(jsonFilename)
         val outputStream = ByteArrayOutputStream()
-        jsonConverter.convert(json, outputStream, expectedFilename.replace(".kt", ""))
+        val rootClassName = expectedFilename.replace(".kt", "").substringAfterLast('/')
+        jsonConverter.convert(json, outputStream, rootClassName)
 
         val generatedSource = String(outputStream.toByteArray()).standardiseNewline()
-        val expectedContents = fileReader.readContents("valid/$expectedFilename").standardiseNewline()
+        val expectedContents = fileReader.readContents(expectedFilename).standardiseNewline()
 
         val msg = "Generated file doesn't match expected file \'$expectedFilename\'"
 
