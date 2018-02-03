@@ -23,18 +23,22 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
         fun filenamePairs(): Collection<Array<String>> {
             return listOf(
                     // primitives
-                    arrayOf("primitives/BoolObjExample.kt", "primitives/boolean_obj.json"),
-                    arrayOf("primitives/NumberObjExample.kt", "primitives/number_obj.json"),
-                    arrayOf("primitives/NullObjExample.kt", "primitives/null_obj.json"),
-                    arrayOf("primitives/StrObjExample.kt", "primitives/string_obj.json"),
-                    arrayOf("primitives/MultiPrimitiveObjExample.kt", "primitives/multi_primitive_obj.json"),
-                    arrayOf("primitives/EmptyObjExample.kt", "primitives/empty_obj.json"),
+                    arrayOf("primitives/obj/BoolExample.kt", "primitives/obj/boolean.json"),
+                    arrayOf("primitives/obj/NumberExample.kt", "primitives/obj/number.json"),
+                    arrayOf("primitives/obj/NullExample.kt", "primitives/obj/null.json"),
+                    arrayOf("primitives/obj/StrExample.kt", "primitives/obj/string.json"),
+                    arrayOf("primitives/obj/MultiPrimitiveExample.kt", "primitives/obj/multi_primitive.json"),
+                    arrayOf("primitives/obj/EmptyExample.kt", "primitives/obj/empty.json"),
 
                     // arrays
-                    arrayOf("primitives/array/BoolAryExample.kt", "primitives/array/boolean_ary.json"),
-                    arrayOf("primitives/array/NullAryExample.kt", "primitives/array/null_ary.json"),
-                    arrayOf("primitives/array/NumberAryExample.kt", "primitives/array/number_ary.json"),
-                    arrayOf("primitives/array/StrAryExample.kt", "primitives/array/string_ary.json")
+                    arrayOf("primitives/array/BoolExample.kt", "primitives/array/boolean.json"),
+                    arrayOf("primitives/array/NullExample.kt", "primitives/array/null.json"),
+                    arrayOf("primitives/array/NumberExample.kt", "primitives/array/number.json"),
+                    arrayOf("primitives/array/StrExample.kt", "primitives/array/string.json"),
+                    arrayOf("primitives/array/EmptyExample.kt", "primitives/array/empty.json"),
+                    arrayOf("primitives/array/RootExample.kt", "primitives/array/root.json"),
+                    arrayOf("primitives/array/NullableStrExample.kt", "primitives/array/nullable_string.json"),
+                    arrayOf("primitives/array/AnyExample.kt", "primitives/array/any.json")
             )
         }
     }
@@ -51,9 +55,7 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
 
         val generatedSource = String(outputStream.toByteArray()).standardiseNewline()
         val expectedContents = fileReader.readContents(expectedFilename).standardiseNewline()
-
         val msg = "Generated file doesn't match expected file \'$expectedFilename\'"
-
         Assert.assertEquals(msg, expectedContents, generatedSource)
     }
 }
