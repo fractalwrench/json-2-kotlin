@@ -22,12 +22,19 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
         @Parameterized.Parameters(name = "File {0}")
         fun filenamePairs(): Collection<Array<String>> {
             return listOf(
-                    // name-value pair primitives
-                    arrayOf("valid/primitives/BoolObjExample.kt", "valid/primitives/boolean_obj.json"),
-                    arrayOf("valid/primitives/NumberObjExample.kt", "valid/primitives/number_obj.json"),
-                    arrayOf("valid/primitives/NullObjExample.kt", "valid/primitives/null_obj.json"),
-                    arrayOf("valid/primitives/StrObjExample.kt", "valid/primitives/string_obj.json"),
-                    arrayOf("valid/primitives/MultiPrimitiveObjExample.kt", "valid/primitives/multi_primitive_obj.json")
+                    // primitives
+                    arrayOf("primitives/BoolObjExample.kt", "primitives/boolean_obj.json"),
+                    arrayOf("primitives/NumberObjExample.kt", "primitives/number_obj.json"),
+                    arrayOf("primitives/NullObjExample.kt", "primitives/null_obj.json"),
+                    arrayOf("primitives/StrObjExample.kt", "primitives/string_obj.json"),
+                    arrayOf("primitives/MultiPrimitiveObjExample.kt", "primitives/multi_primitive_obj.json"),
+                    arrayOf("primitives/EmptyObjExample.kt", "primitives/empty_obj.json"),
+
+                    // arrays
+                    arrayOf("primitives/array/BoolAryExample.kt", "primitives/array/boolean_ary.json"),
+                    arrayOf("primitives/array/NullAryExample.kt", "primitives/array/null_ary.json"),
+                    arrayOf("primitives/array/NumberAryExample.kt", "primitives/array/number_ary.json"),
+                    arrayOf("primitives/array/StrAryExample.kt", "primitives/array/string_ary.json")
             )
         }
     }
