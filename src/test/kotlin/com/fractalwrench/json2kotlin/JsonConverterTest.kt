@@ -7,6 +7,10 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.io.ByteArrayOutputStream
 
+fun String.standardiseNewline(): String {
+    return this.replace("\r\n", "\n")
+}
+
 @RunWith(Parameterized::class)
 class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
 
@@ -19,11 +23,11 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
         fun filenamePairs(): Collection<Array<String>> {
             return listOf(
                     // name-value pair primitives
-                    arrayOf("nvpair/BoolExample.kt", "nvpair/boolean.json"),
-                    arrayOf("nvpair/DoubleExample.kt", "nvpair/double.json"),
-                    arrayOf("nvpair/IntExample.kt", "nvpair/int.json"),
-                    arrayOf("nvpair/NullExample.kt", "nvpair/null.json"),
-                    arrayOf("nvpair/StrExample.kt", "nvpair/string.json")
+                    arrayOf("BoolExample.kt", "boolean.json"),
+                    arrayOf("DoubleExample.kt", "double.json"),
+                    arrayOf("IntExample.kt", "int.json"),
+                    arrayOf("NullExample.kt", "null.json"),
+                    arrayOf("StrExample.kt", "string.json")
             )
         }
     }
@@ -33,14 +37,15 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
      */
     @Test
     fun testJsonToKotlinConversion() {
-        val json = fileReader.readContents(jsonFilename)
+        val json = fileReader.readContents("valid/$jsonFilename")
         val outputStream = ByteArrayOutputStream()
-        jsonConverter.convert(json, outputStream, jsonFilename.replace(".kt", ""))
+        jsonConverter.convert(json, outputStream, expectedFilename.replace(".kt", ""))
 
-        val generatedSource = String(outputStream.toByteArray())
-        val expectedContents = fileReader.readContents(expectedFilename)
+        val generatedSource = String(outputStream.toByteArray()).standardiseNewline()
+        val expectedContents = fileReader.readContents("valid/$expectedFilename").standardiseNewline()
 
         val msg = "Generated file doesn't match expected file \'$expectedFilename\'"
+
         Assert.assertEquals(msg, expectedContents, generatedSource)
     }
 }
