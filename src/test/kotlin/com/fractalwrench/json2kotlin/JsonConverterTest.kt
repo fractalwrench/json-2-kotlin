@@ -24,8 +24,7 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
             return listOf(
                     // name-value pair primitives
                     arrayOf("BoolExample.kt", "boolean.json"),
-                    arrayOf("DoubleExample.kt", "double.json"),
-                    arrayOf("IntExample.kt", "int.json"),
+                    arrayOf("NumberExample.kt", "number.json"),
                     arrayOf("NullExample.kt", "null.json"),
                     arrayOf("StrExample.kt", "string.json")
             )
