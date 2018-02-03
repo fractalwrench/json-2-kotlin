@@ -20,7 +20,7 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
             // create kotlin class
 
             when {
-                root.isJsonObject -> {
+                root.isJsonObject -> { // TODO build up a Set of all the objects as a type representation
                     val obj = root.asJsonObject
 
                     val classBuilder = TypeSpec.classBuilder(rootClassName)

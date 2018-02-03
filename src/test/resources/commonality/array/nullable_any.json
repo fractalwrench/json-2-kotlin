@@ -1,0 +1,11 @@
+[
+  {
+    "foo": "something"
+  },
+  {
+    "foo": null
+  },
+  {
+    "foo": 5
+  }
+]
