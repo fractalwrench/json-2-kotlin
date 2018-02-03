@@ -16,7 +16,7 @@ class InvalidJsonConverterTest(val jsonFilename: String) {
         @JvmStatic
         @Parameterized.Parameters(name = "File {0}")
         fun filenamePairs(): Collection<String> {
-            return listOf("invalid/empty.json", "invalid/invalid.json")
+            return listOf("invalid/empty.json", "invalid/invalid.json", "invalid/dupe.json")
         }
     }
 

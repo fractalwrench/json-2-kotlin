@@ -26,7 +26,8 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
                     arrayOf("BoolObjExample.kt", "boolean_obj.json"),
                     arrayOf("NumberObjExample.kt", "number_obj.json"),
                     arrayOf("NullObjExample.kt", "null_obj.json"),
-                    arrayOf("StrObjExample.kt", "string_obj.json")
+                    arrayOf("StrObjExample.kt", "string_obj.json"),
+                    arrayOf("MultiPrimitiveObjExample.kt", "multi_primitive_obj.json")
             )
         }
     }
