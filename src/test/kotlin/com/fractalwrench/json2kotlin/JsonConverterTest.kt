@@ -1,5 +1,6 @@
 package com.fractalwrench.json2kotlin
 
+import com.google.gson.Gson
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,11 +11,11 @@ import java.io.ByteArrayOutputStream
 class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
 
     private val fileReader = ResourceFileReader()
-    private val jsonConverter = KotlinJsonConverter()
+    private val jsonConverter = KotlinJsonConverter(Gson())
 
     companion object {
         @JvmStatic
-        @Parameterized.Parameters
+        @Parameterized.Parameters(name = "File {0}")
         fun filenamePairs(): Collection<Array<String>> {
             return listOf(
 

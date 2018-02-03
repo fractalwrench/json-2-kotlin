@@ -1,1 +1,1 @@
-data class Example(val strField: String)
+data class StrExample(val strField: String)

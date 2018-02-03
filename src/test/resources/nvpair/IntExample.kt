@@ -1,1 +1,1 @@
-data class Example(val intField: Int)
+data class IntExample(val intField: Int)

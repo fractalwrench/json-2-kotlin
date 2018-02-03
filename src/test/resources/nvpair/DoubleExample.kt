@@ -1,1 +1,1 @@
-data class Example(val doubleField: Double)
+data class DoubleExample(val doubleField: Double)

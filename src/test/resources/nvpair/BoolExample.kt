@@ -1,1 +1,1 @@
-data class Example(val booleanField: Boolean)
+data class BoolExample(val booleanField: Boolean)

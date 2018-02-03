@@ -1,1 +1,1 @@
-data class Example(val nullField: Any?)
+data class NullExample(val nullField: Any?)
