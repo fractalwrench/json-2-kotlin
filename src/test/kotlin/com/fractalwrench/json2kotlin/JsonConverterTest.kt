@@ -23,10 +23,10 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
         fun filenamePairs(): Collection<Array<String>> {
             return listOf(
                     // name-value pair primitives
-                    arrayOf("BoolExample.kt", "boolean.json"),
-                    arrayOf("NumberExample.kt", "number.json"),
-                    arrayOf("NullExample.kt", "null.json"),
-                    arrayOf("StrExample.kt", "string.json")
+                    arrayOf("BoolObjExample.kt", "boolean_obj.json"),
+                    arrayOf("NumberObjExample.kt", "number_obj.json"),
+                    arrayOf("NullObjExample.kt", "null_obj.json"),
+                    arrayOf("StrObjExample.kt", "string_obj.json")
             )
         }
     }
