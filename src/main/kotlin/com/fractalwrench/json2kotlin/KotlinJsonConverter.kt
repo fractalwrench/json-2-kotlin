@@ -22,7 +22,9 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
             when {
                 root.isJsonObject -> {
                     val obj = root.asJsonObject
-                    val rootClass = buildClass(rootClassName, obj)
+
+                    val classBuilder = TypeSpec.classBuilder(rootClassName)
+                    val rootClass = buildClass(classBuilder, obj)
 
                     val sourceFile = FileSpec.builder("", rootClassName)
                             .addType(rootClass)
@@ -45,10 +47,13 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
         }
     }
 
-    private fun buildClass(rootClassName: String, jsonObject: JsonObject): TypeSpec {
-        val classBuilder = TypeSpec.classBuilder(rootClassName)
-                .addModifiers(KModifier.DATA)
+    private fun buildClass(classBuilder: TypeSpec.Builder, jsonObject: JsonObject): TypeSpec {
+        if (jsonObject.size() <= 0) {
+            return classBuilder.build()
+        }
+
         val constructor = FunSpec.constructorBuilder()
+        classBuilder.addModifiers(KModifier.DATA)
 
         for (key in jsonObject.keySet()) {
             val nvp = jsonObject.get(key)
