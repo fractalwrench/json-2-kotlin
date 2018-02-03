@@ -14,20 +14,31 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
             if (input.isEmpty()) {
                 throw IllegalArgumentException("Json input empty")
             }
-            val jsonElement = jsonParser.parse(input)
+            val root = jsonParser.parse(input)
 
 
             // create kotlin class
-            val jsonObject = jsonElement.asJsonObject
-            val rootClass = buildClass(rootClassName, jsonObject)
 
-            val sourceFile = FileSpec.builder("", rootClassName)
-                    .addType(rootClass)
-                    .build()
+            when {
+                root.isJsonObject -> {
+                    val obj = root.asJsonObject
+                    val rootClass = buildClass(rootClassName, obj)
 
-            val stringBuilder = StringBuilder()
-            sourceFile.writeTo(stringBuilder)
-            output.write(stringBuilder.toString().toByteArray())
+                    val sourceFile = FileSpec.builder("", rootClassName)
+                            .addType(rootClass)
+                            .build()
+
+                    val stringBuilder = StringBuilder()
+                    sourceFile.writeTo(stringBuilder)
+                    output.write(stringBuilder.toString().toByteArray())
+                }
+                root.isJsonArray -> {
+                    val ary = root.asJsonArray
+
+                    // TODO wrap in another class, then recurse
+                }
+                else -> throw IllegalStateException("Expected a JSON array or object")
+            }
 
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)

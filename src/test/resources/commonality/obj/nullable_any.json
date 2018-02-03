@@ -1,0 +1,11 @@
+{
+  "firstField": {
+    "foo": "something"
+  },
+  "secondField": {
+    "foo": null
+  },
+  "thirdField": {
+    "foo": 5
+  }
+}

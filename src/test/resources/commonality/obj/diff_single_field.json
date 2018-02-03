@@ -1,0 +1,8 @@
+{
+  "firstField": {
+    "foo": "something"
+  },
+  "secondField": {
+    "bar": "something different"
+  }
+}

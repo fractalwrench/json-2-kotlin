@@ -32,13 +32,21 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
 
                     // arrays
                     arrayOf("primitives/array/BoolExample.kt", "primitives/array/boolean.json"),
+                    arrayOf("primitives/array/BoolExample.kt", "primitives/array/boolean_dangle.json"),
                     arrayOf("primitives/array/NullExample.kt", "primitives/array/null.json"),
+                    arrayOf("primitives/array/NullExample.kt", "primitives/array/null_dangle.json"),
                     arrayOf("primitives/array/NumberExample.kt", "primitives/array/number.json"),
+                    arrayOf("primitives/array/NumberExample.kt", "primitives/array/number_dangle.json"),
                     arrayOf("primitives/array/StrExample.kt", "primitives/array/string.json"),
+                    arrayOf("primitives/array/StrExample.kt", "primitives/array/string_dangle.json"),
                     arrayOf("primitives/array/EmptyExample.kt", "primitives/array/empty.json"),
+                    arrayOf("primitives/array/EmptyExample.kt", "primitives/array/empty_dangle.json"),
                     arrayOf("primitives/array/RootExample.kt", "primitives/array/root.json"),
+                    arrayOf("primitives/array/RootExample.kt", "primitives/array/root_dangle.json"),
                     arrayOf("primitives/array/NullableStrExample.kt", "primitives/array/nullable_string.json"),
-                    arrayOf("primitives/array/AnyExample.kt", "primitives/array/any.json")
+                    arrayOf("primitives/array/NullableStrExample.kt", "primitives/array/nullable_string_dangle.json"),
+                    arrayOf("primitives/array/AnyExample.kt", "primitives/array/any.json"),
+                    arrayOf("primitives/array/AnyExample.kt", "primitives/array/any_dangle.json")
             )
         }
     }

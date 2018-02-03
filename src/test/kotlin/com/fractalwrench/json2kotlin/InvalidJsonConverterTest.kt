@@ -18,11 +18,7 @@ class InvalidJsonConverterTest(val jsonFilename: String) {
         fun filenamePairs(): Collection<String> {
             return listOf(
                     "invalid/empty.json",
-                    "invalid/invalid.json",
-                    "invalid/dupe.json",
-
-                    // this is valid JSON, but only contains primitives so doesn't need class generation
-                    "invalid/primitive_array.json"
+                    "invalid/invalid.json"
             )
         }
     }
