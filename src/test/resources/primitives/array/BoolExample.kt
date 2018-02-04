@@ -1,3 +1,4 @@
-import kotlin.BooleanArray
+import kotlin.Array
+import kotlin.Boolean
 
-data class BoolExample(val booleanField: BooleanArray)
+data class BoolExample(val booleanField: Array<Boolean>)

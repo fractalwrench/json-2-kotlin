@@ -1,11 +1,9 @@
 package com.fractalwrench.json2kotlin
 
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSyntaxException
+import com.google.gson.*
 import com.squareup.kotlinpoet.*
 import java.io.OutputStream
+import kotlin.reflect.KClass
 
 class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
 
@@ -15,7 +13,7 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
                 throw IllegalArgumentException("Json input empty")
             }
             val root = jsonParser.parse(input)
-
+            val sourceFile = FileSpec.builder("", rootClassName)
 
             // create kotlin class
 
@@ -25,22 +23,19 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
 
                     val classBuilder = TypeSpec.classBuilder(rootClassName)
                     val rootClass = buildClass(classBuilder, obj)
-
-                    val sourceFile = FileSpec.builder("", rootClassName)
-                            .addType(rootClass)
-                            .build()
-
-                    val stringBuilder = StringBuilder()
-                    sourceFile.writeTo(stringBuilder)
-                    output.write(stringBuilder.toString().toByteArray())
+                    sourceFile.addType(rootClass)
                 }
                 root.isJsonArray -> {
                     val ary = root.asJsonArray
 
-                    // TODO wrap in another class, then recurse
+                    TODO("wrap in another class, then recurse")
                 }
                 else -> throw IllegalStateException("Expected a JSON array or object")
             }
+
+            val stringBuilder = StringBuilder()
+            sourceFile.build().writeTo(stringBuilder)
+            output.write(stringBuilder.toString().toByteArray())
 
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
@@ -68,11 +63,53 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
                     val type = typenameForPrimitive(primitive)
                     addDataClassProperty(key, type, constructor, classBuilder)
                 }
-                nvp.isJsonArray -> TODO("Handle array")
+                nvp.isJsonArray -> {
+                    val array = nvp.asJsonArray
+                    val paramType = Any::class
+
+                    // TODO determine type
+                    val arrayType = findArrayType(array)
+                    addDataClassProperty(key, arrayType, constructor, classBuilder)
+                    // TODO("Handle array")
+                }
                 nvp.isJsonObject -> TODO("Handle object")
             }
         }
         return classBuilder.primaryConstructor(constructor.build()).build()
+    }
+
+    private fun findArrayType(array: JsonArray): TypeName {
+        val arrayTypes = HashSet<KClass<*>>()
+        var nullable = false
+
+        for (jsonElement in array) {
+            when {
+                jsonElement.isJsonPrimitive -> {
+                    val primitive = jsonElement.asJsonPrimitive
+                    when {
+                        primitive.isBoolean -> arrayTypes.add(Boolean::class)
+                        primitive.isNumber -> arrayTypes.add(Number::class)
+                        primitive.isString -> arrayTypes.add(String::class)
+                        else -> throw IllegalStateException("Unexpected state in array")
+                    }
+                }
+                jsonElement.isJsonArray -> arrayTypes.add(Array<Any>::class) // FIXME handle this better!
+                jsonElement.isJsonObject -> arrayTypes.add(Any::class) // FIXME handle this better!
+                jsonElement.isJsonNull -> nullable = true
+                else -> throw IllegalStateException("Unexpected state in array")
+            }
+        }
+
+        var rawType = if (arrayTypes.size > 1 || arrayTypes.isEmpty()) {
+            Any::class
+        } else {
+            arrayTypes.asIterable().first()
+        }.asTypeName()
+
+        if (nullable) {
+            rawType = rawType.asNullable()
+        }
+        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), rawType)
     }
 
     private fun typenameForPrimitive(primitive: JsonPrimitive): ClassName {
