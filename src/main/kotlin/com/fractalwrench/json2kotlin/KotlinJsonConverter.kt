@@ -21,10 +21,13 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
                 root.isJsonObject -> { // TODO build up a Set of all the objects as a type representation
                     handleRootJsonObject(root, rootClassName, sourceFile)
                 }
-                root.isJsonArray -> {
-                    val ary = root.asJsonArray
+                root.isJsonArray -> { // wrap in an object before processing
+                    val fieldName = "${rootClassName}Field".decapitalize()
+                    val containerClassName = "${rootClassName}Container"
+                    val jsonElement = JsonObject()
 
-                    TODO("wrap in another class, then recurse")
+                    jsonElement.add(fieldName, root)
+                    handleRootJsonObject(jsonElement, containerClassName, sourceFile)
                 }
                 else -> throw IllegalStateException("Expected a JSON array or object")
             }
