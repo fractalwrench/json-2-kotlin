@@ -30,6 +30,7 @@ class InvalidJsonConverterTest(val jsonFilename: String) {
     fun testJsonToKotlinConversion() {
         val json = fileReader.readContents(jsonFilename)
         val outputStream = ByteArrayOutputStream()
-        jsonConverter.convert(json, outputStream, jsonFilename.replace(".kt", ""))
+        val args = ConversionArgs(jsonFilename.replace(".kt", ""))
+        jsonConverter.convert(json, outputStream, args)
     }
 }

@@ -61,7 +61,7 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
         val json = fileReader.readContents(jsonFilename)
         val outputStream = ByteArrayOutputStream()
         val rootClassName = expectedFilename.replace(".kt", "").substringAfterLast(File.separator)
-        jsonConverter.convert(json, outputStream, rootClassName)
+        jsonConverter.convert(json, outputStream, ConversionArgs(rootClassName))
 
         val generatedSource = String(outputStream.toByteArray()).standardiseNewline()
         val expectedContents = fileReader.readContents(expectedFilename).standardiseNewline()
