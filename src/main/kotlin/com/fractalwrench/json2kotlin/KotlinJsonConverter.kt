@@ -115,6 +115,7 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
     }
 
     private fun findJsonObjectType(jsonObject: JsonObject): TypeName {
-        TODO("Handle finding object type")
+        return Any::class.asTypeName()
+        TODO("Need to handle finding object type properly, now that everything else is pseudo-working")
     }
 }
