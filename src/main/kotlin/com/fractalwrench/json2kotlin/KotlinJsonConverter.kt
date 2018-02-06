@@ -3,7 +3,6 @@ package com.fractalwrench.json2kotlin
 import com.google.gson.*
 import com.squareup.kotlinpoet.*
 import java.io.OutputStream
-import kotlin.reflect.KClass
 
 class KotlinJsonConverter(val jsonParser: JsonParser) {
 
@@ -50,79 +49,14 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
             classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
 
             // find the type for each value then add the field to the class
-            jsonObject.entrySet().forEach {
-                addDataClassProperty(it.key, findValueType(it.value), constructor, classBuilder)
+            for (entry in jsonObject.entrySet()) {
+                val valueType = findJsonValueType(entry.value)
+                addDataClassProperty(entry.key, valueType, constructor, classBuilder)
             }
             classBuilder.primaryConstructor(constructor.build())
         }
 
         sourceFile.addType(classBuilder.build())
-    }
-
-    private fun findValueType(nvp: JsonElement): TypeName {
-        return when {
-            nvp.isJsonNull -> Any::class.asTypeName().asNullable()
-            nvp.isJsonPrimitive -> findJsonPrimitiveType(nvp.asJsonPrimitive)
-            nvp.isJsonArray -> findJsonArrayType(nvp.asJsonArray)
-            nvp.isJsonObject -> findJsonObjectType(nvp.asJsonObject)
-            else -> throw IllegalStateException("Expected a JSON value")
-        }
-    }
-
-    private fun findJsonPrimitiveType(primitive: JsonPrimitive): ClassName {
-        return when {
-            primitive.isBoolean -> Boolean::class
-            primitive.isNumber -> Number::class
-            primitive.isString -> String::class
-            else -> throw IllegalStateException("No type found for JSON primitive " + primitive)
-        }.asTypeName()
-    }
-
-    private fun findJsonArrayType(jsonArray: JsonArray): TypeName { // TODO handle objects and arrays
-        val arrayTypes = HashSet<KClass<*>>()
-        var nullable = false
-
-        for (jsonElement in jsonArray) {
-
-            // TODO replace with findValueType (this would require returning KClass)
-
-
-            when {
-                jsonElement.isJsonPrimitive -> {
-                    val primitive = jsonElement.asJsonPrimitive
-                    when {
-                        primitive.isBoolean -> arrayTypes.add(Boolean::class)
-                        primitive.isNumber -> arrayTypes.add(Number::class)
-                        primitive.isString -> arrayTypes.add(String::class)
-                        else -> throw IllegalStateException("Unexpected state in array")
-                    }
-                }
-                jsonElement.isJsonArray -> arrayTypes.add(Array<Any>::class) // FIXME handle this better!
-                jsonElement.isJsonObject -> arrayTypes.add(Any::class) // FIXME handle this better!
-                jsonElement.isJsonNull -> nullable = true
-                else -> throw IllegalStateException("Unexpected state in array")
-            }
-        }
-
-        val rawType = deduceArrayType(arrayTypes, nullable)
-        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), rawType)
-    }
-
-    private fun deduceArrayType(arrayTypes: HashSet<KClass<*>>, nullable: Boolean): ClassName {
-        var rawType = if (arrayTypes.size > 1 || arrayTypes.isEmpty()) {
-            Any::class
-        } else {
-            arrayTypes.asIterable().first()
-        }.asTypeName()
-
-        if (nullable) {
-            rawType = rawType.asNullable()
-        }
-        return rawType
-    }
-
-    private fun findJsonObjectType(jsonObject: JsonObject): TypeName {
-        TODO("Handle object")
     }
 
     private fun addDataClassProperty(key: String, type: TypeName,
@@ -133,4 +67,54 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
         constructor.addParameter(key, type)
     }
 
+
+    private fun findJsonValueType(nvp: JsonElement): TypeName {
+        return when {
+            nvp.isJsonPrimitive -> findJsonPrimitiveType(nvp.asJsonPrimitive)
+            nvp.isJsonArray -> findJsonArrayType(nvp.asJsonArray)
+            nvp.isJsonObject -> findJsonObjectType(nvp.asJsonObject)
+            nvp.isJsonNull -> Any::class.asTypeName().asNullable()
+            else -> throw IllegalStateException("Expected a JSON value")
+        }
+    }
+
+    private fun findJsonPrimitiveType(primitive: JsonPrimitive): TypeName {
+        return when {
+            primitive.isBoolean -> Boolean::class
+            primitive.isNumber -> Number::class
+            primitive.isString -> String::class
+            else -> throw IllegalStateException("No type found for JSON primitive " + primitive)
+        }.asTypeName()
+    }
+
+    private fun findJsonArrayType(jsonArray: JsonArray): TypeName {
+        val arrayTypes = HashSet<TypeName>()
+        var nullable = false
+
+        for (jsonElement in jsonArray) { // TODO optimise by checking arrayTypes each iteration
+            when {
+                jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive))
+                jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray))
+                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject))
+                jsonElement.isJsonNull -> nullable = true
+                else -> throw IllegalStateException("Unexpected state in array")
+            }
+        }
+
+        val rawType = deduceArrayType(arrayTypes, nullable)
+        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), rawType)
+    }
+
+    private fun deduceArrayType(arrayTypes: HashSet<TypeName>, nullable: Boolean): TypeName {
+        val typeName = if (arrayTypes.size > 1 || arrayTypes.isEmpty()) {
+            Any::class.asTypeName()
+        } else {
+            arrayTypes.asIterable().first()
+        }
+        return if (nullable) typeName.asNullable() else typeName
+    }
+
+    private fun findJsonObjectType(jsonObject: JsonObject): TypeName {
+        TODO("Handle finding object type")
+    }
 }

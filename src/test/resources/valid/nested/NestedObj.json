@@ -1,0 +1,9 @@
+{
+  "firstField": {
+    "secondField": {
+      "thirdField": {
+        "foo": "bar"
+      }
+    }
+  }
+}
