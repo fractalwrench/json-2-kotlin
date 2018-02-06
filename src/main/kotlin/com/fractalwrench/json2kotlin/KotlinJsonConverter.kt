@@ -12,23 +12,14 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
             if (input.isEmpty()) {
                 throw IllegalArgumentException("Json input empty")
             }
-            val root = jsonParser.parse(input)
+            val jsonRoot = jsonParser.parse(input)
             val sourceFile = FileSpec.builder("", rootClassName)
 
-            // create kotlin class
+            // TODO build up a Set of all the objects as a type representation
 
             when {
-                root.isJsonObject -> { // TODO build up a Set of all the objects as a type representation
-                    handleRootJsonObject(root, rootClassName, sourceFile)
-                }
-                root.isJsonArray -> { // wrap in an object before processing
-                    val fieldName = "${rootClassName}Field".decapitalize()
-                    val containerClassName = "${rootClassName}Container"
-                    val jsonElement = JsonObject()
-
-                    jsonElement.add(fieldName, root)
-                    handleRootJsonObject(jsonElement, containerClassName, sourceFile)
-                }
+                jsonRoot.isJsonObject -> handleRootJsonObject(jsonRoot.asJsonObject, rootClassName, sourceFile)
+                jsonRoot.isJsonArray -> handleRootJsonArray(jsonRoot.asJsonArray, rootClassName, sourceFile)
                 else -> throw IllegalStateException("Expected a JSON array or object")
             }
 
@@ -41,53 +32,65 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
         }
     }
 
-    private fun handleRootJsonObject(root: JsonElement, rootClassName: String, sourceFile: FileSpec.Builder) {
-        val obj = root.asJsonObject
+    private fun handleRootJsonObject(jsonObject: JsonObject, className: String, sourceFile: FileSpec.Builder) {
+        val classBuilder = TypeSpec.classBuilder(className)
+        val classRepresentation = buildClass(classBuilder, jsonObject)
+        sourceFile.addType(classRepresentation)
+    }
 
-        val classBuilder = TypeSpec.classBuilder(rootClassName)
-        val rootClass = buildClass(classBuilder, obj)
-        sourceFile.addType(rootClass)
+    private fun handleRootJsonArray(jsonArray: JsonArray, className: String, sourceFile: FileSpec.Builder) {
+        val fieldName = "${className}Field".decapitalize() // FIXME not a common case
+        val containerClassName = "${className}Container"
+        val jsonElement = JsonObject()
+        jsonElement.add(fieldName, jsonArray)
+        handleRootJsonObject(jsonElement, containerClassName, sourceFile)
     }
 
     private fun buildClass(classBuilder: TypeSpec.Builder, jsonObject: JsonObject): TypeSpec {
         if (jsonObject.size() <= 0) {
-            return classBuilder.build()
+            return classBuilder.build() // empty class def
         }
 
         val constructor = FunSpec.constructorBuilder()
-        classBuilder.addModifiers(KModifier.DATA)
+        classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
 
+        // find the type for each value then add the field to the class
         for (key in jsonObject.keySet()) {
             val nvp = jsonObject.get(key)
-
-            when {
-                nvp.isJsonNull -> {
-                    val type = Any::class.asTypeName().asNullable()
-                    addDataClassProperty(key, type, constructor, classBuilder)
-                }
-                nvp.isJsonPrimitive -> {
-                    val primitive = nvp.asJsonPrimitive
-                    val type = findJsonPrimitiveType(primitive)
-                    addDataClassProperty(key, type, constructor, classBuilder)
-                }
-                nvp.isJsonArray -> {
-                    val array = nvp.asJsonArray
-                    val arrayType = findJsonArrayType(array)
-                    addDataClassProperty(key, arrayType, constructor, classBuilder)
-
-                    // TODO("Handle array")
-                }
-                nvp.isJsonObject -> TODO("Handle object")
-            }
+            val valueType = findValueType(nvp)
+            addDataClassProperty(key, valueType, constructor, classBuilder)
         }
         return classBuilder.primaryConstructor(constructor.build()).build()
     }
 
-    private fun findJsonArrayType(array: JsonArray): TypeName {
+    private fun findValueType(nvp: JsonElement): TypeName {
+        return when {
+            nvp.isJsonNull -> Any::class.asTypeName().asNullable()
+            nvp.isJsonPrimitive -> findJsonPrimitiveType(nvp.asJsonPrimitive)
+            nvp.isJsonArray -> findJsonArrayType(nvp.asJsonArray)
+            nvp.isJsonObject -> findJsonObjectType(nvp.asJsonObject)
+            else -> throw IllegalStateException("Expected a JSON value")
+        }
+    }
+
+    private fun findJsonPrimitiveType(primitive: JsonPrimitive): ClassName {
+        return when {
+            primitive.isBoolean -> Boolean::class
+            primitive.isNumber -> Number::class
+            primitive.isString -> String::class
+            else -> throw IllegalStateException("No type found for JSON primitive " + primitive)
+        }.asTypeName()
+    }
+
+    private fun findJsonArrayType(jsonArray: JsonArray): TypeName { // TODO handle objects and arrays
         val arrayTypes = HashSet<KClass<*>>()
         var nullable = false
 
-        for (jsonElement in array) {
+        for (jsonElement in jsonArray) {
+
+            // TODO replace with findValueType (this would require returning KClass)
+
+
             when {
                 jsonElement.isJsonPrimitive -> {
                     val primitive = jsonElement.asJsonPrimitive
@@ -105,6 +108,11 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
             }
         }
 
+        val rawType = deduceArrayType(arrayTypes, nullable)
+        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), rawType)
+    }
+
+    private fun deduceArrayType(arrayTypes: HashSet<KClass<*>>, nullable: Boolean): ClassName {
         var rawType = if (arrayTypes.size > 1 || arrayTypes.isEmpty()) {
             Any::class
         } else {
@@ -114,24 +122,19 @@ class KotlinJsonConverter(val jsonParser: JsonParser) : JsonConverter {
         if (nullable) {
             rawType = rawType.asNullable()
         }
-        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), rawType)
+        return rawType
     }
 
-    private fun findJsonPrimitiveType(primitive: JsonPrimitive): ClassName {
-        return when {
-            primitive.isBoolean -> Boolean::class
-            primitive.isNumber -> Number::class
-            primitive.isString -> String::class
-            else -> throw IllegalStateException("No type found for JSON primitive " + primitive)
-        }.asTypeName()
+    private fun findJsonObjectType(jsonObject: JsonObject): TypeName {
+        TODO("Handle object")
     }
 
     private fun addDataClassProperty(key: String, type: TypeName,
                                      constructor: FunSpec.Builder, classBuilder: TypeSpec.Builder) {
-        constructor.addParameter(key, type)
         val initializer = PropertySpec.builder(key, type)
                 .initializer(key)
-        classBuilder.addProperty(initializer.build())
+        classBuilder.addProperty(initializer.build()) // ensures val present by adding both
+        constructor.addParameter(key, type)
     }
 
 }
