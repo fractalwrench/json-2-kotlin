@@ -58,7 +58,7 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
 
             // find the type for each value then add the field to the class
             for (entry in jsonObject.entrySet()) {
-                val valueType = findJsonValueType(entry.value)
+                val valueType = findJsonValueType(entry.value, entry.key)
                 addDataClassProperty(entry.key, valueType, constructor, classBuilder)
             }
             classBuilder.primaryConstructor(constructor.build())
@@ -75,12 +75,12 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
     }
 
 
-    private fun findJsonValueType(nvp: JsonElement): TypeName {
+    private fun findJsonValueType(jsonElement: JsonElement, key: String): TypeName {
         return when {
-            nvp.isJsonPrimitive -> findJsonPrimitiveType(nvp.asJsonPrimitive)
-            nvp.isJsonArray -> findJsonArrayType(nvp.asJsonArray)
-            nvp.isJsonObject -> findJsonObjectType(nvp.asJsonObject)
-            nvp.isJsonNull -> Any::class.asTypeName().asNullable()
+            jsonElement.isJsonPrimitive -> findJsonPrimitiveType(jsonElement.asJsonPrimitive)
+            jsonElement.isJsonArray -> findJsonArrayType(jsonElement.asJsonArray)
+            jsonElement.isJsonObject -> findJsonObjectType(jsonElement.asJsonObject, key)
+            jsonElement.isJsonNull -> Any::class.asTypeName().asNullable()
             else -> throw IllegalStateException("Expected a JSON value")
         }
     }
@@ -99,10 +99,11 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
         var nullable = false
 
         for (jsonElement in jsonArray) { // TODO optimise by checking arrayTypes each iteration
+            val key = "placeholder" // FIXME replace this!
             when {
-                jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive))
+                jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive, key))
                 jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray))
-                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject))
+                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, key))
                 jsonElement.isJsonNull -> nullable = true
                 else -> throw IllegalStateException("Unexpected state in array")
             }
@@ -121,15 +122,8 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
         return if (nullable) typeName.asNullable() else typeName
     }
 
-    private fun findJsonObjectType(jsonObject: JsonObject): TypeName {
-
-        // FIXME need to replace "foo" with a classname (generated or otherwise
-        processJsonObject(jsonObject, "Foo") // TODO need to de-dupe things!
-
-
-        return ClassName.bestGuess("Foo").asNonNullable()
-
-//        return Any::class.asTypeName()
-        TODO("Need to handle finding object type properly, now that everything else is pseudo-working")
+    private fun findJsonObjectType(jsonObject: JsonObject, className: String): TypeName {
+        processJsonObject(jsonObject, className.capitalize()) // TODO need to de-dupe things!
+        return ClassName.bestGuess(className.capitalize()).asNonNullable()
     }
 }
