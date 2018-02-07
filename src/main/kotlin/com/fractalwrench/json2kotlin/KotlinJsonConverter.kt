@@ -3,8 +3,12 @@ package com.fractalwrench.json2kotlin
 import com.google.gson.*
 import com.squareup.kotlinpoet.*
 import java.io.OutputStream
+import java.util.*
 
 class KotlinJsonConverter(val jsonParser: JsonParser) {
+
+    var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
+    val stack = Stack<TypeSpec.Builder>()
 
     fun convert(input: String, output: OutputStream, args: ConversionArgs) {
         try {
@@ -12,14 +16,18 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
                 throw IllegalArgumentException("Json input empty")
             }
             val jsonRoot = jsonParser.parse(input)
-            val sourceFile = FileSpec.builder("", args.rootClassName)
+            sourceFile = FileSpec.builder("", args.rootClassName)
 
             // TODO build up a Set of all the objects as a type representation
 
             when {
-                jsonRoot.isJsonObject -> processJsonObject(jsonRoot.asJsonObject, args.rootClassName, sourceFile)
-                jsonRoot.isJsonArray -> handleRootJsonArray(jsonRoot.asJsonArray, args.rootClassName, sourceFile)
+                jsonRoot.isJsonObject -> processJsonObject(jsonRoot.asJsonObject, args.rootClassName)
+                jsonRoot.isJsonArray -> handleRootJsonArray(jsonRoot.asJsonArray, args.rootClassName)
                 else -> throw IllegalStateException("Expected a JSON array or object")
+            }
+
+            while (!stack.isEmpty()) {
+                sourceFile.addType(stack.pop().build())
             }
 
             val stringBuilder = StringBuilder()
@@ -34,14 +42,14 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
     /**
      * Adds a wrapper object around the array
      */
-    private fun handleRootJsonArray(jsonArray: JsonArray, className: String, sourceFile: FileSpec.Builder) {
+    private fun handleRootJsonArray(jsonArray: JsonArray, className: String) {
         val fieldName = "${className}Field".decapitalize()
         val containerClassName = "${className}Container"
         val jsonElement = JsonObject().apply { add(fieldName, jsonArray) }
-        processJsonObject(jsonElement, containerClassName, sourceFile)
+        processJsonObject(jsonElement, containerClassName)
     }
 
-    private fun processJsonObject(jsonObject: JsonObject, className: String, sourceFile: FileSpec.Builder) {
+    private fun processJsonObject(jsonObject: JsonObject, className: String) {
         val classBuilder = TypeSpec.classBuilder(className)
 
         if (jsonObject.size() > 0) {
@@ -55,8 +63,7 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
             }
             classBuilder.primaryConstructor(constructor.build())
         }
-
-        sourceFile.addType(classBuilder.build())
+        stack.add(classBuilder)
     }
 
     private fun addDataClassProperty(key: String, type: TypeName,
@@ -115,7 +122,13 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
     }
 
     private fun findJsonObjectType(jsonObject: JsonObject): TypeName {
+
+        // FIXME need to replace "foo" with a classname (generated or otherwise
+        processJsonObject(jsonObject, "Foo") // TODO need to de-dupe things!
+
+
         return ClassName.bestGuess("Foo").asNonNullable()
+
 //        return Any::class.asTypeName()
         TODO("Need to handle finding object type properly, now that everything else is pseudo-working")
     }

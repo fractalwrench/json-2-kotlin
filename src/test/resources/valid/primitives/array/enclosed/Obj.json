@@ -1,5 +1,7 @@
 {
-  "objField": {
-    "foo": "bar"
-  }
+  "objField": [
+    {
+      "foo": "bar"
+    }
+  ]
 }
