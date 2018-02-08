@@ -1,0 +1,24 @@
+[
+  {
+    "event_field_value": "10000005",
+    "events": 14,
+    "fields": {
+      "user.email": "user1@example.com",
+      "user.name": "User One"
+    },
+    "first_seen": "2017-06-28T20:27:45+00:00",
+    "last_seen": "2017-06-28T20:34:44+00:00",
+    "proportion": 0.43324
+  },
+  {
+    "event_field_value": "10000025",
+    "events": 5,
+    "fields": {
+      "user.email": "user2@example.com",
+      "user.name": "User Two"
+    },
+    "first_seen": "2017-06-27T20:16:43+00:00",
+    "last_seen": "2017-07-03T15:40:18+00:00",
+    "proportion": 0.15007
+  }
+]

@@ -68,6 +68,15 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
     private fun addDataClassProperty(key: String, type: TypeName,
                                      constructor: FunSpec.Builder, classBuilder: TypeSpec.Builder) {
+        if (key == "null") { // FIXME hack, need to sanitise reserved keywords properly and test
+
+            val initializer = PropertySpec.builder("_null", type)
+                    .initializer("_null")
+            classBuilder.addProperty(initializer.build()) // ensures val present by adding both
+            constructor.addParameter("_null", type)
+            return
+        }
+
         val initializer = PropertySpec.builder(key, type)
                 .initializer(key)
         classBuilder.addProperty(initializer.build()) // ensures val present by adding both
