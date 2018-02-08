@@ -5,10 +5,10 @@ import com.squareup.kotlinpoet.*
 import java.io.OutputStream
 import java.util.*
 
-class KotlinJsonConverter(val jsonParser: JsonParser) {
+class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
-    var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
-    val stack = Stack<TypeSpec.Builder>()
+    private var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
+    private val stack = Stack<TypeSpec.Builder>()
 
     fun convert(input: String, output: OutputStream, args: ConversionArgs) {
         try {
@@ -78,7 +78,7 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
     private fun findJsonValueType(jsonElement: JsonElement, key: String): TypeName {
         return when {
             jsonElement.isJsonPrimitive -> findJsonPrimitiveType(jsonElement.asJsonPrimitive)
-            jsonElement.isJsonArray -> findJsonArrayType(jsonElement.asJsonArray)
+            jsonElement.isJsonArray -> findJsonArrayType(jsonElement.asJsonArray, key)
             jsonElement.isJsonObject -> findJsonObjectType(jsonElement.asJsonObject, key)
             jsonElement.isJsonNull -> Any::class.asTypeName().asNullable()
             else -> throw IllegalStateException("Expected a JSON value")
@@ -94,16 +94,16 @@ class KotlinJsonConverter(val jsonParser: JsonParser) {
         }.asTypeName()
     }
 
-    private fun findJsonArrayType(jsonArray: JsonArray): TypeName {
+    private fun findJsonArrayType(jsonArray: JsonArray, key: String): TypeName {
         val arrayTypes = HashSet<TypeName>()
         var nullable = false
 
         for (jsonElement in jsonArray) { // TODO optimise by checking arrayTypes each iteration
-            val key = "placeholder" // FIXME replace this!
+            // TODO find key!
             when {
                 jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive, key))
-                jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray))
-                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, key))
+                jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray, "${key}Array"))
+                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, "${key}Object"))
                 jsonElement.isJsonNull -> nullable = true
                 else -> throw IllegalStateException("Unexpected state in array")
             }
