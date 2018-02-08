@@ -1,9 +1,9 @@
 import kotlin.String
 
-data class NestedObjExample(val objField: FirstField)
+data class NestedObjExample(val firstField: FirstField)
 
-data class FirstField(val objField: SecondField)
+data class FirstField(val secondField: SecondField)
 
-data class SecondField(val secondField: ThirdField)
+data class SecondField(val thirdField: ThirdField)
 
 data class ThirdField(val foo: String)

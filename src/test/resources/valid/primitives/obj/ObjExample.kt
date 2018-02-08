@@ -1,5 +1,5 @@
 import kotlin.String
 
-data class ObjExample(val objField: Foo)
+data class ObjExample(val objField: ObjField)
 
-data class Foo(val foo: String)
+data class ObjField(val foo: String)

@@ -1,0 +1,12 @@
+{
+  "falseField": false,
+  "nullField": null,
+  "trueField": true,
+  "digitField": 59,
+  "decimalField": 0.623,
+  "expField": 6.23E5,
+  "negativeField": -629.67,
+  "zeroField": 0,
+  "strField": "This is a string",
+  "escapedStrField": "Test\tof\nunicode\u0256\'"
+}
