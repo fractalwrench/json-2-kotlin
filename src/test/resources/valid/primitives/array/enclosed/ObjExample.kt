@@ -1,6 +1,6 @@
 import kotlin.Array
 import kotlin.String
 
-data class ObjExample(val objField: Array<ObjFieldObject>)
+data class ObjExample(val objField: Array<ObjField>)
 
-data class ObjFieldObject(val foo: String)
+data class ObjField(val foo: String)

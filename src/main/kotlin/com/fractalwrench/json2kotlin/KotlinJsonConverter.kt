@@ -103,7 +103,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             when {
                 jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive, key))
                 jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray, "${key}Array"))
-                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, "${key}Object"))
+                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, key))
                 jsonElement.isJsonNull -> nullable = true
                 else -> throw IllegalStateException("Unexpected state in array")
             }

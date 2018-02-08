@@ -1,6 +1,6 @@
 import kotlin.Array
 import kotlin.String
 
-data class RootExampleContainer(val rootExampleField: Array<RootExampleFieldObject>)
+data class RootExampleContainer(val rootExampleField: Array<RootExampleField>)
 
-data class RootExampleFieldObject(val foo: String)
+data class RootExampleField(val foo: String)
