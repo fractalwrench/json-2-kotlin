@@ -1,5 +1,9 @@
 import kotlin.String
 
-data class NullableAnyExample(val firstField: Foo, val secondField: Foo, val thirdField: Foo)
+data class NullableAnyExample(
+    val firstField: FirstField,
+    val secondField: FirstField,
+    val thirdField: FirstField
+)
 
 data class FirstField(val foo: Any?)

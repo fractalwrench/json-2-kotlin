@@ -1,4 +1,4 @@
 import kotlin.Any
 import kotlin.Array
 
-data class NullDangleExample(val nullDangleExampleField: Array<Any?>)
+data class NullDangleExample(val nullDangleExampleArray: Array<Any?>)

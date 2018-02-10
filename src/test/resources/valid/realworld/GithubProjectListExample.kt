@@ -3,9 +3,9 @@ import kotlin.Boolean
 import kotlin.Number
 import kotlin.String
 
-data class GithubProjectListExample(val githubProjectListExampleField: Array<GithubProjectListExampleField>)
+data class GithubProjectListExample(val githubProjectListExampleArray: Array<GithubProjectListExampleArray>)
 
-data class GithubProjectListExampleField(
+data class GithubProjectListExampleArray(
     val owner_url: String,
     val url: String,
     val html_url: String,

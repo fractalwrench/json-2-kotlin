@@ -10,7 +10,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
     private val stack = Stack<TypeSpec.Builder>()
 
-//    private val bfsQueue = LinkedList<>()
+    private val bfsQueue = LinkedList<JsonElement>()
 
     fun convert(input: String, output: OutputStream, args: ConversionArgs) {
         try {
@@ -51,8 +51,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      * Adds an object as root which wraps the array
      */
     private fun processRootArrayWrapper(jsonArray: JsonArray, className: String): JsonObject {
-        val arrayName = "${className}Field".decapitalize() // TODO
-        val rootClassName = "${className}Container" // TODO
+        val arrayName = nameForArrayField(className).decapitalize() // TODO
         return JsonObject().apply { add(arrayName, jsonArray) }
     }
 
@@ -118,7 +117,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
                 element.isJsonPrimitive ->
                     arrayTypes.add(processJsonField(element.asJsonPrimitive, sanitisedName))
                 element.isJsonArray ->
-                    arrayTypes.add(processJsonArray(element.asJsonArray, "${sanitisedName}Array")) // TODO
+                    arrayTypes.add(processJsonArray(element.asJsonArray, nameForArrayField(sanitisedName)))
                 element.isJsonObject ->
                     arrayTypes.add(processJsonObject(element.asJsonObject, nameForObjectInArray(it, sanitisedName)))
                 element.isJsonNull -> nullable = true
@@ -129,6 +128,8 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         val arrayType = deduceArrayType(arrayTypes, nullable)
         return ParameterizedTypeName.get(Array<Any>::class.asClassName(), arrayType)
     }
+
+    private fun nameForArrayField(sanitisedName: String) = "${sanitisedName}Array"
 
     private fun nameForObjectInArray(it: IndexedValue<JsonElement>, sanitisedName: String): String {
         return if (it.index > 0) "$sanitisedName${it.index + 1}" else sanitisedName

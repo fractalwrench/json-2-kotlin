@@ -1,10 +1,10 @@
 import kotlin.Array
 import kotlin.String
 
-data class ArrayExample(val arrayExampleField: Array<ArrayExampleField>)
+data class ArrayExample(val arrayExampleArray: Array<ArrayExampleArray>)
 
-data class ArrayExampleField(val first: String)
+data class ArrayExampleArray(val first: String)
 
-data class ArrayExampleField2(val second: String)
+data class ArrayExampleArray2(val second: String)
 
-data class ArrayExampleField3(val third: String)
+data class ArrayExampleArray3(val third: String)

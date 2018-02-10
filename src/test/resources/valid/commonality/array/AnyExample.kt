@@ -1,5 +1,5 @@
 import kotlin.Array
 
-data class AnyExample(val anyExampleField: Array<AnyExampleField>)
+data class AnyExample(val anyExampleArray: Array<AnyExampleArray>)
 
-data class AnyExampleField(val foo: Any)
+data class AnyExampleArray(val foo: Any)

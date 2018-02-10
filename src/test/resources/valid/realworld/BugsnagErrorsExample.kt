@@ -2,9 +2,9 @@ import kotlin.Array
 import kotlin.Number
 import kotlin.String
 
-data class BugsnagErrorsExampleContainer(val bugsnagErrorsExampleField: Array<BugsnagErrorsExampleField>)
+data class BugsnagErrorsExample(val bugsnagErrorsExampleArray: Array<BugsnagErrorsExampleArray>)
 
-data class BugsnagErrorsExampleField(
+data class BugsnagErrorsExampleArray(
     val event_field_value: String,
     val events: Number,
     val fields: Fields,

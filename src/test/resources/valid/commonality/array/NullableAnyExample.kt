@@ -1,5 +1,5 @@
 import kotlin.Array
 
-data class NullableAnyExample(val nullableAnyExampleField: Array<NullableAnyExampleField>)
+data class NullableAnyExample(val nullableAnyExampleArray: Array<NullableAnyExampleArray>)
 
-data class NullableAnyExampleField(val foo: Any?)
+data class NullableAnyExampleArray(val foo: Any?)

@@ -1,9 +1,9 @@
 import kotlin.Array
 import kotlin.String
 
-data class MoviesAryExampleContainer(val MoviesAryExampleField: Array<Movies>)
+data class MoviesAryExample(val moviesAryExampleArray: Array<Movies>)
 
-data class MoviesAryExampleField(
+data class MoviesAryExampleArray(
     val Title: String,
     val Year: String,
     val Rated: String,

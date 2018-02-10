@@ -1,6 +1,6 @@
 import kotlin.Array
 import kotlin.String
 
-data class NullableStrExample(val nullableStrExampleField: Array<NullableStrExampleField>)
+data class NullableStrExample(val nullableStrExampleArray: Array<NullableStrExampleArray>)
 
-data class NullableStrExampleField(val foo: String?)
+data class NullableStrExampleArray(val foo: String?)
