@@ -10,12 +10,16 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
     private val stack = Stack<TypeSpec.Builder>()
 
+//    private val bfsQueue = LinkedList<>()
+
     fun convert(input: String, output: OutputStream, args: ConversionArgs) {
         try {
             if (input.isEmpty()) {
                 throw IllegalArgumentException("Json input empty")
             }
-            processJsonInput(input, args)
+
+            val json = readJsonTree(input, args)
+            processJsonObject(json, args.rootClassName)
             generateSourceFile(args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
@@ -34,24 +38,22 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         output.write(stringBuilder.toString().toByteArray())
     }
 
-    private fun processJsonInput(input: String, args: ConversionArgs) {
-        val rootElement = jsonParser.parse(input)
+    private fun readJsonTree(input: String, args: ConversionArgs): JsonObject {
+        var rootElement = jsonParser.parse(input)
 
-        when {
-            rootElement.isJsonObject -> processJsonObject(rootElement.asJsonObject, args.rootClassName)
-            rootElement.isJsonArray -> processRootArrayWrapper(rootElement.asJsonArray, args.rootClassName)
-            else -> throw IllegalStateException("Expected a JSON array or object")
+        if (rootElement.isJsonArray) {
+            rootElement = processRootArrayWrapper(rootElement.asJsonArray, args.rootClassName)
         }
+        return rootElement?.asJsonObject ?: throw IllegalStateException("Failed to read json object")
     }
 
     /**
      * Adds an object as root which wraps the array
      */
-    private fun processRootArrayWrapper(jsonArray: JsonArray, className: String) {
+    private fun processRootArrayWrapper(jsonArray: JsonArray, className: String): JsonObject {
         val arrayName = "${className}Field".decapitalize() // TODO
         val rootClassName = "${className}Container" // TODO
-        val rootElement = JsonObject().apply { add(arrayName, jsonArray) }
-        processJsonObject(rootElement, rootClassName)
+        return JsonObject().apply { add(arrayName, jsonArray) }
     }
 
 

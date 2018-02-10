@@ -1,7 +1,7 @@
 import kotlin.Array
 import kotlin.String
 
-data class ArrayExampleContainer(val arrayExampleField: Array<ArrayExampleField>)
+data class ArrayExample(val arrayExampleField: Array<ArrayExampleField>)
 
 data class ArrayExampleField(val first: String)
 

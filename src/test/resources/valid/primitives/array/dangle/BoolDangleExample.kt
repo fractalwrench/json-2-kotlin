@@ -1,4 +1,4 @@
 import kotlin.Array
 import kotlin.Boolean
 
-data class BoolDangleExampleContainer(val boolDangleExampleField: Array<Boolean>)
+data class BoolDangleExample(val boolDangleExampleField: Array<Boolean>)

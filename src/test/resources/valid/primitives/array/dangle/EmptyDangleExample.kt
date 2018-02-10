@@ -1,4 +1,4 @@
 import kotlin.Any
 import kotlin.Array
 
-data class EmptyDangleExampleContainer(val emptyDangleExampleField: Array<Any>)
+data class EmptyDangleExample(val emptyDangleExampleField: Array<Any>)
