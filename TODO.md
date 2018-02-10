@@ -3,8 +3,7 @@
 
 Ordered roughly in priority:
 
-- Better test cases for name generation, particularly around arrays, and duplicate keys
-- Test cases with reserved kotlin keywords
+- Better test cases for name generation around arrays, and duplicate keys
 
 - Unit tests for individual methods (once codebase a bit less volatile)
 - Add a callback for altering the classes/properties once their types are fully known
