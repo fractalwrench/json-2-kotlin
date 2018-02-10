@@ -100,13 +100,15 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         val arrayTypes = HashSet<TypeName>()
         var nullable = false
 
-        for (jsonElement in jsonArray) { // TODO optimise by checking arrayTypes each iteration
-            // TODO find key!
+        for ((index, jsonElement) in jsonArray.withIndex()) {
             val sanitisedName = sanitiseName(key)
             when {
                 jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive, sanitisedName))
                 jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray, "${sanitisedName}Array"))
-                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, sanitisedName))
+                jsonElement.isJsonObject -> {
+                    val objName = if (index > 0) "$sanitisedName${index + 1}" else sanitisedName
+                    arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, objName))
+                }
                 jsonElement.isJsonNull -> nullable = true
                 else -> throw IllegalStateException("Unexpected state in array")
             }
