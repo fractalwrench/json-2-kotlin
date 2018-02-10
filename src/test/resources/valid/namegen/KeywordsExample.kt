@@ -1,3 +1,5 @@
+import kotlin.String
+
 data class KeywordsExample(
     val `as`: String,
     val `as?`: String,
@@ -29,4 +31,3 @@ data class KeywordsExample(
     val `when`: String,
     val `while`: String
 )
-

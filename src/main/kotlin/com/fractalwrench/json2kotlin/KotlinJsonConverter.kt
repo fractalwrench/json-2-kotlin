@@ -50,7 +50,9 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     }
 
     private fun processJsonObject(jsonObject: JsonObject, className: String) {
-        val classBuilder = TypeSpec.classBuilder(className)
+
+        val sanitisedName = sanitiseName(className)
+        val classBuilder = TypeSpec.classBuilder(sanitisedName)
 
         if (jsonObject.size() > 0) {
             val constructor = FunSpec.constructorBuilder()
@@ -59,7 +61,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             // find the type for each value then add the field to the class
             for (entry in jsonObject.entrySet()) {
                 val valueType = findJsonValueType(entry.value, entry.key)
-                addDataClassProperty(entry.key, valueType, constructor, classBuilder)
+                addDataClassProperty(sanitiseName(entry.key), valueType, constructor, classBuilder)
             }
             classBuilder.primaryConstructor(constructor.build())
         }
@@ -68,15 +70,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
     private fun addDataClassProperty(key: String, type: TypeName,
                                      constructor: FunSpec.Builder, classBuilder: TypeSpec.Builder) {
-        if (key == "null") { // FIXME hack, need to sanitise reserved keywords properly and test
-
-            val initializer = PropertySpec.builder("_null", type)
-                    .initializer("_null")
-            classBuilder.addProperty(initializer.build()) // ensures val present by adding both
-            constructor.addParameter("_null", type)
-            return
-        }
-
         val initializer = PropertySpec.builder(key, type)
                 .initializer(key)
         classBuilder.addProperty(initializer.build()) // ensures val present by adding both
@@ -109,10 +102,11 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
         for (jsonElement in jsonArray) { // TODO optimise by checking arrayTypes each iteration
             // TODO find key!
+            val sanitisedName = sanitiseName(key)
             when {
-                jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive, key))
-                jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray, "${key}Array"))
-                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, key))
+                jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive, sanitisedName))
+                jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray, "${sanitisedName}Array"))
+                jsonElement.isJsonObject -> arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, sanitisedName))
                 jsonElement.isJsonNull -> nullable = true
                 else -> throw IllegalStateException("Unexpected state in array")
             }
@@ -135,4 +129,46 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         processJsonObject(jsonObject, className.capitalize()) // TODO need to de-dupe things!
         return ClassName.bestGuess(className.capitalize()).asNonNullable()
     }
+
+    private fun sanitiseName(name: String): String {
+        return if (KEYWORDS.contains(name)) {
+            "`$name`" // escape
+        } else {
+            val replace = name.replace("[^0-9A-Za-z_]+".toRegex(), "_")
+            replace
+        }
+    }
+
+    private val KEYWORDS = listOf(
+            "as",
+            "as?",
+            "break",
+            "class",
+            "continue",
+            "do",
+            "else",
+            "false",
+            "for",
+            "fun",
+            "if",
+            "in",
+            "!in",
+            "interface",
+            "is",
+            "!is",
+            "null",
+            "object",
+            "package",
+            "return",
+            "super",
+            "this",
+            "throw",
+            "try",
+            "typealias",
+            "val",
+            "var",
+            "when",
+            "while"
+    )
+
 }

@@ -1,13 +1,15 @@
-data class SanitiseExample(
-    val Testword1: String,
-    val Testword2: String,
-    val Testword3: String,
-    val Testword4: String,
-    val Testword5: String,
-    val Testword6: String,
-    val Testword7: String,
-    val Testword8: String,
-    val Testword9: String,
-    val Testword10: String
-)
+import kotlin.String
 
+data class SanitiseExample(
+    val Test_word1: String,
+    val Test_word2: String,
+    val Test_word3: String,
+    val Test_word4: String,
+    val Test_word5: String,
+    val Test_word6: String,
+    val Test_word7: String,
+    val Test_word8: String,
+    val Test_word9: String,
+    val Test_word10: String,
+    val Test_word11: String
+)
