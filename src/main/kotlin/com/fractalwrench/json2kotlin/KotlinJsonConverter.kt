@@ -10,7 +10,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
     private val stack = Stack<TypeSpec.Builder>()
 
-    private val bfsQueue = LinkedList<JsonElement>()
+    private val bfsStack = Stack<JsonElement>()
 
     fun convert(input: String, output: OutputStream, args: ConversionArgs) {
         try {
@@ -18,11 +18,31 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
                 throw IllegalArgumentException("Json input empty")
             }
 
-            val json = readJsonTree(input, args)
-            processJsonObject(json, args.rootClassName)
+            val jsonRoot = readJsonTree(input, args)
+            buildQueue(jsonRoot)
+            processQueue()
+
+            // TODO outdated
+            processJsonObject(jsonRoot, args.rootClassName)
             generateSourceFile(args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
+        }
+    }
+
+    private fun buildQueue(element: JsonElement) {
+        bfsStack.add(element)
+
+        when {
+            element.isJsonObject -> element.asJsonObject.entrySet().forEach { buildQueue(it.value) }
+            element.isJsonArray -> element.asJsonArray.forEach(this::buildQueue)
+        }
+    }
+
+    private fun processQueue() {
+        while (!bfsStack.isEmpty()) {
+            val pop = bfsStack.pop()
+            print(pop) // TODO actually process!
         }
     }
 
