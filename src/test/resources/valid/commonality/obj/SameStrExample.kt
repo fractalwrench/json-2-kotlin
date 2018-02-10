@@ -1,5 +1,5 @@
 import kotlin.String
 
-data class SameStrExample(val firstField: Foo, val secondField: Foo)
+data class SameStrExample(val firstField: FirstField, val secondField: FirstField)
 
-data class Foo(val foo: String)
+data class FirstField(val foo: String)

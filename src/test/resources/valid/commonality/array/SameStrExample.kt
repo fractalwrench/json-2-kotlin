@@ -1,5 +1,6 @@
+import kotlin.Array
 import kotlin.String
 
-data class SameStrExample(val firstField: Foo, val secondField: Foo)
+data class SameStrExampleContainer(val sameStrExampleField: Array<SameStrExampleField>)
 
-data class Foo(val foo: String)
+data class SameStrExampleField(val foo: String)

@@ -1,5 +1,10 @@
-data class ArrayExampleContainer(val arrayExampleField: Array<Any>)
+import kotlin.Array
+import kotlin.String
 
-data class FirstObject(val first: String)
-data class SecondObject(val second: String)
-data class ThirdObject(val third: String)
+data class ArrayExampleContainer(val arrayExampleField: Array<ArrayExampleField>)
+
+data class ArrayExampleField(val third: String)
+
+data class ArrayExampleField2(val second: String)
+
+data class ArrayExampleField3(val first: String)

@@ -1,5 +1,5 @@
-import kotlin.String
+import kotlin.Array
 
-data class NullableAnyExample(val firstField: Foo, val secondField: Foo)
+data class NullableAnyExampleContainer(val nullableAnyExampleField: Array<NullableAnyExampleField>)
 
-data class Foo(val foo: Any?)
+data class NullableAnyExampleField(val foo: Any?)

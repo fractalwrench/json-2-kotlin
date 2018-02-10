@@ -1,6 +1,8 @@
+import kotlin.Array
 import kotlin.String
 
-data class DiffSingleFieldExample(val firstField: FirstField, val secondField: SecondField)
+data class DiffSingleFieldExampleContainer(val diffSingleFieldExampleField: Array<Any>)
 
-data class FirstField(val foo: String)
-data class SecondField(val bar: String)
+data class DiffSingleFieldExampleField(val bar: String)
+
+data class DiffSingleFieldExampleField2(val foo: String)

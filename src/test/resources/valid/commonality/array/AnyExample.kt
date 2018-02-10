@@ -1,5 +1,5 @@
-import kotlin.String
+import kotlin.Array
 
-data class AnyExample(val firstField: Foo, val secondField: Foo)
+data class AnyExampleContainer(val anyExampleField: Array<AnyExampleField>)
 
-data class Foo(val foo: Any?)
+data class AnyExampleField(val foo: Any)
