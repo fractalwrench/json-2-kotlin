@@ -15,79 +15,87 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             if (input.isEmpty()) {
                 throw IllegalArgumentException("Json input empty")
             }
-            val jsonRoot = jsonParser.parse(input)
-            sourceFile = FileSpec.builder("", args.rootClassName)
-
-            // TODO build up a Set of all the objects as a type representation
-
-            when {
-                jsonRoot.isJsonObject -> processJsonObject(jsonRoot.asJsonObject, args.rootClassName)
-                jsonRoot.isJsonArray -> handleRootJsonArray(jsonRoot.asJsonArray, args.rootClassName)
-                else -> throw IllegalStateException("Expected a JSON array or object")
-            }
-
-            while (!stack.isEmpty()) {
-                sourceFile.addType(stack.pop().build())
-            }
-
-            val stringBuilder = StringBuilder()
-            sourceFile.build().writeTo(stringBuilder)
-            output.write(stringBuilder.toString().toByteArray())
-
+            processJsonInput(input, args)
+            generateSourceFile(args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
         }
     }
 
-    /**
-     * Adds a wrapper object around the array
-     */
-    private fun handleRootJsonArray(jsonArray: JsonArray, className: String) {
-        val fieldName = "${className}Field".decapitalize()
-        val containerClassName = "${className}Container"
-        val jsonElement = JsonObject().apply { add(fieldName, jsonArray) }
-        processJsonObject(jsonElement, containerClassName)
+    private fun generateSourceFile(args: ConversionArgs, output: OutputStream) {
+        sourceFile = FileSpec.builder("", args.rootClassName)
+
+        while (!stack.isEmpty()) {
+            sourceFile.addType(stack.pop().build())
+        }
+
+        val stringBuilder = StringBuilder()
+        sourceFile.build().writeTo(stringBuilder)
+        output.write(stringBuilder.toString().toByteArray())
     }
 
-    private fun processJsonObject(jsonObject: JsonObject, className: String) {
+    private fun processJsonInput(input: String, args: ConversionArgs) {
+        val rootElement = jsonParser.parse(input)
 
-        val sanitisedName = sanitiseName(className)
-        val classBuilder = TypeSpec.classBuilder(sanitisedName)
+        when {
+            rootElement.isJsonObject -> processJsonObject(rootElement.asJsonObject, args.rootClassName)
+            rootElement.isJsonArray -> processRootArrayWrapper(rootElement.asJsonArray, args.rootClassName)
+            else -> throw IllegalStateException("Expected a JSON array or object")
+        }
+    }
+
+    /**
+     * Adds an object as root which wraps the array
+     */
+    private fun processRootArrayWrapper(jsonArray: JsonArray, className: String) {
+        val arrayName = "${className}Field".decapitalize() // TODO
+        val rootClassName = "${className}Container" // TODO
+        val rootElement = JsonObject().apply { add(arrayName, jsonArray) }
+        processJsonObject(rootElement, rootClassName)
+    }
+
+
+    /** Begin processing actual JSON **/
+
+
+    private fun processJsonObject(jsonObject: JsonObject, key: String): TypeName {
+        val identifier = key.toKotlinIdentifier().capitalize()
+        val classBuilder = TypeSpec.classBuilder(identifier)
 
         if (jsonObject.size() > 0) {
             val constructor = FunSpec.constructorBuilder()
             classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
-
-            // find the type for each value then add the field to the class
-            for (entry in jsonObject.entrySet()) {
-                val valueType = findJsonValueType(entry.value, entry.key)
-                addDataClassProperty(sanitiseName(entry.key), valueType, constructor, classBuilder)
-            }
+            processJsonObjectFields(jsonObject, constructor, classBuilder)
             classBuilder.primaryConstructor(constructor.build())
         }
         stack.add(classBuilder)
+        return ClassName.bestGuess(identifier)
     }
 
-    private fun addDataClassProperty(key: String, type: TypeName,
-                                     constructor: FunSpec.Builder, classBuilder: TypeSpec.Builder) {
-        val initializer = PropertySpec.builder(key, type)
-                .initializer(key)
-        classBuilder.addProperty(initializer.build()) // ensures val present by adding both
-        constructor.addParameter(key, type)
+    private fun processJsonObjectFields(jsonObject: JsonObject,
+                                        constructor: FunSpec.Builder,
+                                        classBuilder: TypeSpec.Builder) {
+        jsonObject.entrySet().forEach {
+            val fieldType = processJsonField(it.value, it.key)
+            val identifier = it.key.toKotlinIdentifier()
+
+            val initializer = PropertySpec.builder(identifier, fieldType).initializer(identifier)
+            classBuilder.addProperty(initializer.build())
+            constructor.addParameter(identifier, fieldType)
+        }
     }
 
-
-    private fun findJsonValueType(jsonElement: JsonElement, key: String): TypeName {
+    private fun processJsonField(jsonElement: JsonElement, key: String): TypeName {
         return when {
-            jsonElement.isJsonPrimitive -> findJsonPrimitiveType(jsonElement.asJsonPrimitive)
-            jsonElement.isJsonArray -> findJsonArrayType(jsonElement.asJsonArray, key)
-            jsonElement.isJsonObject -> findJsonObjectType(jsonElement.asJsonObject, key)
+            jsonElement.isJsonPrimitive -> processJsonPrimitive(jsonElement.asJsonPrimitive)
+            jsonElement.isJsonArray -> processJsonArray(jsonElement.asJsonArray, key)
+            jsonElement.isJsonObject -> processJsonObject(jsonElement.asJsonObject, key)
             jsonElement.isJsonNull -> Any::class.asTypeName().asNullable()
             else -> throw IllegalStateException("Expected a JSON value")
         }
     }
 
-    private fun findJsonPrimitiveType(primitive: JsonPrimitive): TypeName {
+    private fun processJsonPrimitive(primitive: JsonPrimitive): TypeName {
         return when {
             primitive.isBoolean -> Boolean::class
             primitive.isNumber -> Number::class
@@ -96,81 +104,44 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         }.asTypeName()
     }
 
-    private fun findJsonArrayType(jsonArray: JsonArray, key: String): TypeName {
+    private fun processJsonArray(jsonArray: JsonArray, key: String): TypeName {
         val arrayTypes = HashSet<TypeName>()
         var nullable = false
 
-        for ((index, jsonElement) in jsonArray.withIndex()) {
-            val sanitisedName = sanitiseName(key)
+        jsonArray.withIndex().forEach {
+            val sanitisedName = key.toKotlinIdentifier()
+            val element = it.value
+
             when {
-                jsonElement.isJsonPrimitive -> arrayTypes.add(findJsonValueType(jsonElement.asJsonPrimitive, sanitisedName))
-                jsonElement.isJsonArray -> arrayTypes.add(findJsonArrayType(jsonElement.asJsonArray, "${sanitisedName}Array"))
-                jsonElement.isJsonObject -> {
-                    val objName = if (index > 0) "$sanitisedName${index + 1}" else sanitisedName
-                    arrayTypes.add(findJsonObjectType(jsonElement.asJsonObject, objName))
-                }
-                jsonElement.isJsonNull -> nullable = true
+                element.isJsonPrimitive ->
+                    arrayTypes.add(processJsonField(element.asJsonPrimitive, sanitisedName))
+                element.isJsonArray ->
+                    arrayTypes.add(processJsonArray(element.asJsonArray, "${sanitisedName}Array")) // TODO
+                element.isJsonObject ->
+                    arrayTypes.add(processJsonObject(element.asJsonObject, nameForObjectInArray(it, sanitisedName)))
+                element.isJsonNull -> nullable = true
                 else -> throw IllegalStateException("Unexpected state in array")
             }
         }
 
-        val rawType = deduceArrayType(arrayTypes, nullable)
-        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), rawType)
+        val arrayType = deduceArrayType(arrayTypes, nullable)
+        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), arrayType)
+    }
+
+    private fun nameForObjectInArray(it: IndexedValue<JsonElement>, sanitisedName: String): String {
+        return if (it.index > 0) "$sanitisedName${it.index + 1}" else sanitisedName
     }
 
     private fun deduceArrayType(arrayTypes: HashSet<TypeName>, nullable: Boolean): TypeName {
-        val typeName = if (arrayTypes.size > 1 || arrayTypes.isEmpty()) {
-            Any::class.asTypeName()
-        } else {
-            arrayTypes.asIterable().first()
+        val hasMultipleType = arrayTypes.size > 1 || arrayTypes.isEmpty()
+        val arrayTypeName = when {
+            hasMultipleType -> Any::class.asTypeName()
+            else -> arrayTypes.asIterable().first()
         }
-        return if (nullable) typeName.asNullable() else typeName
-    }
-
-    private fun findJsonObjectType(jsonObject: JsonObject, className: String): TypeName {
-        processJsonObject(jsonObject, className.capitalize()) // TODO need to de-dupe things!
-        return ClassName.bestGuess(className.capitalize()).asNonNullable()
-    }
-
-    private fun sanitiseName(name: String): String {
-        return if (KEYWORDS.contains(name)) {
-            "`$name`" // escape
-        } else {
-            val replace = name.replace("[^0-9A-Za-z_]+".toRegex(), "_")
-            replace
+        return when {
+            nullable -> arrayTypeName.asNullable()
+            else -> arrayTypeName
         }
     }
-
-    private val KEYWORDS = listOf(
-            "as",
-            "as?",
-            "break",
-            "class",
-            "continue",
-            "do",
-            "else",
-            "false",
-            "for",
-            "fun",
-            "if",
-            "in",
-            "!in",
-            "interface",
-            "is",
-            "!is",
-            "null",
-            "object",
-            "package",
-            "return",
-            "super",
-            "this",
-            "throw",
-            "try",
-            "typealias",
-            "val",
-            "var",
-            "when",
-            "while"
-    )
 
 }

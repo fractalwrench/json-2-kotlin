@@ -8,10 +8,6 @@ import org.junit.runners.Parameterized
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-fun String.standardiseNewline(): String {
-    return this.replace("\r\n", "\n")
-}
-
 @RunWith(Parameterized::class)
 class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
 
