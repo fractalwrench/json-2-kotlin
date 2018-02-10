@@ -3,7 +3,7 @@ import kotlin.Boolean
 import kotlin.Number
 import kotlin.String
 
-data class GithubProjectListExampleContainer(val githubProjectListExampleField: Array<GithubProjectListExampleField>)
+data class GithubProjectListExample(val githubProjectListExampleField: Array<GithubProjectListExampleField>)
 
 data class GithubProjectListExampleField(
     val owner_url: String,
