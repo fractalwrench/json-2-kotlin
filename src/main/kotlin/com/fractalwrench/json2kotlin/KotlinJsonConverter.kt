@@ -4,6 +4,8 @@ import com.google.gson.*
 import com.squareup.kotlinpoet.*
 import java.io.OutputStream
 import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
@@ -17,7 +19,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             if (input.isEmpty()) {
                 throw IllegalArgumentException("Json input empty")
             }
-
+            sourceFile = FileSpec.builder("", args.rootClassName)
             val jsonRoot = readJsonTree(input, args)
             buildQueue(jsonRoot)
             processQueue()
@@ -64,16 +66,19 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             val pop = bfsStack.pop()
 
             if (depth != -1 && pop.depth != depth) {
-                processLevelQueue(levelQueue)
+                processTreeLevel(levelQueue, depth)
             }
             levelQueue.add(pop)
             depth = pop.depth
         }
-        processLevelQueue(levelQueue)
+        processTreeLevel(levelQueue, depth)
     }
 
-    private fun processLevelQueue(levelQueue: LinkedList<TypedJsonElement>) {
-        println("Processing level ${levelQueue.peek().depth}")
+    /**
+     * Processes a single level in the tree
+     */
+    private fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>, depth: Int) {
+        println("Processing level $depth")
 
         val arrays = levelQueue.filter { it.isJsonArray }
         arrays.forEach { println(it) }
@@ -84,8 +89,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
 
         val commonTypes = determineCommonTypes(objects)
-
-        processCommonTypes(commonTypes)
+        commonTypes.forEach(this::processCommonType)
 
         // TODO should group common objects here!
 
@@ -145,13 +149,83 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         return hasCommonKeys || emptyClasses
     }
 
-    private fun processCommonTypes(commonTypes: List<List<TypedJsonElement>>) {
-        // TODO determine types!
+
+    private fun processCommonType(commonElements: List<TypedJsonElement>) { // TODO assumes an object!
+        val fields = HashSet<String>()
+
+        commonElements.forEach {
+            fields.addAll(it.asJsonObject.keySet())
+        }
+
+        val identifier = "Foo" // FIXME
+
+        if (fields.isNotEmpty()) {
+            val buildClass = buildClass(identifier, fields, commonElements)
+//            sourceFile.addType(buildClass.build()) // FIXME write at some point again!
+        }
     }
 
+    private fun buildClass(identifier: String, fields: HashSet<String>, commonElements: List<TypedJsonElement>): TypeSpec.Builder {
+
+        val classBuilder = TypeSpec.classBuilder(identifier)
+        val constructor = FunSpec.constructorBuilder()
+        classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
+
+        processFieldType(fields, commonElements).entries.forEach {
+            val sanitisedName = it.key.toKotlinIdentifier()
+            val typeName = it.value
+            val initializer = PropertySpec.builder(sanitisedName, typeName).initializer(sanitisedName)
+            classBuilder.addProperty(initializer.build())
+            constructor.addParameter(sanitisedName, typeName)
+        }
+
+        classBuilder.primaryConstructor(constructor.build())
+        return classBuilder
+    }
+
+    private fun processFieldType(fields: HashSet<String>, commonElements: List<TypedJsonElement>): Map<String, TypeName> {
+        val fieldMap = HashMap<String, TypeName>()
+
+        for (field in fields) {
+            val distinctTypes = commonElements.map {
+                val value = it.asJsonObject.get(field)
+
+                when {
+                    value == null -> null
+                    value.isJsonPrimitive -> processJsonPrimitive(value.asJsonPrimitive) // TODO handle others!
+                    else -> null
+                }
+            }.distinct()
+
+            val typeName = reduceToSingleType(distinctTypes)
+            fieldMap.put(field, typeName)
+        }
+        return fieldMap
+    }
+
+    /**
+     * Determines a single type which fits multiple types.
+     */
+    private fun reduceToSingleType(types: List<TypeName?>): TypeName {
+        val nullable = types.contains(null)
+        val nonNullTypes = types.filterNotNull()
+
+        val typeName: TypeName = if (nonNullTypes.size == 1) {
+            nonNullTypes[0]
+        } else {
+            Any::class.asTypeName()
+        }
+
+
+        val fieldType = if (nullable) {
+            typeName.asNullable()
+        } else {
+            typeName
+        }
+        return fieldType
+    }
 
     private fun generateSourceFile(args: ConversionArgs, output: OutputStream) {
-        sourceFile = FileSpec.builder("", args.rootClassName)
 
         while (stack.isNotEmpty()) {
             sourceFile.addType(stack.pop().build())
