@@ -1,8 +1,10 @@
 import kotlin.String
 
 data class KeywordsExample(
-    val `as`: String,
+    val `!in`: String,
+    val `!is`: String,
     val `as?`: String,
+    val `as`: String,
     val `break`: String,
     val `class`: String,
     val `continue`: String,
@@ -13,10 +15,8 @@ data class KeywordsExample(
     val `fun`: String,
     val `if`: String,
     val `in`: String,
-    val `!in`: String,
     val `interface`: String,
     val `is`: String,
-    val `!is`: String,
     val `null`: String,
     val `object`: String,
     val `package`: String,

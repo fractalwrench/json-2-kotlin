@@ -25,8 +25,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             val jsonRoot = readJsonTree(input, args)
             buildQueue(jsonRoot)
             processQueue()
-
-            // TODO outdated
             generateSourceFile(args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
@@ -94,14 +92,8 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         val objects = levelQueue.filter { it.isJsonObject }.toMutableList()
         objects.forEach { println(it) }
 
-
         val commonTypes = determineCommonTypes(objects)
         commonTypes.forEach(this::processCommonType)
-
-        // TODO should group common objects here!
-
-
-        // TODO handle null (at current and primitive level)!
         levelQueue.clear()
     }
 
@@ -156,7 +148,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         return hasCommonKeys || emptyClasses
     }
 
-
     private fun processCommonType(commonElements: List<TypedJsonElement>) { // TODO assumes an object!
         val fields = HashSet<String>()
 
@@ -164,8 +155,8 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             fields.addAll(it.asJsonObject.keySet())
         }
 
-        val identifier = commonElements.first().name // FIXME
-        val buildClass = buildClass(identifier, fields.sorted(), commonElements)
+        val identifier = commonElements.last().name
+        val buildClass = buildClass(identifier, fields.sortedBy { it.toKotlinIdentifier() }, commonElements)
 
         stack.add(buildClass)
     }
@@ -303,8 +294,8 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private fun processJsonField(jsonElement: JsonElement, key: String): TypeName {
         return when {
             jsonElement.isJsonPrimitive -> processJsonPrimitive(jsonElement.asJsonPrimitive)
-            jsonElement.isJsonArray -> processJsonArray(jsonElement.asJsonArray, key)
-            jsonElement.isJsonObject -> processJsonObject(jsonElement.asJsonObject, key)
+            jsonElement.isJsonArray -> processJsonArray(jsonElement.asJsonArray, key) // FIXME
+            jsonElement.isJsonObject -> processJsonObject(jsonElement.asJsonObject, key) // FIXME
             jsonElement.isJsonNull -> Any::class.asTypeName().asNullable()
             else -> throw IllegalStateException("Expected a JSON value")
         }
