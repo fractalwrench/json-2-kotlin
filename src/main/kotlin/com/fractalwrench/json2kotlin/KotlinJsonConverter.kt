@@ -10,7 +10,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
     private val stack = Stack<TypeSpec.Builder>()
 
-    private val bfsStack = Stack<JsonElement>()
+    private val bfsStack = Stack<TypedJsonElement>()
 
     fun convert(input: String, output: OutputStream, args: ConversionArgs) {
         try {
@@ -30,19 +30,45 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         }
     }
 
-    private fun buildQueue(element: JsonElement) {
-        bfsStack.add(element)
+    private fun buildQueue(element: JsonElement, depth: Int = 0) {
+        if (depth == 0) {
+            bfsStack.add(TypedJsonElement(element, depth))
+        }
 
-        when {
-            element.isJsonObject -> element.asJsonObject.entrySet().forEach { buildQueue(it.value) }
-            element.isJsonArray -> element.asJsonArray.forEach(this::buildQueue)
+        val values = when {
+            element.isJsonObject -> element.asJsonObject.entrySet().map { it.value }
+            element.isJsonArray -> element.asJsonArray
+            else -> Collections.emptyList()
+        }
+
+        values.forEach {
+            bfsStack.add(TypedJsonElement(it, depth + 1))
+        }
+        values.forEach {
+            buildQueue(it, depth + 1)
         }
     }
 
     private fun processQueue() {
+        var depth = -1
+
         while (!bfsStack.isEmpty()) {
             val pop = bfsStack.pop()
-            print(pop) // TODO actually process!
+
+            if (depth != -1 && pop.depth != depth) {
+                println("Processing level ${pop.depth}")
+            }
+            depth = pop.depth
+
+            when {
+                pop.isJsonArray -> {
+                    println(pop) // TODO actually process!
+                }
+                pop.isJsonObject -> {
+                    println(pop) // TODO actually process!
+                }
+                else -> {}
+            }
         }
     }
 
