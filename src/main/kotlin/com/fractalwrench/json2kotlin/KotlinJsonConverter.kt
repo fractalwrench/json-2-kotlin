@@ -27,7 +27,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             processQueue()
 
             // TODO outdated
-//            processJsonObject(jsonRoot, args.rootClassName)
             generateSourceFile(args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
@@ -88,6 +87,10 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         arrays.forEach { println(it) }
 
         // TODO handle arrays
+
+
+
+
         val objects = levelQueue.filter { it.isJsonObject }.toMutableList()
         objects.forEach { println(it) }
 
@@ -163,11 +166,12 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
         val identifier = commonElements.first().name // FIXME
         val buildClass = buildClass(identifier, fields.sorted(), commonElements)
-        sourceFile.addType(buildClass.build()) // FIXME write at some point again!
+
+        stack.add(buildClass)
     }
 
     private fun buildClass(identifier: String, fields: Collection<String>, commonElements: List<TypedJsonElement>): TypeSpec.Builder {
-        val classBuilder = TypeSpec.classBuilder(identifier)
+        val classBuilder = TypeSpec.classBuilder(identifier.toKotlinIdentifier().capitalize())
         val constructor = FunSpec.constructorBuilder()
 
         if (fields.isEmpty()) {
@@ -196,12 +200,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         for (field in fields) {
             val distinctTypes = commonElements.map {
                 val value = it.asJsonObject.get(field)
-
-                when {
-                    value == null -> null
-                    value.isJsonPrimitive -> processJsonPrimitive(value.asJsonPrimitive) // TODO handle others!
-                    else -> null
-                }
+                if (value != null) processJsonField(value, field) else null
             }.distinct()
 
             val typeName = reduceToSingleType(distinctTypes)
@@ -233,7 +232,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     }
 
     private fun generateSourceFile(args: ConversionArgs, output: OutputStream) {
-
         while (stack.isNotEmpty()) {
             sourceFile.addType(stack.pop().build())
         }
@@ -265,7 +263,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      * Adds an object as root which wraps the array
      */
     private fun processRootArrayWrapper(jsonArray: JsonArray, className: String): JsonObject {
-        val arrayName = nameForArrayField(className).decapitalize() // TODO
+        val arrayName = nameForArrayField(className).decapitalize()
         return JsonObject().apply { add(arrayName, jsonArray) }
     }
 
@@ -274,82 +272,78 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private fun nameForObjectInArray(it: IndexedValue<JsonElement>, sanitisedName: String): String {
         return if (it.index > 0) "$sanitisedName${it.index + 1}" else sanitisedName
     }
-//
-//
-//    /** Begin processing actual JSON **/
-//
-//
-//    private fun processJsonObject(jsonObject: JsonObject, key: String): TypeName {
-//        val identifier = key.toKotlinIdentifier().capitalize()
-//        val classBuilder = TypeSpec.classBuilder(identifier)
-//
-//        if (jsonObject.size() > 0) {
-//            val constructor = FunSpec.constructorBuilder()
-//            classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
-//            processJsonObjectFields(jsonObject, constructor, classBuilder)
-//            classBuilder.primaryConstructor(constructor.build())
-//        }
-//        stack.add(classBuilder)
-//        return ClassName.bestGuess(identifier)
-//    }
-//
-//    private fun processJsonObjectFields(jsonObject: JsonObject,
-//                                        constructor: FunSpec.Builder,
-//                                        classBuilder: TypeSpec.Builder) {
-//        jsonObject.entrySet().forEach {
-//            val fieldType = processJsonField(it.value, it.key)
-//            val identifier = it.key.toKotlinIdentifier()
-//
-//            val initializer = PropertySpec.builder(identifier, fieldType).initializer(identifier)
-//            classBuilder.addProperty(initializer.build())
-//            constructor.addParameter(identifier, fieldType)
-//        }
-//    }
-//
-//    private fun processJsonField(jsonElement: JsonElement, key: String): TypeName {
-//        return when {
-//            jsonElement.isJsonPrimitive -> processJsonPrimitive(jsonElement.asJsonPrimitive)
-//            jsonElement.isJsonArray -> processJsonArray(jsonElement.asJsonArray, key)
-//            jsonElement.isJsonObject -> processJsonObject(jsonElement.asJsonObject, key)
-//            jsonElement.isJsonNull -> Any::class.asTypeName().asNullable()
-//            else -> throw IllegalStateException("Expected a JSON value")
-//        }
-//    }
-//
-//    private fun processJsonArray(jsonArray: JsonArray, key: String): TypeName {
-//        val arrayTypes = HashSet<TypeName>()
-//        var nullable = false
-//
-//        jsonArray.withIndex().forEach {
-//            val sanitisedName = key.toKotlinIdentifier()
-//            val element = it.value
-//
-//            when {
-//                element.isJsonPrimitive ->
-//                    arrayTypes.add(processJsonField(element.asJsonPrimitive, sanitisedName))
-//                element.isJsonArray ->
-//                    arrayTypes.add(processJsonArray(element.asJsonArray, nameForArrayField(sanitisedName)))
-//                element.isJsonObject ->
-//                    arrayTypes.add(processJsonObject(element.asJsonObject, nameForObjectInArray(it, sanitisedName)))
-//                element.isJsonNull -> nullable = true
-//                else -> throw IllegalStateException("Unexpected state in array")
-//            }
-//        }
-//
-//        val arrayType = deduceArrayType(arrayTypes, nullable)
-//        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), arrayType)
-//    }
-//
-//    private fun deduceArrayType(arrayTypes: HashSet<TypeName>, nullable: Boolean): TypeName {
-//        val hasMultipleType = arrayTypes.size > 1 || arrayTypes.isEmpty()
-//        val arrayTypeName = when {
-//            hasMultipleType -> Any::class.asTypeName()
-//            else -> arrayTypes.asIterable().first()
-//        }
-//        return when {
-//            nullable -> arrayTypeName.asNullable()
-//            else -> arrayTypeName
-//        }
-//    }
+
+
+    private fun processJsonObject(jsonObject: JsonObject, key: String): TypeName {
+        val identifier = key.toKotlinIdentifier().capitalize()
+        val classBuilder = TypeSpec.classBuilder(identifier)
+
+        if (jsonObject.size() > 0) {
+            val constructor = FunSpec.constructorBuilder()
+            classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
+            processJsonObjectFields(jsonObject, constructor, classBuilder)
+            classBuilder.primaryConstructor(constructor.build())
+        }
+        return ClassName.bestGuess(identifier)
+    }
+
+    private fun processJsonObjectFields(jsonObject: JsonObject,
+                                        constructor: FunSpec.Builder,
+                                        classBuilder: TypeSpec.Builder) {
+        jsonObject.entrySet().forEach {
+            val fieldType = processJsonField(it.value, it.key)
+            val identifier = it.key.toKotlinIdentifier()
+
+            val initializer = PropertySpec.builder(identifier, fieldType).initializer(identifier)
+            classBuilder.addProperty(initializer.build())
+            constructor.addParameter(identifier, fieldType)
+        }
+    }
+
+    private fun processJsonField(jsonElement: JsonElement, key: String): TypeName {
+        return when {
+            jsonElement.isJsonPrimitive -> processJsonPrimitive(jsonElement.asJsonPrimitive)
+            jsonElement.isJsonArray -> processJsonArray(jsonElement.asJsonArray, key)
+            jsonElement.isJsonObject -> processJsonObject(jsonElement.asJsonObject, key)
+            jsonElement.isJsonNull -> Any::class.asTypeName().asNullable()
+            else -> throw IllegalStateException("Expected a JSON value")
+        }
+    }
+
+    private fun processJsonArray(jsonArray: JsonArray, key: String): TypeName {
+        val arrayTypes = HashSet<TypeName>()
+        var nullable = false
+
+        jsonArray.withIndex().forEach {
+            val sanitisedName = key.toKotlinIdentifier()
+            val element = it.value
+
+            when {
+                element.isJsonPrimitive ->
+                    arrayTypes.add(processJsonField(element.asJsonPrimitive, sanitisedName))
+                element.isJsonArray ->
+                    arrayTypes.add(processJsonArray(element.asJsonArray, nameForArrayField(sanitisedName)))
+                element.isJsonObject ->
+                    arrayTypes.add(processJsonObject(element.asJsonObject, nameForObjectInArray(it, sanitisedName)))
+                element.isJsonNull -> nullable = true
+                else -> throw IllegalStateException("Unexpected state in array")
+            }
+        }
+
+        val arrayType = deduceArrayType(arrayTypes, nullable)
+        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), arrayType)
+    }
+
+    private fun deduceArrayType(arrayTypes: HashSet<TypeName>, nullable: Boolean): TypeName {
+        val hasMultipleType = arrayTypes.size > 1 || arrayTypes.isEmpty()
+        val arrayTypeName = when {
+            hasMultipleType -> Any::class.asTypeName()
+            else -> arrayTypes.asIterable().first()
+        }
+        return when {
+            nullable -> arrayTypeName.asNullable()
+            else -> arrayTypeName
+        }
+    }
 
 }
