@@ -19,7 +19,6 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
         @Parameterized.Parameters(name = "File {0}")
         fun filenamePairs(): Collection<Array<String>> {
             val dir = File(JsonConverterTest::class.java.classLoader.getResource("valid").file)
-//            val dir = File(resourcePath).parentFile
             val arrayList = ArrayList<Array<String>>()
             findTestCaseFiles(dir, dir, arrayList)
             return arrayList

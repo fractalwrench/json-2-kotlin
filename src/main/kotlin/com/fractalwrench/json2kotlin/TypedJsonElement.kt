@@ -4,7 +4,10 @@ import com.google.gson.*
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class TypedJsonElement(val jsonElement: JsonElement, val depth: Int): JsonElement() {
+class TypedJsonElement(
+        val jsonElement: JsonElement,
+        val name: String,
+        val depth: Int) : JsonElement() {
 
     override fun isJsonNull(): Boolean = jsonElement.isJsonNull
 
@@ -33,7 +36,7 @@ class TypedJsonElement(val jsonElement: JsonElement, val depth: Int): JsonElemen
     override fun getAsBigDecimal(): BigDecimal = jsonElement.asBigDecimal
 
     override fun getAsInt(): Int = jsonElement.asInt
-    
+
     override fun getAsNumber(): Number = jsonElement.asNumber
 
     override fun isJsonPrimitive(): Boolean = jsonElement.isJsonPrimitive
