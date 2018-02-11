@@ -23,7 +23,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             }
             sourceFile = FileSpec.builder("", args.rootClassName)
             val jsonRoot = readJsonTree(input, args)
-            buildQueue(jsonRoot)
+            buildQueue(jsonRoot, null)
             processQueue()
             generateSourceFile(args, output)
         } catch (e: JsonSyntaxException) {
@@ -35,7 +35,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      * Adds the JSON nodes to a stack using BFS. This permits a reverse level order traversal, which is used to build
      * class types from the bottom up.
      */
-    private fun buildQueue(element: JsonElement, depth: Int = 0) {
+    private fun buildQueue(element: JsonElement, key: String?, depth: Int = 0) {
         if (depth == 0) {
             bfsStack.add(TypedJsonElement(element, args.rootClassName, depth))
         }
@@ -46,12 +46,12 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             element.isJsonObject -> {
                 val entrySet = element.asJsonObject.entrySet()
                 entrySet.mapTo(bfsStack) { TypedJsonElement(it.value, it.key, newDepth) }
-                entrySet.forEach { buildQueue(it.value, newDepth) }
+                entrySet.forEach { buildQueue(it.value, it.key, newDepth) }
             }
             element.isJsonArray -> {
                 val array = element.asJsonArray
-                array.mapTo(bfsStack) { TypedJsonElement(it, nameForArrayField("Foo"), newDepth) }
-                array.forEach { buildQueue(it, newDepth) }
+                array.mapTo(bfsStack) { TypedJsonElement(it, key!!, newDepth) }
+                array.forEach { buildQueue(it, key!!, newDepth) }
             }
         }
     }
