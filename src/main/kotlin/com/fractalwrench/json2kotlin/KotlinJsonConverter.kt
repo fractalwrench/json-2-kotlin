@@ -162,11 +162,11 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         }
 
         val identifier = commonElements.first().name // FIXME
-        val buildClass = buildClass(identifier, fields, commonElements)
+        val buildClass = buildClass(identifier, fields.sorted(), commonElements)
         sourceFile.addType(buildClass.build()) // FIXME write at some point again!
     }
 
-    private fun buildClass(identifier: String, fields: HashSet<String>, commonElements: List<TypedJsonElement>): TypeSpec.Builder {
+    private fun buildClass(identifier: String, fields: Collection<String>, commonElements: List<TypedJsonElement>): TypeSpec.Builder {
         val classBuilder = TypeSpec.classBuilder(identifier)
         val constructor = FunSpec.constructorBuilder()
 
@@ -190,7 +190,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         return classBuilder
     }
 
-    private fun processFieldType(fields: HashSet<String>, commonElements: List<TypedJsonElement>): Map<String, TypeName> {
+    private fun processFieldType(fields: Collection<String>, commonElements: List<TypedJsonElement>): Map<String, TypeName> {
         val fieldMap = HashMap<String, TypeName>()
 
         for (field in fields) {
