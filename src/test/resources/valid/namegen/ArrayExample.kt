@@ -1,7 +1,8 @@
+import kotlin.Any
 import kotlin.Array
 import kotlin.String
 
-data class ArrayExample(val arrayExampleArray: Array<ArrayExampleArray>)
+data class ArrayExample(val arrayExampleArray: Array<Any>)
 
 data class ArrayExampleArray(val first: String)
 

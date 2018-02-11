@@ -1,4 +1,4 @@
-import kotlin.String
+import kotlin.Any
 
 data class NullableAnyExample(
     val firstField: FirstField,

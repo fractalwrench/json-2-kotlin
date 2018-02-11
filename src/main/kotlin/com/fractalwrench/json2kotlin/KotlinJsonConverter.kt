@@ -51,8 +51,16 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             }
             element.isJsonArray -> {
                 val array = element.asJsonArray
-                array.mapTo(bfsStack) { TypedJsonElement(it, key!!, newDepth) }
-                array.forEach { buildQueue(it, key!!, newDepth) }
+                val identifier = key ?: throw IllegalStateException("Expected geberated identifier for array element")
+
+                array.forEachIndexed { index, jsonElement ->
+                    val genName = if (index == 0) identifier else "$identifier${index + 1}"
+                    bfsStack.add(TypedJsonElement(jsonElement, genName, newDepth))
+                }
+                array.forEachIndexed { index, jsonElement ->
+                    val genName = if (index == 0) identifier else "$identifier${index + 1}" // FIXME DRY
+                    buildQueue(jsonElement, genName, newDepth)
+                }
             }
         }
     }
@@ -83,11 +91,10 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         println("Processing level $depth")
 
         val arrays = levelQueue.filter { it.isJsonArray }
-        arrays.forEach { println(it) }
-
+        arrays.forEach {
+            println(it)
+        }
         // TODO handle arrays
-
-
 
 
         val objects = levelQueue.filter { it.isJsonObject }.toMutableList()
@@ -108,8 +115,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             val first = allObjects.first()
             allObjects.remove(first)
             commonTypeList.add(first)
-
-            // TODO need to check transient deps here
             findCommonTypesForElement(first, allObjects, commonTypeList)
         }
         return types
@@ -194,7 +199,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private fun processFieldType(fields: Collection<String>, commonElements: List<TypedJsonElement>): Map<String, TypeName> {
         val fieldMap = HashMap<String, TypeName>()
 
-        for (field in fields) {
+        for (field in fields) { // TODO need to handle differently if an array!
             val distinctTypes = commonElements.map {
                 val value = it.asJsonObject.get(field)
                 if (value != null) processJsonField(value, field) else null
@@ -210,8 +215,9 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      * Determines a single type which fits multiple types.
      */
     private fun reduceToSingleType(types: List<TypeName?>): TypeName {
-        val nullable = types.contains(null)
-        val nonNullTypes = types.filterNotNull()
+        val nullableClassName = Any::class.asClassName().asNullable()
+        val nullable = types.contains(nullableClassName) || types.contains(null)
+        val nonNullTypes = types.filterNotNull().filter { it != nullableClassName }
 
         val typeName: TypeName = if (nonNullTypes.size == 1) {
             nonNullTypes[0]

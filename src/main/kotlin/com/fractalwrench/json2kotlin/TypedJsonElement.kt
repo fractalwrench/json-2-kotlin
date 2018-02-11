@@ -48,7 +48,7 @@ class TypedJsonElement(
     override fun getAsDouble(): Double = jsonElement.asDouble
 
     override fun deepCopy(): JsonElement {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw UnsupportedOperationException()
     }
 
     override fun getAsJsonArray(): JsonArray = jsonElement.asJsonArray
