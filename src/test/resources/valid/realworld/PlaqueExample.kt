@@ -4,52 +4,52 @@ import kotlin.Boolean
 import kotlin.Number
 import kotlin.String
 
-data class PlaqueExample(val meta: Meta, val data: Array<Any>)
+data class PlaqueExample(val data: Array<Any>, val meta: Meta)
 
 data class Meta(val view: View)
 
 data class View(
-    val id: String,
-    val name: String,
     val attribution: String,
     val attributionLink: String,
     val averageRating: Number,
     val category: String,
+    val columns: Array<Columns>,
     val createdAt: Number,
     val description: String,
     val displayType: String,
     val downloadCount: Number,
+    val flags: Array<String>,
+    val grants: Array<Grants>,
     val hideFromCatalog: Boolean,
     val hideFromDataJson: Boolean,
     val iconUrl: String,
+    val id: String,
     val indexUpdatedAt: Number,
+    val license: License,
     val licenseId: String,
+    val metadata: Metadata,
+    val name: String,
     val newBackend: Boolean,
     val numberOfComments: Number,
     val oid: Number,
+    val owner: Owner,
     val provenance: String,
     val publicationAppendEnabled: Boolean,
     val publicationDate: Number,
     val publicationGroup: Number,
     val publicationStage: String,
+    val query: Query,
+    val rights: Array<String>,
     val rowClass: String,
     val rowIdentifierColumnId: Number,
     val rowsUpdatedAt: Number,
     val rowsUpdatedBy: String,
+    val tableAuthor: Owner,
     val tableId: Number,
     val totalTimesRated: Number,
     val viewCount: Number,
     val viewLastModified: Number,
-    val viewType: String,
-    val columns: Array<Columns>,
-    val grants: Array<Grants>,
-    val license: License,
-    val metadata: Metadata,
-    val owner: Owner,
-    val query: Query,
-    val rights: Array<String>,
-    val tableAuthor: TableAuthor,
-    val flags: Array<String>
+    val viewType: String
 )
 
 data class TableAuthor(
