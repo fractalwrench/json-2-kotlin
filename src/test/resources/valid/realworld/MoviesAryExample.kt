@@ -1,7 +1,7 @@
 import kotlin.Array
 import kotlin.String
 
-data class MoviesAryExample(val moviesAryExampleArray: Array<Movies>)
+data class MoviesAryExample(val moviesAryExampleArray: Array<MoviesAryExampleArray>)
 
 data class MoviesAryExampleArray(
     val Actors: String,

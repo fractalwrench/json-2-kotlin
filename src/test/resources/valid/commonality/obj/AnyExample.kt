@@ -1,4 +1,4 @@
-import kotlin.String
+import kotlin.Any
 
 data class AnyExample(val firstField: FirstField, val secondField: FirstField)
 

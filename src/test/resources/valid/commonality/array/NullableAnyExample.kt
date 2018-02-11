@@ -1,3 +1,4 @@
+import kotlin.Any
 import kotlin.Array
 
 data class NullableAnyExample(val nullableAnyExampleArray: Array<NullableAnyExampleArray>)

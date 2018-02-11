@@ -10,9 +10,10 @@ import kotlin.collections.HashSet
 class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
     private var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
-    private val stack = Stack<TypeSpec.Builder>()
+    private val stack = Stack<TypeSpec>()
 
     private val bfsStack = Stack<TypedJsonElement>()
+    private val jsonElementMap = HashMap<JsonElement, TypeSpec>()
     private lateinit var args: ConversionArgs
 
     fun convert(input: String, output: OutputStream, args: ConversionArgs) {
@@ -157,8 +158,13 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
         val identifier = commonElements.last().name
         val buildClass = buildClass(identifier, fields.sortedBy { it.toKotlinIdentifier().toLowerCase() }, commonElements)
+        val classType = buildClass.build()
 
-        stack.add(buildClass)
+        // add to map for lookup on next level
+        commonElements.forEach {
+            jsonElementMap.put(it.jsonElement, classType)
+        }
+        stack.add(classType)
     }
 
     private fun buildClass(identifier: String, fields: Collection<String>, commonElements: List<TypedJsonElement>): TypeSpec.Builder {
@@ -224,7 +230,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
     private fun generateSourceFile(args: ConversionArgs, output: OutputStream) {
         while (stack.isNotEmpty()) {
-            sourceFile.addType(stack.pop().build())
+            sourceFile.addType(stack.pop())
         }
 
         val stringBuilder = StringBuilder()
@@ -266,6 +272,12 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
 
     private fun processJsonObject(jsonObject: JsonObject, key: String): TypeName {
+        val get = jsonElementMap[jsonObject]
+        if (get != null) {
+            return ClassName.bestGuess(get.name!!)
+        }
+
+
         val identifier = key.toKotlinIdentifier().capitalize()
         val classBuilder = TypeSpec.classBuilder(identifier)
 
