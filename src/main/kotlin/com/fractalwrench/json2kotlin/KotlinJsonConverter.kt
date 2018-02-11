@@ -58,25 +58,76 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      */
     private fun processQueue() {
         var depth = -1
+        val levelQueue = LinkedList<TypedJsonElement>()
 
-        while (!bfsStack.isEmpty()) {
+        while (bfsStack.isNotEmpty()) {
             val pop = bfsStack.pop()
 
             if (depth != -1 && pop.depth != depth) {
-                println("Processing level ${pop.depth}")
+                processLevelQueue(levelQueue)
             }
+            levelQueue.add(pop)
             depth = pop.depth
+        }
+        processLevelQueue(levelQueue)
+    }
 
-            when { // TODO won't know the name for the type immediately
-                pop.isJsonArray -> {
-                    println(pop) // TODO actually process!
-                }
-                pop.isJsonObject -> {
-                    println(pop) // TODO actually process!
-                }
-                else -> {
-                }
-            }
+    private fun processLevelQueue(levelQueue: LinkedList<TypedJsonElement>) {
+        println("Processing level ${levelQueue.peek().depth}")
+
+        val arrays = levelQueue.filter { it.isJsonArray }
+        arrays.forEach { println(it) }
+
+        // TODO handle arrays
+        val objects = levelQueue.filter { it.isJsonObject }.toMutableList()
+        objects.forEach { println(it) }
+
+
+        val commonTypes = determineCommonTypes(objects)
+
+        processCommonTypes(commonTypes)
+
+        // TODO should group common objects here!
+
+
+        // TODO handle null (at current and primitive level)!
+        levelQueue.clear()
+    }
+
+    private fun determineCommonTypes(allObjects: MutableList<TypedJsonElement>): List<List<TypedJsonElement>> {
+        val types: MutableList<MutableList<TypedJsonElement>> = mutableListOf()
+
+        while (allObjects.isNotEmpty()) {
+            val commonTypeList = mutableListOf<TypedJsonElement>()
+            types.add(commonTypeList)
+
+            val first = allObjects.first()
+            allObjects.remove(first)
+            commonTypeList.add(first)
+
+            // TODO need to check transient deps here
+            findCommonTypesForElement(first, allObjects, commonTypeList)
+        }
+        return types
+    }
+
+    /**
+     * Recursively finds any commonality between types in a collection of JSON objects. Commonality between
+     * two objects is defined as them sharing one or more key value.
+     *
+     * Recursion is necessary to detect transitive relationships. For example, an object that only contains a
+     * key of "foo" may be the same type as an object that only contains a key of "bar", if another object exists
+     * which contains both "foo" and "bar" keys.
+     */
+    private fun findCommonTypesForElement(element: TypedJsonElement,
+                                          allObjects: MutableList<TypedJsonElement>,
+                                          commonTypeList: MutableList<TypedJsonElement>) {
+        val sameTypes = allObjects.filter { hasSameClassType(element, it) }
+        commonTypeList.addAll(sameTypes)
+        allObjects.removeAll(sameTypes)
+
+        sameTypes.forEach {
+            findCommonTypesForElement(it, allObjects, commonTypeList)
         }
     }
 
@@ -86,19 +137,23 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      * The grouping strategy used here is very simple. If either of the JSON objects contain the same key as one of
      * the others, then each object is of the same type. The only exception to this rule is the case of an empty object.
      */
-    private fun hasSameClassType(lhs: JsonObject, rhs: JsonObject): Boolean {
-        val lhsKeys = lhs.keySet()
-        val rhsKeys = rhs.keySet()
+    private fun hasSameClassType(lhs: TypedJsonElement, rhs: TypedJsonElement): Boolean {
+        val lhsKeys = lhs.asJsonObject.keySet()
+        val rhsKeys = rhs.asJsonObject.keySet()
         val emptyClasses = lhsKeys.isEmpty() && rhsKeys.isEmpty()
-        val hasCommonKeys = !lhsKeys.intersect(rhsKeys).isEmpty()
+        val hasCommonKeys = lhsKeys.intersect(rhsKeys).isNotEmpty()
         return hasCommonKeys || emptyClasses
+    }
+
+    private fun processCommonTypes(commonTypes: List<List<TypedJsonElement>>) {
+        // TODO determine types!
     }
 
 
     private fun generateSourceFile(args: ConversionArgs, output: OutputStream) {
         sourceFile = FileSpec.builder("", args.rootClassName)
 
-        while (!stack.isEmpty()) {
+        while (stack.isNotEmpty()) {
             sourceFile.addType(stack.pop().build())
         }
 

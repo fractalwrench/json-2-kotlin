@@ -1,0 +1,12 @@
+{
+  "firstField": {
+    "foo": "something"
+  },
+  "secondField": {
+    "foo": "another field",
+    "bar": "something else"
+  },
+  "thirdField": {
+    "bar": "something else"
+  }
+}
