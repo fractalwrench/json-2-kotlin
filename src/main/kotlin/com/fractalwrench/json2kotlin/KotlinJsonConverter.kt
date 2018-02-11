@@ -156,7 +156,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         }
 
         val identifier = commonElements.last().name
-        val buildClass = buildClass(identifier, fields.sortedBy { it.toKotlinIdentifier() }, commonElements)
+        val buildClass = buildClass(identifier, fields.sortedBy { it.toKotlinIdentifier().toLowerCase() }, commonElements)
 
         stack.add(buildClass)
     }
