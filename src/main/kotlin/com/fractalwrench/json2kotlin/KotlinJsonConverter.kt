@@ -30,6 +30,10 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         }
     }
 
+    /**
+     * Adds the JSON nodes to a stack using BFS. This permits a reverse level order traversal, which is used to build
+     * class types from the bottom up.
+     */
     private fun buildQueue(element: JsonElement, depth: Int = 0) {
         if (depth == 0) {
             bfsStack.add(TypedJsonElement(element, depth))
@@ -49,6 +53,9 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         }
     }
 
+    /**
+     * Processes JSON nodes in a reverse level order traversal, by building class types for each level of the tree.
+     */
     private fun processQueue() {
         var depth = -1
 
@@ -60,17 +67,33 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             }
             depth = pop.depth
 
-            when {
+            when { // TODO won't know the name for the type immediately
                 pop.isJsonArray -> {
                     println(pop) // TODO actually process!
                 }
                 pop.isJsonObject -> {
                     println(pop) // TODO actually process!
                 }
-                else -> {}
+                else -> {
+                }
             }
         }
     }
+
+    /**
+     * Determines whether two JSON Objects on the same level of a JSON tree share the same class type.
+     *
+     * The grouping strategy used here is very simple. If either of the JSON objects contain the same key as one of
+     * the others, then each object is of the same type. The only exception to this rule is the case of an empty object.
+     */
+    private fun hasSameClassType(lhs: JsonObject, rhs: JsonObject): Boolean {
+        val lhsKeys = lhs.keySet()
+        val rhsKeys = rhs.keySet()
+        val emptyClasses = lhsKeys.isEmpty() && rhsKeys.isEmpty()
+        val hasCommonKeys = !lhsKeys.intersect(rhsKeys).isEmpty()
+        return hasCommonKeys || emptyClasses
+    }
+
 
     private fun generateSourceFile(args: ConversionArgs, output: OutputStream) {
         sourceFile = FileSpec.builder("", args.rootClassName)
