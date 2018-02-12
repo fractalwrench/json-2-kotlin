@@ -7,12 +7,11 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-class KotlinJsonConverter(private val jsonParser: JsonParser) {
+class KotlinJsonConverter(private val jsonParser: JsonParser) : TraversalDelegate {
 
     private var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
     private val stack = Stack<TypeSpec>()
 
-    private val bfsStack = Stack<TypedJsonElement>()
     private val jsonElementMap = HashMap<JsonElement, TypeSpec>()
     private lateinit var args: ConversionArgs
 
@@ -24,8 +23,9 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             }
             sourceFile = FileSpec.builder("", args.rootClassName)
             val jsonRoot = readJsonTree(input, args)
-            buildQueue(jsonRoot, null)
-            processQueue()
+            val traverser = ReverseJsonTreeTraverser(this)
+            traverser.traverse(jsonRoot, args.rootClassName)
+
             generateSourceFile(args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
@@ -33,76 +33,13 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     }
 
     /**
-     * Adds the JSON nodes to a stack using BFS. This permits a reverse level order traversal, which is used to build
-     * class types from the bottom up.
-     */
-    private fun buildQueue(element: JsonElement, key: String?, depth: Int = 0) {
-        if (depth == 0) {
-            bfsStack.add(TypedJsonElement(element, args.rootClassName, 0))
-        }
-
-        val newDepth = depth + 1
-
-        when {
-            element.isJsonObject -> {
-                val entrySet = element.asJsonObject.entrySet()
-                entrySet.forEach { entry: MutableMap.MutableEntry<String, JsonElement>? ->
-                    if (shouldAddToStack(entry!!.value)) {
-                        bfsStack.add(TypedJsonElement(entry.value, entry.key, newDepth))
-                    }
-                }
-                entrySet.forEach { buildQueue(it.value, it.key, newDepth) }
-            }
-            element.isJsonArray -> {
-                val array = element.asJsonArray
-                val identifier = key ?: throw IllegalStateException("Expected geberated identifier for array element")
-
-                array.forEachIndexed { index, jsonElement ->
-                    val genName = if (index == 0) identifier else "$identifier${index + 1}"
-                    if (shouldAddToStack(jsonElement)) {
-                        bfsStack.add(TypedJsonElement(jsonElement, genName, newDepth))
-                    }
-                }
-                array.forEachIndexed { index, jsonElement ->
-                    val genName = if (index == 0) identifier else "$identifier${index + 1}" // FIXME DRY
-                    buildQueue(jsonElement, genName, newDepth)
-                }
-            }
-        }
-    }
-
-    private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
-
-    /**
-     * Processes JSON nodes in a reverse level order traversal, by building class types for each level of the tree.
-     */
-    private fun processQueue() {
-        var depth = -1
-        val levelQueue = LinkedList<TypedJsonElement>()
-
-        while (bfsStack.isNotEmpty()) {
-            val pop = bfsStack.pop()
-
-            if (depth != -1 && pop.depth != depth) {
-                processTreeLevel(levelQueue, depth)
-            }
-            levelQueue.add(pop)
-            depth = pop.depth
-        }
-        processTreeLevel(levelQueue, depth)
-    }
-
-    /**
      * Processes a single level in the tree
      */
-    private fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>, depth: Int) {
-        println("Processing level $depth")
+    override fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) {
         val objects = levelQueue.filter { it.isJsonObject }.toMutableList()
         objects.forEach { println(it) }
 
-        val commonTypes = determineCommonTypes(objects)
-
-        commonTypes
+        determineCommonTypes(objects)
                 .flatMap { processCommonType(it) }
                 .sortedByDescending { it.name }
                 .forEach { stack += it }
@@ -170,7 +107,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         val classType = buildClass.build()
 
         // add to map for lookup on next level
-        return commonElements.filterNot{
+        return commonElements.filterNot {
             val containsValue = jsonElementMap.containsValue(classType)
             jsonElementMap.put(it.jsonElement, classType)
             containsValue
@@ -204,7 +141,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private fun processFieldType(fields: Collection<String>, commonElements: List<TypedJsonElement>): Map<String, TypeName> {
         val fieldMap = HashMap<String, TypeName>()
 
-        for (field in fields) { // TODO need to handle differently if an array!
+        for (field in fields) {
             val distinctTypes = commonElements.map {
                 val value = it.asJsonObject.get(field)
                 if (value != null) processJsonField(value, field) else null
@@ -242,13 +179,9 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
                         anyClz
                     }
                 }
-
-
-
             }
             else -> anyClz
         }
-
         return if (nullable) typeName.asNullable() else typeName
     }
 
@@ -294,13 +227,11 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         return if (it.index > 0) "$sanitisedName${it.index + 1}" else sanitisedName
     }
 
-
     private fun processJsonObject(jsonObject: JsonObject, key: String): TypeName {
         val get = jsonElementMap[jsonObject]
         if (get != null) {
             return ClassName.bestGuess(get.name!!)
         }
-
 
         val identifier = key.toKotlinIdentifier().capitalize()
         val classBuilder = TypeSpec.classBuilder(identifier)
@@ -330,8 +261,8 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private fun processJsonField(jsonElement: JsonElement, key: String): TypeName {
         return when {
             jsonElement.isJsonPrimitive -> processJsonPrimitive(jsonElement.asJsonPrimitive)
-            jsonElement.isJsonArray -> processJsonArray(jsonElement.asJsonArray, key) // FIXME
-            jsonElement.isJsonObject -> processJsonObject(jsonElement.asJsonObject, key) // FIXME
+            jsonElement.isJsonArray -> processJsonArray(jsonElement.asJsonArray, key)
+            jsonElement.isJsonObject -> processJsonObject(jsonElement.asJsonObject, key)
             jsonElement.isJsonNull -> Any::class.asTypeName().asNullable()
             else -> throw IllegalStateException("Expected a JSON value")
         }
