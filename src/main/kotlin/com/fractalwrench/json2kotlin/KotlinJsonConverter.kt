@@ -211,23 +211,36 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      * Determines a single type which fits multiple types.
      */
     private fun reduceToSingleType(types: List<TypeName?>): TypeName {
-        val nullableClassName = Any::class.asClassName().asNullable()
+        val anyClz = Any::class.asTypeName()
+        val nullableClassName = anyClz.asNullable()
         val nullable = types.contains(nullableClassName) || types.contains(null)
         val nonNullTypes = types.filterNotNull().filter { it != nullableClassName }
 
-        val typeName: TypeName = if (nonNullTypes.size == 1) {
-            nonNullTypes[0]
-        } else {
-            Any::class.asTypeName()
-        }
+        val typeName: TypeName = when {
+            nonNullTypes.size == 1 -> nonNullTypes[0]
+            nonNullTypes.size == 2 -> {
+
+                val parameterizedTypeName = nonNullTypes.filterIsInstance(ParameterizedTypeName::class.java).firstOrNull()
+
+                if (parameterizedTypeName != null) { // handle type params (recursive)
+                    val rawType = parameterizedTypeName.rawType
+                    parameterizedTypeName.typeArguments
+                    return ParameterizedTypeName.get(rawType, reduceToSingleType(parameterizedTypeName.typeArguments))
+                } else {
+                    if (nonNullTypes.contains(anyClz)) { // Any will be an empty/missing object
+                        nonNullTypes.filterNot { it == anyClz }.first()
+                    } else {
+                        anyClz
+                    }
+                }
 
 
-        val fieldType = if (nullable) {
-            typeName.asNullable()
-        } else {
-            typeName
+
+            }
+            else -> anyClz
         }
-        return fieldType
+
+        return if (nullable) typeName.asNullable() else typeName
     }
 
     private fun generateSourceFile(args: ConversionArgs, output: OutputStream) {
