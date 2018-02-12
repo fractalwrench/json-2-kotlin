@@ -38,7 +38,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      */
     private fun buildQueue(element: JsonElement, key: String?, depth: Int = 0) {
         if (depth == 0) {
-            bfsStack.add(TypedJsonElement(element, args.rootClassName, depth))
+            bfsStack.add(TypedJsonElement(element, args.rootClassName, 0))
         }
 
         val newDepth = depth + 1
@@ -46,7 +46,11 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         when {
             element.isJsonObject -> {
                 val entrySet = element.asJsonObject.entrySet()
-                entrySet.mapTo(bfsStack) { TypedJsonElement(it.value, it.key, newDepth) }
+                entrySet.forEach { entry: MutableMap.MutableEntry<String, JsonElement>? ->
+                    if (shouldAddToStack(entry!!.value)) {
+                        bfsStack.add(TypedJsonElement(entry.value, entry.key, newDepth))
+                    }
+                }
                 entrySet.forEach { buildQueue(it.value, it.key, newDepth) }
             }
             element.isJsonArray -> {
@@ -55,7 +59,9 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
                 array.forEachIndexed { index, jsonElement ->
                     val genName = if (index == 0) identifier else "$identifier${index + 1}"
-                    bfsStack.add(TypedJsonElement(jsonElement, genName, newDepth))
+                    if (shouldAddToStack(jsonElement)) {
+                        bfsStack.add(TypedJsonElement(jsonElement, genName, newDepth))
+                    }
                 }
                 array.forEachIndexed { index, jsonElement ->
                     val genName = if (index == 0) identifier else "$identifier${index + 1}" // FIXME DRY
@@ -64,6 +70,8 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
             }
         }
     }
+
+    private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
 
     /**
      * Processes JSON nodes in a reverse level order traversal, by building class types for each level of the tree.
