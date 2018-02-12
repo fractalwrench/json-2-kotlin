@@ -1,0 +1,9 @@
+{
+  "firstField": {
+    "foo": ["bar"],
+    "another": "test"
+  },
+  "secondField": {
+    "foo": ["bar"]
+  }
+}
