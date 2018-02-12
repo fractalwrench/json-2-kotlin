@@ -101,7 +101,11 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         objects.forEach { println(it) }
 
         val commonTypes = determineCommonTypes(objects)
-        commonTypes.forEach(this::processCommonType)
+
+        commonTypes
+                .flatMap { processCommonType(it) }
+                .sortedByDescending { it.name }
+                .forEach { stack += it }
         levelQueue.clear()
     }
 
@@ -154,7 +158,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         return hasCommonKeys || emptyClasses
     }
 
-    private fun processCommonType(commonElements: List<TypedJsonElement>) { // TODO assumes an object!
+    private fun processCommonType(commonElements: List<TypedJsonElement>): List<TypeSpec> {
         val fields = HashSet<String>()
 
         commonElements.forEach {
@@ -166,14 +170,11 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
         val classType = buildClass.build()
 
         // add to map for lookup on next level
-        commonElements.forEach {
+        return commonElements.filterNot{
             val containsValue = jsonElementMap.containsValue(classType)
             jsonElementMap.put(it.jsonElement, classType)
-
-            if (!containsValue) { // e.g. an object in an array can be found multiple times, only want to define once
-                stack.add(classType)
-            }
-        }
+            containsValue
+        }.map { classType }
     }
 
     private fun buildClass(identifier: String, fields: Collection<String>, commonElements: List<TypedJsonElement>): TypeSpec.Builder {
