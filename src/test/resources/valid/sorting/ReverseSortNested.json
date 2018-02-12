@@ -1,0 +1,20 @@
+{
+  "cow": {
+    "zoo": {
+      "owner": "John Smith"
+    }
+  },
+  "bird": {
+    "alpha": {
+      "awesome": true
+    }
+  },
+  "lima": {
+    "meshuggah": {
+      "description": "A heavy band"
+    }
+  },
+  "anteater": {
+    "test4": "First"
+  }
+}
