@@ -153,7 +153,7 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
     private fun hasSameClassType(lhs: TypedJsonElement, rhs: TypedJsonElement): Boolean {
         val lhsKeys = lhs.asJsonObject.keySet()
         val rhsKeys = rhs.asJsonObject.keySet()
-        val emptyClasses = (lhsKeys.isEmpty() || rhsKeys.isEmpty()) && Math.abs(lhsKeys.size - rhsKeys.size) == 1
+        val emptyClasses = (lhsKeys.isEmpty() || rhsKeys.isEmpty())// && Math.abs(lhsKeys.size - rhsKeys.size) == 1
         val hasCommonKeys = lhsKeys.intersect(rhsKeys).isNotEmpty()
         return hasCommonKeys || emptyClasses
     }
