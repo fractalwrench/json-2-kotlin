@@ -89,14 +89,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
      */
     private fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>, depth: Int) {
         println("Processing level $depth")
-
-        val arrays = levelQueue.filter { it.isJsonArray }
-        arrays.forEach {
-            println(it)
-        }
-        // TODO handle arrays
-
-
         val objects = levelQueue.filter { it.isJsonObject }.toMutableList()
         objects.forEach { println(it) }
 
@@ -167,9 +159,13 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) {
 
         // add to map for lookup on next level
         commonElements.forEach {
+            val containsValue = jsonElementMap.containsValue(classType)
             jsonElementMap.put(it.jsonElement, classType)
+
+            if (!containsValue) { // e.g. an object in an array can be found multiple times, only want to define once
+                stack.add(classType)
+            }
         }
-        stack.add(classType)
     }
 
     private fun buildClass(identifier: String, fields: Collection<String>, commonElements: List<TypedJsonElement>): TypeSpec.Builder {
