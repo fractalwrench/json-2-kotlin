@@ -40,7 +40,7 @@ internal class ClassTypeHolder : TraversalDelegate {
 
         return commonElements.filterNot { // reuse any types which already exist in the map
             val containsValue = jsonProcessor.jsonElementMap.containsValue(classType)
-            jsonProcessor.jsonElementMap.put(it.jsonElement, classType)
+            jsonProcessor.jsonElementMap.put(it.jsonElement, classType) // FIXME weird
             containsValue
         }.map { classType }
     }
@@ -54,7 +54,7 @@ internal class ClassTypeHolder : TraversalDelegate {
             return classBuilder
         }
 
-        val fieldTypeMap = jsonProcessor.processFieldType(fields, commonElements)
+        val fieldTypeMap = jsonProcessor.findDistinctTypesForFields(fields, commonElements)
         fields.forEach { addProperty(it, fieldTypeMap, classBuilder, constructor) }
 
         classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier

@@ -9,71 +9,64 @@ import java.util.HashMap
 import java.util.HashSet
 
 
-// TODO tidy/split
-
 internal class JsonProcessor {
 
-    internal val jsonElementMap = HashMap<JsonElement, TypeSpec>() // FIXME encapsulate me!
+    internal val jsonElementMap = HashMap<JsonElement, TypeSpec>()
 
-    fun processFieldType(fields: Collection<String>, commonElements: List<TypedJsonElement>): Map<String, TypeName> {
+    fun findDistinctTypesForFields(fields: Collection<String>,
+                                   commonElements: List<TypedJsonElement>): Map<String, TypeName> {
         val fieldMap = HashMap<String, TypeName>()
 
-        for (field in fields) {
-            val distinctTypes = commonElements.map {
-                val value = it.asJsonObject.get(field)
-                if (value != null) processJsonField(value, field) else null
-            }.distinct()
-
-            val typeName = reduceToSingleType(distinctTypes)
-            fieldMap.put(field, typeName)
+        fields.forEach {
+            val distinctTypes = findDistinctTypesForField(commonElements, it)
+            fieldMap.put(it, reduceToSingleType(distinctTypes))
         }
         return fieldMap
     }
 
-    private fun processJsonObject(jsonObject: JsonObject, key: String): TypeName {
-        val get = jsonElementMap[jsonObject]
-        if (get != null) {
-            return ClassName.bestGuess(get.name!!)
-        }
-
-        val identifier = key.toKotlinIdentifier().capitalize()
-        val classBuilder = TypeSpec.classBuilder(identifier)
-
-        if (jsonObject.size() > 0) {
-            val constructor = FunSpec.constructorBuilder()
-            classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
-            processJsonObjectFields(jsonObject, constructor, classBuilder)
-            classBuilder.primaryConstructor(constructor.build())
-        }
-        return ClassName.bestGuess(identifier)
+    private fun findDistinctTypesForField(commonElements: List<TypedJsonElement>, key: String): List<TypeName?> {
+        return commonElements.map {
+            val fieldValue = it.asJsonObject.get(key)
+            if (fieldValue != null) typeForJsonField(fieldValue, key) else null
+        }.distinct()
     }
 
-    private fun processJsonObjectFields(jsonObject: JsonObject,
-                                        constructor: FunSpec.Builder,
-                                        classBuilder: TypeSpec.Builder) {
-        jsonObject.entrySet().forEach {
-            val fieldType = processJsonField(it.value, it.key)
-            val identifier = it.key.toKotlinIdentifier()
-
-            val initializer = PropertySpec.builder(identifier, fieldType).initializer(identifier)
-            classBuilder.addProperty(initializer.build())
-            constructor.addParameter(identifier, fieldType)
-        }
-    }
-
-    private fun processJsonField(jsonElement: JsonElement, key: String): TypeName {
+    private fun typeForJsonField(jsonElement: JsonElement, key: String): TypeName {
         with(jsonElement) {
             return when {
-                isJsonPrimitive -> processJsonPrimitive(asJsonPrimitive)
-                isJsonArray -> processJsonArray(asJsonArray, key)
-                isJsonObject -> processJsonObject(asJsonObject, key)
+                isJsonPrimitive -> typeForJsonPrimitive(asJsonPrimitive)
+                isJsonArray -> typeForJsonArray(asJsonArray, key)
+                isJsonObject -> typeForJsonObject(asJsonObject, key)
                 isJsonNull -> Any::class.asTypeName().asNullable()
                 else -> throw IllegalStateException("Expected a JSON value")
             }
         }
     }
 
-    private fun processJsonArray(jsonArray: JsonArray, key: String): TypeName {
+    private fun typeForJsonPrimitive(primitive: JsonPrimitive): TypeName {
+        return when {
+            primitive.isBoolean -> Boolean::class
+            primitive.isNumber -> Number::class
+            primitive.isString -> String::class
+            else -> throw IllegalStateException("No type found for JSON primitive " + primitive)
+        }.asTypeName()
+    }
+
+
+    // FIXME feels really messy from here on out
+
+
+    private fun typeForJsonObject(jsonObject: JsonObject, key: String): TypeName {
+        val existingTypeName = jsonElementMap[jsonObject]
+        if (existingTypeName != null) {
+            return ClassName.bestGuess(existingTypeName.name!!)
+        }
+
+        val identifier = key.toKotlinIdentifier().capitalize()
+        return ClassName.bestGuess(identifier)
+    }
+
+    private fun typeForJsonArray(jsonArray: JsonArray, key: String): TypeName {
         val arrayTypes = HashSet<TypeName>()
         var nullable = false
 
@@ -81,9 +74,9 @@ internal class JsonProcessor {
             val sanitisedName = key.toKotlinIdentifier()
             with(it.value) {
                 when {
-                    isJsonPrimitive -> arrayTypes.add(processJsonField(asJsonPrimitive, sanitisedName))
-                    isJsonArray -> arrayTypes.add(processJsonArray(asJsonArray, nameForArrayField(sanitisedName)))
-                    isJsonObject -> arrayTypes.add(processJsonObject(asJsonObject, nameForObjectInArray(it, sanitisedName)))
+                    isJsonPrimitive -> arrayTypes.add(typeForJsonPrimitive(asJsonPrimitive))
+                    isJsonArray -> arrayTypes.add(typeForJsonArray(asJsonArray, nameForArrayField(sanitisedName)))
+                    isJsonObject -> arrayTypes.add(typeForJsonObject(asJsonObject, nameForObjectInArray(it, sanitisedName)))
                     isJsonNull -> nullable = true
                     else -> throw IllegalStateException("Unexpected state in array")
                 }
@@ -91,15 +84,6 @@ internal class JsonProcessor {
         }
         val arrayType = deduceArrayType(arrayTypes, nullable)
         return ParameterizedTypeName.get(Array<Any>::class.asClassName(), arrayType)
-    }
-
-    private fun processJsonPrimitive(primitive: JsonPrimitive): TypeName {
-        return when {
-            primitive.isBoolean -> Boolean::class
-            primitive.isNumber -> Number::class
-            primitive.isString -> String::class
-            else -> throw IllegalStateException("No type found for JSON primitive " + primitive)
-        }.asTypeName()
     }
 
     private fun deduceArrayType(arrayTypes: HashSet<TypeName>, nullable: Boolean): TypeName {
