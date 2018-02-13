@@ -34,19 +34,19 @@ internal class ClassTypeHolder : TraversalDelegate {
             fields.addAll(it.asJsonObject.keySet())
         }
 
-        val identifier = commonElements.last().name
-        val buildClass = buildClass(identifier, fields.sortedBy { it.toKotlinIdentifier().toLowerCase() }, commonElements)
-        val classType = buildClass.build()
+        val classType = buildClass(commonElements, fields.sortedBy {
+            it.toKotlinIdentifier().toLowerCase()
+        }).build()
 
-        // add to map for lookup on next level
-        return commonElements.filterNot {
+        return commonElements.filterNot { // reuse any types which already exist in the map
             val containsValue = jsonProcessor.jsonElementMap.containsValue(classType)
             jsonProcessor.jsonElementMap.put(it.jsonElement, classType)
             containsValue
         }.map { classType }
     }
 
-    private fun buildClass(identifier: String, fields: Collection<String>, commonElements: List<TypedJsonElement>): TypeSpec.Builder {
+    private fun buildClass(commonElements: List<TypedJsonElement>, fields: Collection<String>): TypeSpec.Builder {
+        val identifier = commonElements.last().name
         val classBuilder = TypeSpec.classBuilder(identifier.toKotlinIdentifier().capitalize())
         val constructor = FunSpec.constructorBuilder()
 
@@ -54,22 +54,20 @@ internal class ClassTypeHolder : TraversalDelegate {
             return classBuilder
         }
 
-        classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
-
         val fieldTypeMap = jsonProcessor.processFieldType(fields, commonElements)
+        fields.forEach { addProperty(it, fieldTypeMap, classBuilder, constructor) }
 
-        for (field in fields) {
-            val sanitisedName = field.toKotlinIdentifier()
-            val typeName = fieldTypeMap[field]
-            val initializer = PropertySpec.builder(sanitisedName, typeName!!).initializer(sanitisedName)
-            classBuilder.addProperty(initializer.build())
-            constructor.addParameter(sanitisedName, typeName)
-        }
-
+        classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
         classBuilder.primaryConstructor(constructor.build())
         return classBuilder
     }
 
+    private fun addProperty(field: String, fieldTypeMap: Map<String, TypeName>, classBuilder: TypeSpec.Builder, constructor: FunSpec.Builder) {
+        val sanitisedName = field.toKotlinIdentifier()
+        val typeName = fieldTypeMap[field]
+        val initializer = PropertySpec.builder(sanitisedName, typeName!!).initializer(sanitisedName)
+        classBuilder.addProperty(initializer.build())
+        constructor.addParameter(sanitisedName, typeName)
+    }
 
 }
-
