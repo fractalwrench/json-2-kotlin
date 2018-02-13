@@ -23,5 +23,5 @@ class JsonReader(val jsonParser: JsonParser) {
         return JsonObject().apply { add(arrayName, jsonArray) }
     }
 
-    private fun nameForArrayField(sanitisedName: String) = "${sanitisedName}Array"
+    private fun nameForArrayField(sanitisedName: String) = "${sanitisedName}Array" // FIXME dupe
 }

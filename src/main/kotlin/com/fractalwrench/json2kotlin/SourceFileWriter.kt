@@ -14,9 +14,10 @@ internal class SourceFileWriter {
             sourceFile.addType(stack.pop())
         }
 
-        val stringBuilder = StringBuilder()
-        sourceFile.build().writeTo(stringBuilder)
-        output.write(stringBuilder.toString().toByteArray())
+        with(StringBuilder()) {
+            sourceFile.build().writeTo(this)
+            output.write(toString().toByteArray())
+        }
     }
 
 }
