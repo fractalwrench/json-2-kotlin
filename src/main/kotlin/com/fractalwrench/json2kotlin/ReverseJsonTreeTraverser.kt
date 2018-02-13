@@ -39,7 +39,6 @@ internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate) : Traversal
                 else -> Collections.emptyList()
             }
         }
-
         complexFields.forEach { bfsStack += it }
         complexFields.forEach { buildQueue(it.jsonElement, it.name, newDepth) }
     }

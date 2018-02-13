@@ -1,6 +1,7 @@
 
 ## Task list
 
+
 Ordered roughly in priority:
 
 - Test null field + object results in nullable object
@@ -9,13 +10,13 @@ Ordered roughly in priority:
 - General cleanup of disgusting code areas
 - Tests which actually serialise JSON with the generated Kotlin files
 
-
-
 - Unit tests for individual methods (once codebase a bit less volatile)
 - Add a callback for altering the classes/properties once their types are fully known
 - Support 1-2 common serialisation libs out of the box
 - Create command line tool + website (essential for convenience)
 
+
+## Rough architecture
 
 
 1. Enqueue each element in a Queue using BFS, recording the level of each element.

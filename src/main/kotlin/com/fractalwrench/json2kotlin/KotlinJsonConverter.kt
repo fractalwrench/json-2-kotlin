@@ -6,8 +6,8 @@ import java.io.OutputStream
 class KotlinJsonConverter {
 
     private val sourceFileWriter = SourceFileWriter()
-    private val stackBuilder = ClassTypeStackBuilder()
-    private val traverser = ReverseJsonTreeTraverser(stackBuilder)
+    private val typeHolder = ClassTypeHolder()
+    private val traverser = ReverseJsonTreeTraverser(typeHolder)
     private val jsonReader = JsonReader(JsonParser())
 
     private lateinit var args: ConversionArgs
@@ -21,7 +21,7 @@ class KotlinJsonConverter {
 
             val jsonRoot = jsonReader.readJsonTree(input, args)
             traverser.traverse(jsonRoot, args.rootClassName)
-            sourceFileWriter.writeSourceFile(stackBuilder.stack, args, output)
+            sourceFileWriter.writeSourceFile(typeHolder.stack, args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
         }
