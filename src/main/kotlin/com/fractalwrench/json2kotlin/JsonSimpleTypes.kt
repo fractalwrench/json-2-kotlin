@@ -7,6 +7,7 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import java.util.HashSet
 
+// TODO tidy
 
 /**
  * Determines whether two JSON Objects on the same level of a JSON tree share the same class type.

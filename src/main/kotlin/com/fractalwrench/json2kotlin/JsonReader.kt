@@ -4,6 +4,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
+// TODO tidy
+
 class JsonReader(val jsonParser: JsonParser) {
 
     internal fun readJsonTree(input: String, args: ConversionArgs): JsonObject {

@@ -1,6 +1,8 @@
 package com.fractalwrench.json2kotlin
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import java.util.*
 
 
@@ -11,7 +13,7 @@ interface TraversalDelegate {
 /**
  * Traverses a JSON tree from the bottom up in level order.
  */
-internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate): TraversalDelegate by delegate {
+internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate) : TraversalDelegate by delegate {
 
     private val bfsStack: Stack<TypedJsonElement> = Stack()
 
@@ -30,51 +32,61 @@ internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate): TraversalD
         }
         val newDepth = depth + 1
 
-        val complexFields = when {
-            element.isJsonObject -> {
-                element.asJsonObject.entrySet()
-                        .filter { shouldAddToStack(it.value) }
-                        .map { TypedJsonElement(it.value, it.key, newDepth) }
+        val complexFields = with(element) {
+            when {
+                isJsonObject -> convert(asJsonObject, newDepth)
+                isJsonArray -> convert(asJsonArray, key, newDepth)
+                else -> Collections.emptyList()
             }
-            element.isJsonArray -> {
-                val identifier = key ?: throw IllegalStateException("Expected generated identifier for array element")
-                element.asJsonArray
-                        .filter { shouldAddToStack(it) }
-                        .mapIndexed { index, jsonElement ->
-                            TypedJsonElement(jsonElement, nameForArrayField(index, identifier), newDepth)
-                        }
-            }
-            else -> Collections.emptyList()
         }
 
         complexFields.forEach { bfsStack += it }
         complexFields.forEach { buildQueue(it.jsonElement, it.name, newDepth) }
     }
 
-    private fun nameForArrayField(index: Int, identifier: String): String =
-            if (index == 0) identifier else "$identifier${index + 1}"
-
-    private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
-
     /**
-     * Processes JSON nodes in a reverse level order traversal, by building class types for each level of the tree.
+     * Processes JSON nodes in a reverse level order traversal,
+     * by building class types for each level of the tree.
      */
     private fun processQueue() {
-        var depth = -1
+        var level = -1
         val levelQueue = LinkedList<TypedJsonElement>()
 
         while (bfsStack.isNotEmpty()) {
             val pop = bfsStack.pop()
 
-            if (depth != -1 && pop.depth != depth) {
-                println("Processing level $depth")
-                processTreeLevel(levelQueue)
+            if (level != -1 && pop.level != level) {
+                handleLevel(level, levelQueue)
             }
             levelQueue.add(pop)
-            depth = pop.depth
+            level = pop.level
         }
+        handleLevel(level, levelQueue)
+    }
 
-        println("Processing level $depth")
+    private fun convert(jsonArray: JsonArray, key: String?, depth: Int): List<TypedJsonElement> {
+        val identifier = key ?:
+                throw IllegalStateException("Expected generated identifier for array element")
+        return jsonArray
+                .filter(this::shouldAddToStack)
+                .mapIndexed { index, element ->
+                    TypedJsonElement(element, nameForArrayField(index, identifier), depth)
+                }
+    }
+
+    private fun convert(jsonObject: JsonObject, depth: Int): List<TypedJsonElement> {
+        return jsonObject.entrySet()
+                .filter { shouldAddToStack(it.value) }
+                .map { TypedJsonElement(it.value, it.key, depth) }
+    }
+
+    private fun nameForArrayField(index: Int, identifier: String): String =
+            if (index == 0) identifier else "$identifier${index + 1}" // FIXME dupe
+
+    private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
+
+    private fun handleLevel(level: Int, levelQueue: LinkedList<TypedJsonElement>) {
+        println("Processing level $level")
         processTreeLevel(levelQueue)
     }
 

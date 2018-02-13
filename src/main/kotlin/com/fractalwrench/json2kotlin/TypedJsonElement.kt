@@ -7,7 +7,7 @@ import java.math.BigInteger
 class TypedJsonElement(
         val jsonElement: JsonElement,
         val name: String,
-        val depth: Int) : JsonElement() {
+        val level: Int) : JsonElement() {
 
     override fun isJsonNull(): Boolean = jsonElement.isJsonNull
 

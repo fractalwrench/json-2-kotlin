@@ -3,9 +3,10 @@ package com.fractalwrench.json2kotlin
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import com.squareup.kotlinpoet.*
 import java.util.*
+
+// TODO tidy/split
 
 internal class ClassTypeStackBuilder: TraversalDelegate {
 
