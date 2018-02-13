@@ -9,9 +9,11 @@ import kotlin.collections.HashSet
 
 class KotlinJsonConverter(private val jsonParser: JsonParser) : TraversalDelegate {
 
-    private var sourceFile: FileSpec.Builder = FileSpec.builder("", "")
-    private val stack = Stack<TypeSpec>()
+    private val sourceFileWriter = SourceFileWriter()
+    private val traverser = ReverseJsonTreeTraverser(this)
+    private val jsonReader = JsonReader(JsonParser())
 
+    private val stack = Stack<TypeSpec>()
     private val jsonElementMap = HashMap<JsonElement, TypeSpec>()
     private lateinit var args: ConversionArgs
 
@@ -21,12 +23,10 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) : TraversalDelegat
             if (input.isEmpty()) {
                 throw IllegalArgumentException("Json input empty")
             }
-            sourceFile = FileSpec.builder("", args.rootClassName)
-            val jsonRoot = readJsonTree(input, args)
-            val traverser = ReverseJsonTreeTraverser(this)
-            traverser.traverse(jsonRoot, args.rootClassName)
 
-            generateSourceFile(args, output)
+            val jsonRoot = jsonReader.readJsonTree(input, args)
+            traverser.traverse(jsonRoot, args.rootClassName)
+            sourceFileWriter.writeSourceFile(stack, args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
         }
@@ -45,6 +45,19 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) : TraversalDelegat
                 .forEach { stack += it }
         levelQueue.clear()
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private fun determineCommonTypes(allObjects: MutableList<TypedJsonElement>): List<List<TypedJsonElement>> {
         val types: MutableList<MutableList<TypedJsonElement>> = mutableListOf()
@@ -185,16 +198,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) : TraversalDelegat
         return if (nullable) typeName.asNullable() else typeName
     }
 
-    private fun generateSourceFile(args: ConversionArgs, output: OutputStream) {
-        while (stack.isNotEmpty()) {
-            sourceFile.addType(stack.pop())
-        }
-
-        val stringBuilder = StringBuilder()
-        sourceFile.build().writeTo(stringBuilder)
-        output.write(stringBuilder.toString().toByteArray())
-    }
-
     private fun processJsonPrimitive(primitive: JsonPrimitive): TypeName {
         return when {
             primitive.isBoolean -> Boolean::class
@@ -202,23 +205,6 @@ class KotlinJsonConverter(private val jsonParser: JsonParser) : TraversalDelegat
             primitive.isString -> String::class
             else -> throw IllegalStateException("No type found for JSON primitive " + primitive)
         }.asTypeName()
-    }
-
-    private fun readJsonTree(input: String, args: ConversionArgs): JsonObject {
-        var rootElement = jsonParser.parse(input)
-
-        if (rootElement.isJsonArray) {
-            rootElement = processRootArrayWrapper(rootElement.asJsonArray, args.rootClassName)
-        }
-        return rootElement?.asJsonObject ?: throw IllegalStateException("Failed to read json object")
-    }
-
-    /**
-     * Adds an object as root which wraps the array
-     */
-    private fun processRootArrayWrapper(jsonArray: JsonArray, className: String): JsonObject {
-        val arrayName = nameForArrayField(className).decapitalize()
-        return JsonObject().apply { add(arrayName, jsonArray) }
     }
 
     private fun nameForArrayField(sanitisedName: String) = "${sanitisedName}Array"
