@@ -81,7 +81,7 @@ internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate) : Traversal
     }
 
     private fun nameForArrayField(index: Int, identifier: String): String =
-            if (index == 0) identifier else "$identifier${index + 1}" // FIXME dupe
+            if (index == 0) identifier else "$identifier${index + 1}"
 
     private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
 

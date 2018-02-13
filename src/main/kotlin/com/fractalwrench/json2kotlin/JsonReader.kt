@@ -4,26 +4,23 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
-// TODO tidy
-
-class JsonReader(val jsonParser: JsonParser) {
+class JsonReader(private val jsonParser: JsonParser) {
 
     internal fun readJsonTree(input: String, args: ConversionArgs): JsonObject {
-        var rootElement = jsonParser.parse(input)
-
-        if (rootElement.isJsonArray) {
-            rootElement = processRootArrayWrapper(rootElement.asJsonArray, args.rootClassName)
+        with (jsonParser.parse(input)) {
+            return when {
+                isJsonObject -> asJsonObject
+                isJsonArray -> addRootWrapper(asJsonArray, args.rootClassName)
+                else -> throw IllegalStateException("Failed to read json object")
+            }
         }
-        return rootElement?.asJsonObject ?: throw IllegalStateException("Failed to read json object")
     }
 
     /**
      * Adds an object as root which wraps the array
      */
-    private fun processRootArrayWrapper(jsonArray: JsonArray, className: String): JsonObject {
-        val arrayName = nameForArrayField(className).decapitalize()
-        return JsonObject().apply { add(arrayName, jsonArray) }
+    private fun addRootWrapper(jsonArray: JsonArray, className: String): JsonObject {
+        return JsonObject().apply { add(nameForArrayField(className).decapitalize(), jsonArray) }
     }
 
-    private fun nameForArrayField(sanitisedName: String) = "${sanitisedName}Array" // FIXME dupe
 }

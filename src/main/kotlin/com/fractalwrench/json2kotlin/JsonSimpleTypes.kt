@@ -7,8 +7,6 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import java.util.HashSet
 
-// TODO tidy
-
 /**
  * Determines whether two JSON Objects on the same level of a JSON tree share the same class type.
  *
@@ -37,6 +35,9 @@ internal fun nameForArrayField(sanitisedName: String) = "${sanitisedName}Array"
 internal fun nameForObjectInArray(it: IndexedValue<JsonElement>, sanitisedName: String): String {
     return if (it.index > 0) "$sanitisedName${it.index + 1}" else sanitisedName
 }
+
+
+// TODO tidy from here
 
 internal fun deduceArrayType(arrayTypes: HashSet<TypeName>, nullable: Boolean): TypeName {
     val hasMultipleType = arrayTypes.size > 1 || arrayTypes.isEmpty()
