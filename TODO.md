@@ -4,16 +4,16 @@
 
 Ordered roughly in priority:
 
+- Tests which actually serialise JSON with the generated Kotlin files
+- Support 1-2 common serialisation libs out of the box (extensible architecture)
+- Create command line tool + website (essential for convenience)
+
+- General cleanup of weird/disgusting code areas
 - Test null field + object results in nullable object
 - More tests for array commonality
 - More tests for object commonality
-- General cleanup of disgusting code areas
-- Tests which actually serialise JSON with the generated Kotlin files
-
+- More real world tests
 - Unit tests for individual methods (once codebase a bit less volatile)
-- Add a callback for altering the classes/properties once their types are fully known
-- Support 1-2 common serialisation libs out of the box
-- Create command line tool + website (essential for convenience)
 
 
 ## Rough architecture
