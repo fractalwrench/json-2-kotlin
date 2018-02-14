@@ -7,6 +7,9 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
+/**
+ * Serialises a Json file using a JSON serialisation library. Relies on copy + paste for class declarations
+ */
 abstract class AbstractSerialisationTest {
 
     private val fileReader = ResourceFileReader()

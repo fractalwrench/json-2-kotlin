@@ -1,3 +1,6 @@
+package com.fractalwrench.json2kotlin.valid
+
+
 import kotlin.Array
 import kotlin.Number
 import kotlin.String
