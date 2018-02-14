@@ -4,8 +4,6 @@
 
 Ordered roughly in priority:
 
-- Tests which actually serialise JSON with the generated Kotlin files
-- Support 1-2 common serialisation libs out of the box (extensible architecture)
 - Create command line tool + website (essential for convenience)
 
 - General cleanup of weird/disgusting code areas
