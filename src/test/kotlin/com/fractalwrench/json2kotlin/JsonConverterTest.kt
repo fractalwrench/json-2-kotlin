@@ -1,7 +1,7 @@
 package com.fractalwrench.json2kotlin
 
-import com.google.gson.JsonParser
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -9,10 +9,16 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 
 @RunWith(Parameterized::class)
-class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
+open class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
 
     private val fileReader = ResourceFileReader()
     private val jsonConverter = KotlinJsonConverter()
+    internal lateinit var json: String
+
+    @Before
+    fun setUp() {
+        json = ""
+    }
 
     companion object {
         @JvmStatic
@@ -52,10 +58,10 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
      * Takes a JSON file and converts it into the equivalent Kotlin class, then compares to expected output.
      */
     @Test
-    fun testJsonToKotlinConversion() {
-        val json = fileReader.readContents(jsonFilename)
+    open fun testJsonToKotlinConversion() {
+        json = fileReader.readContents(jsonFilename)
         val outputStream = ByteArrayOutputStream()
-        val rootClassName = expectedFilename.replace(".kt", "").substringAfterLast(File.separator)
+        val rootClassName = classNameForFile(expectedFilename)
         jsonConverter.convert(json, outputStream, ConversionArgs(rootClassName))
 
         val generatedSource = String(outputStream.toByteArray()).standardiseNewline()
@@ -63,4 +69,7 @@ class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) 
         val msg = "Generated file doesn't match expected file \'$expectedFilename\'"
         Assert.assertEquals(msg, expectedContents, generatedSource)
     }
+
+    internal fun classNameForFile(filename: String): String
+            = filename.replace(".kt", "").substringAfterLast(File.separator)
 }
