@@ -1,7 +1,5 @@
 package com.fractalwrench.json2kotlin.gson
 
-import com.fractalwrench.json2kotlin.valid.GithubProjectExample
-import com.fractalwrench.json2kotlin.valid.MoviesAryExample
 import com.fractalwrench.json2kotlin.valid.MoviesAryExampleArray
 import com.google.gson.Gson
 import org.junit.Assert
@@ -51,77 +49,69 @@ class MoviesGsonSerialisationTest : AbstractSerialisationTest() {
             Assert.assertEquals("90/100", Ratings[2].Value)
         }
 
+        with(gson[1]) {
+            Assert.assertEquals("Rockwell Tools Bladerunner X2", Title)
+            Assert.assertEquals("2015", Year)
+            Assert.assertEquals("N/A", Rated)
+            Assert.assertEquals("01 Jan 2015", Released)
+            Assert.assertEquals("N/A", Runtime)
+            Assert.assertEquals("N/A", Genre)
+            Assert.assertEquals("N/A", Director)
+            Assert.assertEquals("N/A", Writer)
+            Assert.assertEquals("N/A", Actors)
+            Assert.assertEquals("N/A", Plot)
+            Assert.assertEquals("English", Language)
+            Assert.assertEquals("USA", Country)
+            Assert.assertEquals("N/A", Awards)
+            Assert.assertEquals("N/A", Poster)
+            Assert.assertEquals("N/A", Metascore)
+            Assert.assertEquals("N/A", imdbRating)
+            Assert.assertEquals("N/A", imdbVotes)
+            Assert.assertEquals("tt5855480", imdbID)
+            Assert.assertEquals("movie", Type)
+            Assert.assertEquals("N/A", DVD)
+            Assert.assertEquals("N/A", BoxOffice)
+            Assert.assertEquals("N/A", Production)
+            Assert.assertEquals("N/A", Website)
+            Assert.assertEquals("True", Response)
 
-        //        [
-//            {
-//                "Title": "Rockwell Tools Bladerunner X2",
-//                "Year": "2015",
-//                "Rated": "N/A",
-//                "Released": "01 Jan 2015",
-//                "Runtime": "N/A",
-//                "Genre": "N/A",
-//                "Director": "N/A",
-//                "Writer": "N/A",
-//                "Actors": "N/A",
-//                "Plot": "N/A",
-//                "Language": "English",
-//                "Country": "USA",
-//                "Awards": "N/A",
-//                "Poster": "N/A",
-//                "Ratings": [],
-//                "Metascore": "N/A",
-//                "imdbRating": "N/A",
-//                "imdbVotes": "N/A",
-//                "imdbID": "tt5855480",
-//                "Type": "movie",
-//                "DVD": "N/A",
-//                "BoxOffice": "N/A",
-//                "Production": "N/A",
-//                "Website": "N/A",
-//                "Response": "True"
-//            },
-//            {
-//                "Title": "The Lion King",
-//                "Year": "1994",
-//                "Rated": "G",
-//                "Released": "24 Jun 1994",
-//                "Runtime": "88 min",
-//                "Genre": "Animation, Adventure, Drama",
-//                "Director": "Roger Allers, Rob Minkoff",
-//                "Writer": "Irene Mecchi (screenplay by), Jonathan Roberts (screenplay by), Linda Woolverton (screenplay by), Burny Mattinson (story), Barry Johnson (story), Lorna Cook (story), Thom Enriquez (story), Andy Gaskill (story), Gary Trousdale (story), Jim Capobianco (story), Kevin Harkey (story), Jorgen Klubien (story), Chris Sanders (story), Tom Sito (story), Larry Leker (story), Joe Ranft (story), Rick Maki (story), Ed Gombert (story), Francis Glebas (story), Mark Kausler (story), J.T. Allen (additional story material), George Scribner (additional story material), Miguel Tejada-Flores (additional story material), Jenny Tripp (additional story material), Bob Tzudiker (additional story material), Christopher Vogler (additional story material), Kirk Wise (additional story material), Noni White (additional story material), Brenda Chapman (story supervisor)",
-//                "Actors": "Rowan Atkinson, Matthew Broderick, Niketa Calame, Jim Cummings",
-//                "Plot": "Lion cub and future king Simba searches for his identity. His eagerness to please others and penchant for testing his boundaries sometimes gets him into trouble.",
-//                "Language": "English, Swahili, Xhosa, Zulu",
-//                "Country": "USA",
-//                "Awards": "Won 2 Oscars. Another 33 wins & 29 nominations.",
-//                "Poster": "https://images-na.ssl-images-amazon.com/images/M/MV5BYTYxNGMyZTYtMjE3MS00MzNjLWFjNmYtMDk3N2FmM2JiM2M1XkEyXkFqcGdeQXVyNjY5NDU4NzI@._V1_SX300.jpg",
-//                "Ratings": [
-//                {
-//                    "Source": "Internet Movie Database",
-//                    "Value": "8.5/10"
-//                },
-//                {
-//                    "Source": "Rotten Tomatoes",
-//                    "Value": "92%"
-//                },
-//                {
-//                    "Source": "Metacritic",
-//                    "Value": "83/100"
-//                }
-//                ],
-//                "Metascore": "83",
-//                "imdbRating": "8.5",
-//                "imdbVotes": "740,390",
-//                "imdbID": "tt0110357",
-//                "Type": "movie",
-//                "DVD": "07 Oct 2003",
-//                "BoxOffice": "$94,240,635",
-//                "Production": "Buena Vista",
-//                "Website": "http://disney.go.com/lionking/",
-//                "Response": "True"
-//            }
-//        ]
-        TODO("implement me")
+            Assert.assertNotNull(Ratings)
+            Assert.assertTrue(Ratings.isEmpty())
+        }
+
+        with(gson[2]) {
+            Assert.assertEquals("The Lion King", Title)
+            Assert.assertEquals("1994", Year)
+            Assert.assertEquals("G", Rated)
+            Assert.assertEquals("24 Jun 1994", Released)
+            Assert.assertEquals("88 min", Runtime)
+            Assert.assertEquals("Animation, Adventure, Drama", Genre)
+            Assert.assertEquals("Roger Allers, Rob Minkoff", Director)
+            Assert.assertEquals("Irene Mecchi (screenplay by), Jonathan Roberts (screenplay by), Linda Woolverton (screenplay by), Burny Mattinson (story), Barry Johnson (story), Lorna Cook (story), Thom Enriquez (story), Andy Gaskill (story), Gary Trousdale (story), Jim Capobianco (story), Kevin Harkey (story), Jorgen Klubien (story), Chris Sanders (story), Tom Sito (story), Larry Leker (story), Joe Ranft (story), Rick Maki (story), Ed Gombert (story), Francis Glebas (story), Mark Kausler (story), J.T. Allen (additional story material), George Scribner (additional story material), Miguel Tejada-Flores (additional story material), Jenny Tripp (additional story material), Bob Tzudiker (additional story material), Christopher Vogler (additional story material), Kirk Wise (additional story material), Noni White (additional story material), Brenda Chapman (story supervisor)", Writer)
+            Assert.assertEquals("Rowan Atkinson, Matthew Broderick, Niketa Calame, Jim Cummings", Actors)
+            Assert.assertEquals("Lion cub and future king Simba searches for his identity. His eagerness to please others and penchant for testing his boundaries sometimes gets him into trouble.", Plot)
+            Assert.assertEquals("English, Swahili, Xhosa, Zulu", Language)
+            Assert.assertEquals("USA", Country)
+            Assert.assertEquals("Won 2 Oscars. Another 33 wins & 29 nominations.", Awards)
+            Assert.assertEquals("https://images-na.ssl-images-amazon.com/images/M/MV5BYTYxNGMyZTYtMjE3MS00MzNjLWFjNmYtMDk3N2FmM2JiM2M1XkEyXkFqcGdeQXVyNjY5NDU4NzI@._V1_SX300.jpg", Poster)
+            Assert.assertEquals("83", Metascore)
+            Assert.assertEquals("8.5", imdbRating)
+            Assert.assertEquals("740,390", imdbVotes)
+            Assert.assertEquals("tt0110357", imdbID)
+            Assert.assertEquals("movie", Type)
+            Assert.assertEquals("07 Oct 2003", DVD)
+            Assert.assertEquals("\$94,240,635", BoxOffice)
+            Assert.assertEquals("Buena Vista", Production)
+            Assert.assertEquals("http://disney.go.com/lionking/", Website)
+            Assert.assertEquals("True", Response)
+
+            Assert.assertEquals("Internet Movie Database", Ratings[0].Source)
+            Assert.assertEquals("8.5/10", Ratings[0].Value)
+            Assert.assertEquals("Rotten Tomatoes", Ratings[1].Source)
+            Assert.assertEquals("92%", Ratings[1].Value)
+            Assert.assertEquals("Metacritic", Ratings[2].Source)
+            Assert.assertEquals("83/100", Ratings[2].Value)
+        }
     }
 
 }
