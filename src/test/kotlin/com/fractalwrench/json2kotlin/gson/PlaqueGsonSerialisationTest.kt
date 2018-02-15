@@ -8,12 +8,16 @@ import org.junit.Test
 
 class PlaqueGsonSerialisationTest : AbstractSerialisationTest() {
 
-    override fun filename() = "PlaqueExample"
+    override fun filename() = "Plaque"
 
     @Test
     override fun testGsonSerialisation() {
         val gson = Gson().fromJson(json, PlaqueExample::class.java)
-        TODO("implement me")
+        Assert.assertNotNull(gson)
+
+
+
+        Assert.fail()
     }
 
 }

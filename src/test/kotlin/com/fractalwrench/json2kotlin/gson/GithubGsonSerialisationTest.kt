@@ -12,6 +12,7 @@ class GithubGsonSerialisationTest : AbstractSerialisationTest() {
     @Test
     override fun testGsonSerialisation() {
         val gson = Gson().fromJson(json, GithubProjectExample::class.java)
+        Assert.assertNotNull(gson)
 
         Assert.assertEquals("https://api.github.com/repos/api-playground/projects-test", gson.owner_url)
         Assert.assertEquals("https://api.github.com/projects/1002604", gson.url)
