@@ -4,8 +4,7 @@
 
 Ordered roughly in priority:
 
-- Create command line tool + website (essential for convenience)
-
+- Create command line tool + website (Spring Boot, throttled) (essential for convenience)
 - General cleanup of weird/disgusting code areas
 - Test null field + object results in nullable object
 - More tests for array commonality
