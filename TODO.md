@@ -4,7 +4,8 @@
 
 Ordered roughly in priority:
 
-- Create website (Spring Boot, throttled) (essential for convenience)
+- Make website tool prettier, and load on one page/retaining information
+
 - General cleanup of weird/disgusting code areas
 - Test null field + object results in nullable object
 - More tests for array commonality

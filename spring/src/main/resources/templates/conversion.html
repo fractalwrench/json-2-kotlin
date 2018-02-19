@@ -1,14 +1,72 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title>Convert JSON to Kotlin</title>
+    <meta charset="utf-8"/>
+    <title>Convert JSON to Kotlin Data Class</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+    <title>Convert JSON to Kotlin Data Class</title>
+    <meta property="og:title" content="Convert JSON to Kotlin Data Class"/>
+    <meta name="twitter:title" content="Convert JSON to Kotlin Data Class"/>
+    <meta name="description" content="Convert JSON to Kotlin Data Class"/>
+    <meta property="og:description" content="Convert JSON to Kotlin Data Class"/>
+    <meta name="twitter:description" content="Convert JSON to Kotlin Data Class"/>
+    <meta name="author" content="Jamie Lynch"/>
+    <link href="https://fractalwrench.co.uk/img/favicon.ico" rel="icon" type="image/x-icon"/>
+    <meta property="og:image" content="https://fractalwrench.co.uk/img/avatar.png"/>
+    <meta name="twitter:image" content="https://fractalwrench.co.uk/img/avatar.png"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:site" content="@fractalwrench"/>
+    <meta name="twitter:creator" content="@fractalwrench"/>
+    <meta property="og:url" content="https://fractalwrench.co.uk/"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="Fractalwrench"/>
 </head>
 <body>
-<h1>Form</h1>
-<form action="#" th:action="@{/results}" th:object="${conversionForm}" method="post">
-    <p>JSON: <textarea rows="30" cols="80" th:field="*{json}"></textarea></p>
-    <p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>
-</form>
+<div class="container" style="text-align:center">
+    <h1>Convert JSON to Kotlin Data Class</h1>
+    <form id="jsonForm" action="#" th:action="@{/}" th:object="${conversionForm}"
+          method="post" onsubmit="return validateForm()">
+        <textarea placeholder="Paste JSON here..." cols="40" th:field="*{json}"></textarea>
+        <p><input type="reset" value="Reset"/> <input type="submit" value="Convert"/></p>
+    </form>
+    <h2>Results</h2>
+    <textarea th:text="${kotlin}"></textarea>
+</div>
+<footer>
+    <div>
+        <ul class="list-inline">
+            <li><a href="mailto:fractalwrench@gmail.com" class="font-icon icon-envelope-o" title="Email me"></a></li>
+            <li><a href="https://github.com/fractalwrench" class="font-icon icon-github" title="GitHub"></a></li>
+            <li><a href="https://twitter.com/fractalwrench" class="font-icon icon-twitter" title="Twitter"></a></li>
+            <li><a href="https://reddit.com/u/fractalwrench" class="font-icon icon-reddit-alien" title="Reddit"></a>
+            </li>
+            <li><a href="https://linkedin.com/in/fractalwrench" class="font-icon icon-linkedin" title="LinkedIn"></a>
+            </li>
+            <li><a href="https://stackoverflow.com/users/5144991/fractalwrench" class="font-icon icon-stack-overflow"
+                   title="StackOverflow"></a></li>
+        </ul>
+        <p class="copyright"><a href="https://fractalwrench.co.uk">Jamie Lynch</a> &nbsp;•&nbsp; 2018 &nbsp;•&nbsp; <a
+                href="https://fractalwrench.co.uk/">Fractalwrench</a></p>
+        <p class="copyright"><a href="http://gohugo.io">Hugo v0.26</a> powered &nbsp;•&nbsp; Theme by <a
+                href="http://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a> adapted to <a
+                href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a></p></div>
+</footer>
+<link rel="stylesheet" type="text/css" href="/main.css"/>
+<link rel="stylesheet" type="text/css" href="/fonticons.css"/>
+<script type="text/javascript">
+    function validateForm() {
+        var json = document.forms["jsonForm"]["json"].value;
+        try {
+            JSON.parse(json);
+        } catch (e) {
+            alert("Input was not interpreted as valid JSON.");
+            return false;
+        }
+    }
+</script>
 </body>
 </html>
+<!-- TODO GA -->
+<!-- TODO link to GH -->

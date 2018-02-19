@@ -17,13 +17,13 @@ class ConversionController {
         return "conversion"
     }
 
-    @PostMapping("/results")
+    @PostMapping("/")
     fun convertToKotlin(model: Model, @ModelAttribute conversionForm: ConversionForm): String {
-
         val os = ByteArrayOutputStream()
         KotlinJsonConverter().convert(conversionForm.json, os, ConversionArgs())// TODO handle failure etc with redirect
+        model.addAttribute("conversionForm", conversionForm)
         model.addAttribute("kotlin", String(os.toByteArray()))
-        return "results"
+        return displayConversionForm(model)
     }
 
 }
