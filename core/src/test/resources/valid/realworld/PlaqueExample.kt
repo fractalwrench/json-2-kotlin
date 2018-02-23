@@ -90,48 +90,44 @@ data class Columns(
     val width: Number?
 )
 
-
-
-
-
-
-
-data class RenderTypeConfig(val visible: Visible)
-
-data class Visible(val table: Boolean)
-
-data class Custom_fields(val Publication: Publication, val AdditionalLicenceDetail: AdditionalLicenceDetail)
-
-data class AdditionalLicenceDetail(
-    val ReuserGuidelines: String,
-    val AdditionalLicenceInformation: String,
-    val LicenceURL: String
-)
-
-data class Publication(val UpdateFrequency: String)
-
-data class Grants(
-    val inherited: Boolean,
-    val type: String,
-    val flags: Array<String>
-)
-
-
-data class Format(val view: String, val align: String)
-
 data class CachedContents(
-        val non_null: Number,
-        val largest: Largest,
-        val _null: Number,
-        val top: Array<Top>?,
-        val smallest: Smallest
+    val `null`: Number,
+    val average: String,
+    val largest: String,
+    val non_null: Number,
+    val smallest: String,
+    val sum: String,
+    val top: Array<Top>?
 )
 
-data class Smallest(val latitude: String, val longitude: String)
+data class Format(
+    val align: String?,
+    val noCommas: String?,
+    val precisionStyle: String?
+)
 
-data class Top(val item: Item, val count: Number)
+data class Top(val count: Number, val item: String) // TODO handle this (weird) scenario
+
+data class Top(val count: Number, val item: Item) // TODO handle this scenario
 
 data class Item(val latitude: String, val longitude: String)
 
-data class Largest(val latitude: String, val longitude: String)
+data class Grants(
+    val flags: Array<String>,
+    val inherited: Boolean,
+    val type: String
+)
 
+data class Custom_fields(val Additional_Licence_Detail: Additional_Licence_Detail, val Publication: Publication)
+
+data class RenderTypeConfig(val visible: Visible)
+
+data class Additional_Licence_Detail(
+    val Additional_Licence_Information: String,
+    val Licence_URL: String,
+    val Re_user_Guidelines: String
+)
+
+data class Publication(val Update_Frequency: String)
+
+data class Visible(val table: Boolean)
