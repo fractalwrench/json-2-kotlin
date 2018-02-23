@@ -1,0 +1,78 @@
+[
+  {
+    "format": {}
+  },
+  {
+    "container": {},
+    "format": {
+      "align": "left"
+    }
+  },
+  {
+    "container": {
+      "foo": 84
+    },
+    "format": {
+      "precisionStyle": "standard",
+      "noCommas": "false",
+      "align": "right"
+    }
+  },
+  {
+    "container": {
+      "foo": 84,
+      "bar": "white",
+      "cat": 0
+    },
+    "format": {}
+  },
+  {
+    "container": {
+      "dog": 3,
+      "whistle": "2013-01-01T00:00:00",
+      "cat": 81
+    },
+    "format": {
+      "view": "date_time",
+      "align": "left"
+    }
+  },
+  {
+    "container": {
+      "non_null": 82,
+      "largest": "http://farm9.staticflickr.com/8422/7803179600_15a03ca521_s.jpg",
+      "null": 2,
+      "smallest": "http://commons.wikimedia.org/wiki/Special:FilePath/Beau_Nash_plaque,_Bath.jpg?width=75"
+    },
+    "format": {
+      "align": "left"
+    }
+  },
+  {
+    "container": {
+      "non_null": 84,
+      "largest": {
+        "latitude": "51.380794",
+        "longitude": "-2.362028"
+      },
+      "null": 0,
+      "top": [
+        {
+          "item": {
+            "latitude": "51.3801",
+            "longitude": "-2.35557"
+          },
+          "count": 20
+        }
+      ],
+      "smallest": {
+        "latitude": "51.3839",
+        "longitude": "-2.36371"
+      }
+    },
+    "format": {
+      "view": "coords",
+      "align": "left"
+    }
+  }
+]
