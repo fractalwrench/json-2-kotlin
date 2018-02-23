@@ -28,7 +28,7 @@ data class Main(
     val temp_min: Number
 )
 
-data class Rain(val 3h: Number)
+data class Rain(val _3h: Number)
 
 data class Sys(
     val country: String,

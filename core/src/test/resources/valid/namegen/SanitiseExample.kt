@@ -1,6 +1,9 @@
 import kotlin.String
 
 data class SanitiseExample(
+    val _1: String,
+    val _a: String,
+    val _f: String,
     val Test_word1: String,
     val Test_word10: String,
     val Test_word11: String,
