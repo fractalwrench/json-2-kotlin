@@ -7,10 +7,10 @@ data class TypeClashExampleArray(val cachedContents: CachedContents)
 
 data class CachedContents(val top: Array<Top>?)
 
-data class Top(val item: String) // FIXME
+data class Top(val item: String)
 
 data class CachedContents(val top: Array<Top>)
 
-data class Top(val item: Item) // FIXME
+data class Top(val item: Item)
 
 data class Item(val latitude: String, val longitude: String)
