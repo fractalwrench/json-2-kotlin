@@ -13,9 +13,8 @@ class WeatherGsonSerialisationTest : AbstractSerialisationTest() {
     override fun testGsonSerialisation() {
         val weather = Gson().fromJson(json, WeatherExample::class.java)
         Assert.assertNotNull(weather)
-        Assert.fail()
 
-        Assert.assertEquals(139, weather.coord.lat.toInt())
+        Assert.assertEquals(139, weather.coord.lon.toInt())
         Assert.assertEquals(35, weather.coord.lat.toInt())
 
         Assert.assertEquals("JP", weather.sys.country)
@@ -23,7 +22,7 @@ class WeatherGsonSerialisationTest : AbstractSerialisationTest() {
         Assert.assertEquals(1369821049, weather.sys.sunset.toInt())
 
         Assert.assertEquals(1, weather.weather.size)
-        Assert.assertEquals(1369821049, weather.weather[0].id.toInt())
+        Assert.assertEquals(804, weather.weather[0].id.toInt())
         Assert.assertEquals("clouds", weather.weather[0].main)
         Assert.assertEquals("overcast clouds", weather.weather[0].description)
         Assert.assertEquals("04n", weather.weather[0].icon)
