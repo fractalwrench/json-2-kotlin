@@ -1,0 +1,136 @@
+[
+  {
+    "id": -1,
+    "format": {}
+  },
+  {
+    "id": 193352,
+    "cachedContents": {
+      "non_null": 84,
+      "largest": "http://openplaques.org/plaques/9199.json",
+      "null": 0,
+      "top": [
+        {
+          "item": "http://openplaques.org/plaques/6496.json",
+          "count": 20
+        },
+        {
+          "item": "http://openplaques.org/plaques/31632.json",
+          "count": 19
+        }
+      ],
+      "smallest": "http://openplaques.org/plaques/10182.json"
+    },
+    "format": {
+      "align": "left"
+    }
+  },
+  {
+    "id": 193351,
+    "cachedContents": {
+      "non_null": 84,
+      "average": "5035.035714285714",
+      "largest": "31632",
+      "null": 0,
+      "top": [
+        {
+          "item": "6496",
+          "count": 20
+        },
+        {
+          "item": "31632",
+          "count": 19
+        }
+      ],
+      "smallest": "867",
+      "sum": "422943"
+    },
+    "format": {
+      "precisionStyle": "standard",
+      "noCommas": "false",
+      "align": "right"
+    }
+  },
+  {
+    "id": 193356,
+    "cachedContents": {
+      "non_null": 84,
+      "largest": "white",
+      "null": 0,
+      "top": [
+        {
+          "item": "bronze",
+          "count": 20
+        }
+      ],
+      "smallest": "black"
+    },
+    "format": {}
+  },
+  {
+    "id": 193358,
+    "cachedContents": {
+      "non_null": 3,
+      "largest": "2013-01-01T00:00:00",
+      "null": 81,
+      "top": [
+        {
+          "item": "1984-10-28T00:00:00",
+          "count": 20
+        }
+      ],
+      "smallest": "1937-01-01T00:00:00"
+    },
+    "format": {
+      "view": "date_time",
+      "align": "left"
+    }
+  },
+  {
+    "id": 193359,
+    "cachedContents": {
+      "non_null": 82,
+      "largest": "http://farm9.staticflickr.com/8422/7803179600_15a03ca521_s.jpg",
+      "null": 2,
+      "smallest": "http://commons.wikimedia.org/wiki/Special:FilePath/Beau_Nash_plaque,_Bath.jpg?width=75"
+    },
+    "format": {
+      "align": "left"
+    }
+  },
+  {
+    "id": 193360,
+    "cachedContents": {
+      "non_null": 84,
+      "largest": {
+        "latitude": "51.380794",
+        "longitude": "-2.362028"
+      },
+      "null": 0,
+      "top": [
+        {
+          "item": {
+            "latitude": "51.3801",
+            "longitude": "-2.35557"
+          },
+          "count": 20
+        }
+      ],
+      "smallest": {
+        "latitude": "51.3839",
+        "longitude": "-2.36371"
+      }
+    },
+    "format": {
+      "view": "coords",
+      "align": "left"
+    },
+    "subColumnTypes": [
+      "human_address",
+      "latitude",
+      "longitude",
+      "machine_address",
+      "needs_recoding"
+    ]
+  }
+]

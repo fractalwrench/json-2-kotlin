@@ -1,0 +1,46 @@
+[
+  {
+    "id": -1
+  },
+  {
+    "id": 193351,
+    "cachedContents": {
+      "non_null": 84,
+      "average": "5035.035714285714",
+      "largest": "31632",
+      "null": 0,
+      "top": [
+        {
+          "item": "6496",
+          "count": 20
+        }
+      ],
+      "smallest": "867",
+      "sum": "422943"
+    }
+  },
+  {
+    "id": 193352,
+    "cachedContents": {
+      "non_null": 84,
+      "largest": "http://openplaques.org/plaques/9199.json",
+      "null": 0,
+      "top": [
+        {
+          "item": "http://openplaques.org/plaques/6496.json",
+          "count": 20
+        }
+      ],
+      "smallest": "http://openplaques.org/plaques/10182.json"
+    }
+  },
+  {
+    "id": 193359,
+    "cachedContents": {
+      "non_null": 82,
+      "largest": "http://farm9.staticflickr.com/8422/7803179600_15a03ca521_s.jpg",
+      "null": 2,
+      "smallest": "http://commons.wikimedia.org/wiki/Special:FilePath/Beau_Nash_plaque,_Bath.jpg?width=75"
+    }
+  }
+]

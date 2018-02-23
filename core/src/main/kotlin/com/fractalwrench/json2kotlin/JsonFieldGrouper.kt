@@ -47,7 +47,7 @@ internal class JsonFieldGrouper {
     private fun hasSameClassType(lhs: TypedJsonElement, rhs: TypedJsonElement): Boolean {
         val lhsKeys = lhs.asJsonObject.keySet()
         val rhsKeys = rhs.asJsonObject.keySet()
-        val emptyClasses = (lhsKeys.isEmpty() || rhsKeys.isEmpty()) // FIXME can add transitive deps when not needed
+        val emptyClasses = (lhsKeys.isEmpty() || rhsKeys.isEmpty())
 
         val keySize = if (lhsKeys.size > rhsKeys.size) lhsKeys.size else rhsKeys.size
         val commonKeyCount = if (emptyClasses) 1 else lhsKeys.intersect(rhsKeys).size
