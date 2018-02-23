@@ -38,14 +38,17 @@ internal class JsonFieldGrouper {
     /**
      * Determines whether two JSON Objects on the same level of a JSON tree share the same class type.
      *
-     * The grouping strategy used here is very simple. If either of the JSON objects contain the same key as one of
-     * the others, then each object is of the same type. The only exception to this rule is the case of an empty object.
+     * The grouping strategy used here is very simple. If either of the JSON objects contain 1/3 of the same
+     * keys as one of the others, then each object is of the same type.
+     * The only exception to this rule is the case of an empty object.
      */
     private fun hasSameClassType(lhs: TypedJsonElement, rhs: TypedJsonElement): Boolean {
         val lhsKeys = lhs.asJsonObject.keySet()
         val rhsKeys = rhs.asJsonObject.keySet()
-        val emptyClasses = (lhsKeys.isEmpty() || rhsKeys.isEmpty())// && Math.abs(lhsKeys.size - rhsKeys.size) == 1
-        val hasCommonKeys = lhsKeys.intersect(rhsKeys).isNotEmpty()
-        return hasCommonKeys || emptyClasses
+        val emptyClasses = (lhsKeys.isEmpty() || rhsKeys.isEmpty())
+
+        val keySize = if (lhsKeys.size > rhsKeys.size) lhsKeys.size else rhsKeys.size
+        val commonKeyCount = lhsKeys.intersect(rhsKeys).size
+        return emptyClasses || (commonKeyCount * 3) >= keySize // at least a third of keys must match
     }
 }
