@@ -4,14 +4,17 @@
 
 Ordered roughly in priority:
 
+- Pass tests
+- Add more real world scenarios (particularly nested objects)
+- GSON serialisation delegate
+- Symbol pool for class names
+
 - Make website tool prettier
 - Throttle website tool/prepare for HN
-- Add unit tests for anything currently failing + pass it
 
 - General cleanup of weird/disgusting code areas
-- More real world tests
 - Unit tests for individual methods (once codebase a bit less volatile)
-
+- Docs + writeup
 
 ## Rough architecture
 
