@@ -1,0 +1,20 @@
+{
+  "firstField": {
+    "foo": {
+      "animal": "cat",
+      "edible": false
+    }
+  },
+  "secondField": {
+    "foo": {
+      "animal": "cow",
+      "edible": true
+    }
+  },
+  "thirdField": {
+    "foo": null
+  },
+  "fourthField": {
+    "foo": null
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "foo": {
+      "animal": "cat",
+      "edible": false
+    }
+  },
+  {
+    "foo": {
+      "animal": "cow",
+      "edible": true
+    }
+  },
+  {
+    "foo": null
+  },
+  {
+    "foo": null
+  }
+]

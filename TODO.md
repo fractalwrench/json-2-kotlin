@@ -4,12 +4,11 @@
 
 Ordered roughly in priority:
 
-- Make website tool prettier, and load on one page/retaining information
+- Make website tool prettier
+- Throttle website tool/prepare for HN
+- Add unit tests for anything currently failing + pass it
 
 - General cleanup of weird/disgusting code areas
-- Test null field + object results in nullable object
-- More tests for array commonality
-- More tests for object commonality
 - More real world tests
 - Unit tests for individual methods (once codebase a bit less volatile)
 
