@@ -8,9 +8,10 @@ import java.io.OutputStream
  */
 class KotlinJsonConverter {
 
+    private val buildDelegate: SourceBuildDelegate = GsonBuildDelegate()
     private val jsonReader = JsonReader(JsonParser())
     private val sourceFileWriter = SourceFileWriter()
-    private val typeHolder = ClassTypeHolder()
+    private val typeHolder = ClassTypeHolder(buildDelegate)
     private val traverser = ReverseJsonTreeTraverser(typeHolder)
 
     /**

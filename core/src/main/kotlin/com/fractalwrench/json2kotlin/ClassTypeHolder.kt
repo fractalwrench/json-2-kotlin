@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.*
 import java.util.*
 
 
-internal class ClassTypeHolder : TraversalDelegate {
+internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDelegate {
 
     internal val stack = Stack<TypeSpec>()
     private val jsonProcessor = JsonProcessor()
@@ -35,7 +35,7 @@ internal class ClassTypeHolder : TraversalDelegate {
         }
 
         val classType = buildClass(commonElements, fields.sortedBy {
-            it.toKotlinIdentifier().toLowerCase()
+            it.toKotlinIdentifier().toLowerCase() // FIXME check symbol pool!
         }).build()
 
         return commonElements.filterNot { // reuse any types which already exist in the map
@@ -46,8 +46,8 @@ internal class ClassTypeHolder : TraversalDelegate {
     }
 
     private fun buildClass(commonElements: List<TypedJsonElement>, fields: Collection<String>): TypeSpec.Builder {
-        val identifier = commonElements.last().name
-        val classBuilder = TypeSpec.classBuilder(identifier.toKotlinIdentifier().capitalize())
+        val identifier = commonElements.last().kotlinIdentifier
+        val classBuilder = TypeSpec.classBuilder(identifier.capitalize()) // FIXME check symbol pool!
         val constructor = FunSpec.constructorBuilder()
 
         if (fields.isEmpty()) {
@@ -59,13 +59,15 @@ internal class ClassTypeHolder : TraversalDelegate {
 
         classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
         classBuilder.primaryConstructor(constructor.build())
+        delegate.prepareClass(classBuilder, identifier, commonElements.last())
         return classBuilder
     }
 
     private fun addProperty(field: String, fieldTypeMap: Map<String, TypeName>, classBuilder: TypeSpec.Builder, constructor: FunSpec.Builder) {
-        val sanitisedName = field.toKotlinIdentifier()
+        val sanitisedName = field.toKotlinIdentifier() // FIXME should be done before this
         val typeName = fieldTypeMap[field]
         val initializer = PropertySpec.builder(sanitisedName, typeName!!).initializer(sanitisedName)
+        delegate.prepareClassProperty(initializer, sanitisedName, null) // FIXME pass in original name
         classBuilder.addProperty(initializer.build())
         constructor.addParameter(sanitisedName, typeName)
     }

@@ -4,10 +4,19 @@ import com.google.gson.*
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class TypedJsonElement(
-        val jsonElement: JsonElement,
-        val name: String,
-        val level: Int) : JsonElement() {
+class TypedJsonElement : JsonElement {
+
+    val jsonElement: JsonElement
+    val jsonKey: String
+    val level: Int
+    val kotlinIdentifier: String
+
+    constructor(jsonElement: JsonElement, jsonKey: String, level: Int) : super() {
+        this.jsonElement = jsonElement
+        this.jsonKey = jsonKey
+        this.level = level
+        this.kotlinIdentifier = jsonKey.toKotlinIdentifier()
+    }
 
     override fun isJsonNull(): Boolean = jsonElement.isJsonNull
 

@@ -6,10 +6,6 @@ import com.google.gson.JsonObject
 import java.util.*
 
 
-interface TraversalDelegate {
-    fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>)
-}
-
 /**
  * Traverses a JSON tree from the bottom up in level order.
  */
@@ -40,7 +36,7 @@ internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate) : Traversal
             }
         }
         complexFields.forEach { bfsStack += it }
-        complexFields.forEach { buildQueue(it.jsonElement, it.name, newDepth) }
+        complexFields.forEach { buildQueue(it.jsonElement, it.jsonKey, newDepth) }
     }
 
     /**

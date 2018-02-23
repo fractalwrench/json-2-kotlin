@@ -51,6 +51,6 @@ internal class JsonFieldGrouper {
 
         val keySize = if (lhsKeys.size > rhsKeys.size) lhsKeys.size else rhsKeys.size
         val commonKeyCount = if (emptyClasses) 1 else lhsKeys.intersect(rhsKeys).size
-        return (commonKeyCount * 5) >= keySize // at least a third of keys must match
+        return (commonKeyCount * 5) >= keySize // at least a fifth of keys must match
     }
 }

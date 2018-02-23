@@ -62,7 +62,7 @@ internal class JsonProcessor {
             return ClassName.bestGuess(existingTypeName.name!!)
         }
 
-        val identifier = key.toKotlinIdentifier().capitalize()
+        val identifier = key.toKotlinIdentifier().capitalize() // FIXME check symbol pool!
         return ClassName.bestGuess(identifier)
     }
 
@@ -71,7 +71,7 @@ internal class JsonProcessor {
         var nullable = false
 
         jsonArray.withIndex().forEach {
-            val sanitisedName = key.toKotlinIdentifier()
+            val sanitisedName = key.toKotlinIdentifier() // FIXME check symbol pool!
             with(it.value) {
                 when {
                     isJsonPrimitive -> arrayTypes.add(typeForJsonPrimitive(asJsonPrimitive))
