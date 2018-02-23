@@ -10,7 +10,7 @@ fun String.toKotlinIdentifier(): String {
         KEYWORDS.contains(this) -> "`$this`" // escape
         else -> {
             val sanitisedOutput = this.replace("[^0-9A-Za-z_]+".toRegex(), "_")
-            val regex = "^[^A-Za-z_]".toRegex()
+            val regex = "^[^A-Za-z_].*".toRegex()
 
             when {
                 regex.matches(sanitisedOutput) -> "_$sanitisedOutput"
