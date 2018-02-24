@@ -1,3 +1,4 @@
+import kotlin.Any
 import kotlin.Array
 import kotlin.String
 
@@ -7,10 +8,6 @@ data class TypeClashExampleArray(val cachedContents: CachedContents)
 
 data class CachedContents(val top: Array<Top>?)
 
-data class Top(val item: String)
-
-data class CachedContents(val top: Array<Top>)
-
-data class Top(val item: Item)
+data class Top(val item: Any)
 
 data class Item(val latitude: String, val longitude: String)
