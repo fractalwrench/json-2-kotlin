@@ -1,3 +1,6 @@
+sudo:
+  true
+
 language: java
 
 before_cache:
