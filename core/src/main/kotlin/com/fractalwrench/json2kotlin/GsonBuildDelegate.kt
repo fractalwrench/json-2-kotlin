@@ -7,6 +7,11 @@ import com.squareup.kotlinpoet.TypeSpec
 
 class GsonBuildDelegate: SourceBuildDelegate {
 
+    // TODO pattern compilation
+    // FIXME pattern super hacky
+    // TODO should pass TypedJsonElement (and as much info as possible,
+    // maybe in a wrapper class e.g. PropBuildParams/ClassBuildParams)
+
     override fun prepareClassProperty(propertyBuilder: PropertySpec.Builder,
                                       kotlinIdentifier: String,
                                       jsonKey: String?) {

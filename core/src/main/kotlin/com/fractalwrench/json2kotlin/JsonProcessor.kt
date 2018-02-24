@@ -9,10 +9,11 @@ import java.util.HashMap
 import java.util.HashSet
 
 
-internal class JsonProcessor {
+internal class JsonProcessor { // TODO crappy name
 
-    internal val jsonElementMap = HashMap<JsonElement, TypeSpec>()
+    internal val jsonElementMap = HashMap<JsonElement, TypeSpec>() // FIXME feels wrong having this exposed
 
+    // FIXME should take TypedJsonElement rather than String as a param!
     fun findDistinctTypesForFields(fields: Collection<String>,
                                    commonElements: List<TypedJsonElement>): Map<String, TypeName> {
         val fieldMap = HashMap<String, TypeName>()
@@ -30,6 +31,12 @@ internal class JsonProcessor {
             if (fieldValue != null) typeForJsonField(fieldValue, key) else null
         }.distinct()
     }
+
+
+
+    // TODO: refactor all the (simple) type deduction methods. They can take an extra Map parameter. This will greatly simplify any unit
+    // testing and pass Single-Responsibility test
+
 
     private fun typeForJsonField(jsonElement: JsonElement, key: String): TypeName {
         with(jsonElement) {

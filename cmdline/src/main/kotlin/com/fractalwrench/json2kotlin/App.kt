@@ -22,7 +22,7 @@ fun main(args: Array<String>) {
 
             if (inputFile.exists()) {
                 val outputFile = findOutputFile(inputFile)
-                KotlinJsonConverter().convert(inputFile.readText(), outputFile.outputStream(), ConversionArgs())
+                Kotlin2JsonConverter().convert(inputFile.readText(), outputFile.outputStream(), ConversionArgs())
                 println("Generated source available at '$outputFile'")
             } else {
                 println("Failed to find file '$inputFile'")

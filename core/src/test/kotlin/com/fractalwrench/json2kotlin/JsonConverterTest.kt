@@ -12,7 +12,7 @@ import java.io.File
 open class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
 
     private val fileReader = ResourceFileReader()
-    private val jsonConverter = KotlinJsonConverter()
+    private val jsonConverter = Kotlin2JsonConverter()
     internal lateinit var json: String
 
     @Before

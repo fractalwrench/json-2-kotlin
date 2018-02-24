@@ -4,12 +4,12 @@ import com.google.gson.*
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class TypedJsonElement : JsonElement {
+class TypedJsonElement : JsonElement { // TODO check visibility
 
     val jsonElement: JsonElement
     val jsonKey: String
     val level: Int
-    val kotlinIdentifier: String
+    val kotlinIdentifier: String // FIXME symbol pooling
 
     constructor(jsonElement: JsonElement, jsonKey: String, level: Int) : super() {
         this.jsonElement = jsonElement

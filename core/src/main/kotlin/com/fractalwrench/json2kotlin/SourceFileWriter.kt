@@ -8,19 +8,19 @@ import java.util.*
 /**
  * Writes a collection of types to a source file OutputStream.
  */
-internal class SourceFileWriter {
+internal class SourceFileWriter { // TODO rename once functionality has changed
 
     /**
      * Writes a collection of types to a source file OutputStream.
      */
     fun writeSourceFile(stack: Stack<TypeSpec>, args: ConversionArgs, output: OutputStream) {
-        val sourceFile = FileSpec.builder("", args.rootClassName)
+        val sourceFile = FileSpec.builder("", args.rootClassName) // FIXME set package name
 
         while (stack.isNotEmpty()) {
             sourceFile.addType(stack.pop())
         }
 
-        with(StringBuilder()) {
+        with(StringBuilder()) { // FIXME inefficient use of resources
             sourceFile.build().writeTo(this)
             output.write(toString().toByteArray())
         }

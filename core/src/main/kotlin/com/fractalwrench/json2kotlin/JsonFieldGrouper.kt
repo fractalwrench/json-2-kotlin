@@ -35,6 +35,8 @@ internal class JsonFieldGrouper {
         }
     }
 
+    // TODO this should be exposed as a constructor parameter, will allow greater extensibility
+
     /**
      * Determines whether two JSON Objects on the same level of a JSON tree share the same class type.
      *
@@ -52,5 +54,5 @@ internal class JsonFieldGrouper {
         val keySize = if (lhsKeys.size > rhsKeys.size) lhsKeys.size else rhsKeys.size
         val commonKeyCount = if (emptyClasses) 1 else lhsKeys.intersect(rhsKeys).size
         return (commonKeyCount * 5) >= keySize // at least a fifth of keys must match
-    }
+    } // FIXME should also consider relative size of objects (if lhs has 99 keys, and rhs has 1 key, then they shouldn't match)
 }

@@ -1,6 +1,5 @@
 package com.fractalwrench.json2kotlin
 
-import com.google.gson.JsonParser
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -10,7 +9,7 @@ import java.io.ByteArrayOutputStream
 class InvalidJsonConverterTest(val jsonFilename: String) {
 
     private val fileReader = ResourceFileReader()
-    private val jsonConverter = KotlinJsonConverter()
+    private val jsonConverter = Kotlin2JsonConverter()
 
     companion object {
         @JvmStatic

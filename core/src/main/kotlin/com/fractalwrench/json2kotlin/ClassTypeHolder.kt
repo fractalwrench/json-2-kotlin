@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.*
 import java.util.*
 
 
-internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDelegate {
+internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDelegate { // TODO rename, bad ontology
 
     internal val stack = Stack<TypeSpec>()
     private val jsonProcessor = JsonProcessor()
@@ -13,9 +13,9 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDel
     /**
      * Processes a single level in the tree
      */
-    override fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) {
+    override fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) { // FIXME not ll, generify?
         val fieldValues = levelQueue.filter { it.isJsonObject }.toMutableList()
-        fieldValues.forEach { println(it) }
+        fieldValues.forEach { println(it) } // TODO add verbose flag to config, default to false
 
         jsonFieldGrouper.groupCommonFieldValues(fieldValues)
                 .flatMap { convertFieldsToTypes(it) }
@@ -40,17 +40,17 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDel
 
         return commonElements.filterNot { // reuse any types which already exist in the map
             val containsValue = jsonProcessor.jsonElementMap.containsValue(classType)
-            jsonProcessor.jsonElementMap.put(it.jsonElement, classType) // FIXME weird
+            jsonProcessor.jsonElementMap.put(it.jsonElement, classType) // FIXME feels weird
             containsValue
         }.map { classType }
     }
 
     private fun buildClass(commonElements: List<TypedJsonElement>, fields: Collection<String>): TypeSpec.Builder {
-        val identifier = commonElements.last().kotlinIdentifier
+        val identifier = commonElements.last().kotlinIdentifier // FIXME should only pass in one if that's all that's needed!
         val classBuilder = TypeSpec.classBuilder(identifier.capitalize()) // FIXME check symbol pool!
         val constructor = FunSpec.constructorBuilder()
 
-        if (fields.isEmpty()) {
+        if (fields.isEmpty()) { // FIXME misses delegate!
             return classBuilder
         }
 
@@ -67,7 +67,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDel
         val sanitisedName = field.toKotlinIdentifier() // FIXME should be done before this
         val typeName = fieldTypeMap[field]
         val initializer = PropertySpec.builder(sanitisedName, typeName!!).initializer(sanitisedName)
-        delegate.prepareClassProperty(initializer, sanitisedName, field) // FIXME pass in original name
+        delegate.prepareClassProperty(initializer, sanitisedName, field)
         classBuilder.addProperty(initializer.build())
         constructor.addParameter(sanitisedName, typeName)
     }
