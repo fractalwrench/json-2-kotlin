@@ -1,11 +1,10 @@
 package com.fractalwrench.json2kotlin.valid
-
+import com.google.gson.annotations.SerializedName
 import kotlin.Any
 import kotlin.Array
 import kotlin.Boolean
 import kotlin.Number
 import kotlin.String
-
 
 data class PlaqueExample(val data: Array<Any>, val meta: Meta)
 
@@ -41,7 +40,7 @@ data class View(
         val publicationDate: Number,
         val publicationGroup: Number,
         val publicationStage: String,
-        val query: Query,
+        val query: License,
         val rights: Array<String>,
         val rowClass: String,
         val rowIdentifierColumnId: Number,
@@ -55,91 +54,81 @@ data class View(
         val viewType: String
 )
 
-data class TableAuthor(
-        val id: String,
-        val displayName: String,
-        val profileImageUrlLarge: String,
-        val profileImageUrlMedium: String,
-        val profileImageUrlSmall: String,
-        val screenName: String,
-        val type: String,
-        val flags: Array<String>
-)
-
-class Query
-
-data class Owner(
-        val id: String,
-        val displayName: String,
-        val profileImageUrlLarge: String,
-        val profileImageUrlMedium: String,
-        val profileImageUrlSmall: String,
-        val screenName: String,
-        val type: String,
-        val flags: Array<String>
-)
+data class License(val name: String?)
 
 data class Metadata(
-        val rdfSubject: String,
-        val rdfClass: String,
-        val custom_fields: Custom_fields,
-        val rowIdentifier: String,
         val availableDisplayTypes: Array<String>,
-        val renderTypeConfig: RenderTypeConfig
+        val custom_fields: Custom_fields,
+        val rdfClass: String,
+        val rdfSubject: String,
+        val renderTypeConfig: RenderTypeConfig,
+        val rowIdentifier: String
 )
 
-data class RenderTypeConfig(val visible: Visible)
-
-data class Visible(val table: Boolean)
-
-data class Custom_fields(val Publication: Publication, val AdditionalLicenceDetail: AdditionalLicenceDetail)
-
-data class AdditionalLicenceDetail(
-        val ReuserGuidelines: String,
-        val AdditionalLicenceInformation: String,
-        val LicenceURL: String
-)
-
-data class Publication(val UpdateFrequency: String)
-
-data class License(val name: String)
-
-data class Grants(
-        val inherited: Boolean,
-        val type: String,
-        val flags: Array<String>
+data class Owner(
+        val displayName: String,
+        val flags: Array<String>,
+        val id: String,
+        val profileImageUrlLarge: String,
+        val profileImageUrlMedium: String,
+        val profileImageUrlSmall: String,
+        val screenName: String,
+        val type: String
 )
 
 data class Columns(
+        val cachedContents: CachedContents?,
+        val dataTypeName: String,
+        val description: String?,
+        val fieldName: String,
+        val flags: Array<String>?,
+        val format: CachedContents,
         val id: Number,
         val name: String,
-        val dataTypeName: String,
-        val description: String,
-        val fieldName: String,
         val position: Number,
         val renderTypeName: String,
-        val tableColumnId: Number,
-        val width: Number,
-        val cachedContents: CachedContents,
-        val format: Format,
-        val subColumnTypes: Array<String>?
+        val subColumnTypes: Array<String>?,
+        val tableColumnId: Number?,
+        val width: Number?
 )
 
-data class Format(val view: String, val align: String)
+data class Custom_fields(@SerializedName(value="Additional Licence Detail")
+                         val Additional_Licence_Detail: CachedContents, val Publication: CachedContents)
+
+data class Grants(
+        val flags: Array<String>,
+        val inherited: Boolean,
+        val type: String
+)
+
+data class RenderTypeConfig(val visible: CachedContents)
 
 data class CachedContents(
-        val non_null: Number,
-        val largest: Largest,
-        val _null: Number,
+        @SerializedName(value="null")
+        val `null`: Number?,
+        @SerializedName(value="Additional Licence Information")
+        val Additional_Licence_Information: String?,
+        val align: String?,
+        val average: String?,
+        val largest: Any?,
+        @SerializedName(value="Licence URL")
+        val Licence_URL: String?,
+        val noCommas: String?,
+        val non_null: Number?,
+        val precisionStyle: String?,
+        @SerializedName(value="Re-user Guidelines")
+        val Re_user_Guidelines: String?,
+        val smallest: Any?,
+        val sum: String?,
+        val table: Boolean?,
         val top: Array<Top>?,
-        val smallest: Smallest
+        @SerializedName(value="Update Frequency")
+        val Update_Frequency: String?,
+        val view: String?
 )
-
-data class Smallest(val latitude: String, val longitude: String)
-
-data class Top(val item: Item, val count: Number)
-
-data class Item(val latitude: String, val longitude: String)
 
 data class Largest(val latitude: String, val longitude: String)
 
+data class Top(val count: Number, val item: Any)
+
+data class Item(val latitude: String, val longitude: String)

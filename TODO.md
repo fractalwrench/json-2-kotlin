@@ -6,7 +6,6 @@ Ordered roughly in priority:
 
 - Pass tests
 - Add more real world scenarios (particularly nested objects)
-- GSON serialisation delegate
 - Symbol pool for class names
 
 - Make website tool prettier

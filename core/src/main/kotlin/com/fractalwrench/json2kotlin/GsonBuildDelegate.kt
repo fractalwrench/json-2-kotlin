@@ -10,9 +10,9 @@ class GsonBuildDelegate: SourceBuildDelegate {
     override fun prepareClassProperty(propertyBuilder: PropertySpec.Builder,
                                       kotlinIdentifier: String,
                                       jsonKey: String?) {
-        if (kotlinIdentifier != jsonKey) {
+        if (kotlinIdentifier != jsonKey && jsonKey != null) {
             val serializedNameBuilder = AnnotationSpec.builder(SerializedName::class)
-            serializedNameBuilder.addMember("value=\"$jsonKey\"")
+            serializedNameBuilder.addMember("value=\"${jsonKey.replace("%".toRegex(), "%%")}\"", "")
             propertyBuilder.addAnnotation(serializedNameBuilder.build())
         }
     }

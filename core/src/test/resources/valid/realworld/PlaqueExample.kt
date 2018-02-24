@@ -1,3 +1,4 @@
+import com.google.gson.annotations.SerializedName
 import kotlin.Any
 import kotlin.Array
 import kotlin.Boolean
@@ -90,7 +91,8 @@ data class Columns(
     val width: Number?
 )
 
-data class Custom_fields(val Additional_Licence_Detail: CachedContents, val Publication: CachedContents)
+data class Custom_fields(@SerializedName(value="Additional Licence Detail")
+val Additional_Licence_Detail: CachedContents, val Publication: CachedContents)
 
 data class Grants(
     val flags: Array<String>,
@@ -101,20 +103,25 @@ data class Grants(
 data class RenderTypeConfig(val visible: CachedContents)
 
 data class CachedContents(
+    @SerializedName(value="null")
     val `null`: Number?,
+    @SerializedName(value="Additional Licence Information")
     val Additional_Licence_Information: String?,
     val align: String?,
     val average: String?,
     val largest: Any?,
+    @SerializedName(value="Licence URL")
     val Licence_URL: String?,
     val noCommas: String?,
     val non_null: Number?,
     val precisionStyle: String?,
+    @SerializedName(value="Re-user Guidelines")
     val Re_user_Guidelines: String?,
     val smallest: Any?,
     val sum: String?,
     val table: Boolean?,
     val top: Array<Top>?,
+    @SerializedName(value="Update Frequency")
     val Update_Frequency: String?,
     val view: String?
 )
