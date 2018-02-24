@@ -9,21 +9,21 @@ data class NestedObjObjExample(val nestedObjObjExampleArray: Array<NestedObjObjE
 data class NestedObjObjExampleArray(val container: Container?, val format: Container)
 
 data class Container(
-    @SerializedName(value="null")
-    val `null`: Number?,
-    val align: String?,
-    val bar: String?,
-    val cat: Number?,
-    val dog: Number?,
-    val foo: Number?,
-    val largest: Any?,
-    val noCommas: String?,
-    val non_null: Number?,
-    val precisionStyle: String?,
-    val smallest: Any?,
-    val top: Array<Top>?,
-    val view: String?,
-    val whistle: String?
+        @SerializedName(value="null")
+        val `null`: Number?,
+        val align: String?,
+        val bar: String?,
+        val cat: Number?,
+        val dog: Number?,
+        val foo: Number?,
+        val largest: Any?,
+        val noCommas: String?,
+        val non_null: Number?,
+        val precisionStyle: String?,
+        val smallest: Any?,
+        val top: Array<Top>?,
+        val view: String?,
+        val whistle: String?
 )
 
 data class Largest(val latitude: String, val longitude: String)

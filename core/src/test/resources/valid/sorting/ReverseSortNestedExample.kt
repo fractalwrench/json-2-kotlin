@@ -2,10 +2,10 @@ import kotlin.Boolean
 import kotlin.String
 
 data class ReverseSortNestedExample(
-    val anteater: Anteater,
-    val bird: Bird,
-    val cow: Cow,
-    val lima: Lima
+        val anteater: Anteater,
+        val bird: Bird,
+        val cow: Cow,
+        val lima: Lima
 )
 
 data class Anteater(val test4: String)

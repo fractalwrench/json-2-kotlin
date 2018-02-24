@@ -1,10 +1,10 @@
 import kotlin.String
 
 data class ReverseSortExample(
-    val anteater: Anteater,
-    val lion: Lion,
-    val man: Man,
-    val zebra: Zebra
+        val anteater: Anteater,
+        val lion: Lion,
+        val man: Man,
+        val zebra: Zebra
 )
 
 data class Anteater(val test4: String)
