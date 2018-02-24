@@ -1,19 +1,17 @@
 
 ## Task list
 
-
 Ordered roughly in priority:
 
-- Pass tests
-- Add more real world scenarios (particularly nested objects)
+- Add more real world payloads
 - Symbol pool for class names
+- General cleanup of weird/disgusting code areas
 
 - Make website tool prettier
 - Throttle website tool/prepare for HN
-
-- General cleanup of weird/disgusting code areas
-- Unit tests for individual methods (once codebase a bit less volatile)
 - Docs + writeup
+
+- Unit tests for individual methods (once codebase a bit less volatile)
 
 ## Rough architecture
 
