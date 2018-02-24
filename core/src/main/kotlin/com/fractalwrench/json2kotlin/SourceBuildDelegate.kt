@@ -6,7 +6,7 @@ import com.squareup.kotlinpoet.TypeSpec
 interface SourceBuildDelegate {
     fun prepareClassProperty(propertyBuilder: PropertySpec.Builder,
                              kotlinIdentifier: String,
-                             jsonElement: TypedJsonElement?)
+                             jsonKey: String?)
 
     fun prepareClass(classBuilder: TypeSpec.Builder,
                      kotlinIdentifier: String,

@@ -1,3 +1,4 @@
+import com.google.gson.annotations.SerializedName
 import kotlin.Any
 import kotlin.Array
 import kotlin.Number
@@ -8,6 +9,7 @@ data class NestedObjObjExample(val nestedObjObjExampleArray: Array<NestedObjObjE
 data class NestedObjObjExampleArray(val container: Container?, val format: Container)
 
 data class Container(
+    @SerializedName(value="null")
     val `null`: Number?,
     val align: String?,
     val bar: String?,

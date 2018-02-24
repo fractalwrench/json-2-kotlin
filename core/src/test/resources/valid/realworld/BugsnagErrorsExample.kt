@@ -1,3 +1,4 @@
+import com.google.gson.annotations.SerializedName
 import kotlin.Array
 import kotlin.Number
 import kotlin.String
@@ -13,4 +14,6 @@ data class BugsnagErrorsExampleArray(
     val proportion: Number
 )
 
-data class Fields(val user_email: String, val user_name: String)
+data class Fields(@SerializedName(value="user.email")
+val user_email: String, @SerializedName(value="user.name")
+val user_name: String)

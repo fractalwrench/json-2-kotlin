@@ -67,7 +67,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDel
         val sanitisedName = field.toKotlinIdentifier() // FIXME should be done before this
         val typeName = fieldTypeMap[field]
         val initializer = PropertySpec.builder(sanitisedName, typeName!!).initializer(sanitisedName)
-        delegate.prepareClassProperty(initializer, sanitisedName, null) // FIXME pass in original name
+        delegate.prepareClassProperty(initializer, sanitisedName, field) // FIXME pass in original name
         classBuilder.addProperty(initializer.build())
         constructor.addParameter(sanitisedName, typeName)
     }

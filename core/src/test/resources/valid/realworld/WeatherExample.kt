@@ -1,3 +1,4 @@
+import com.google.gson.annotations.SerializedName
 import kotlin.Array
 import kotlin.Number
 import kotlin.String
@@ -28,7 +29,8 @@ data class Main(
     val temp_min: Number
 )
 
-data class Rain(val _3h: Number)
+data class Rain(@SerializedName(value="3h")
+val _3h: Number)
 
 data class Sys(
     val country: String,
