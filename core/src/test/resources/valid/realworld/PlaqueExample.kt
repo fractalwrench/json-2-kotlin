@@ -80,7 +80,7 @@ data class Columns(
     val description: String?,
     val fieldName: String,
     val flags: Array<String>?,
-    val format: Format,
+    val format: CachedContents,
     val id: Number,
     val name: String,
     val position: Number,
@@ -90,27 +90,7 @@ data class Columns(
     val width: Number?
 )
 
-data class CachedContents(
-    val `null`: Number,
-    val average: String,
-    val largest: String,
-    val non_null: Number,
-    val smallest: String,
-    val sum: String,
-    val top: Array<Top>?
-)
-
-data class Format(
-    val align: String?,
-    val noCommas: String?,
-    val precisionStyle: String?
-)
-
-data class Top(val count: Number, val item: String) // TODO handle this (weird) scenario
-
-data class Top(val count: Number, val item: Item) // TODO handle this scenario
-
-data class Item(val latitude: String, val longitude: String)
+data class Custom_fields(val Additional_Licence_Detail: CachedContents, val Publication: CachedContents)
 
 data class Grants(
     val flags: Array<String>,
@@ -118,16 +98,29 @@ data class Grants(
     val type: String
 )
 
-data class Custom_fields(val Additional_Licence_Detail: Additional_Licence_Detail, val Publication: Publication)
+data class RenderTypeConfig(val visible: CachedContents)
 
-data class RenderTypeConfig(val visible: Visible)
-
-data class Additional_Licence_Detail(
-    val Additional_Licence_Information: String,
-    val Licence_URL: String,
-    val Re_user_Guidelines: String
+data class CachedContents(
+    val `null`: Number?,
+    val Additional_Licence_Information: String?,
+    val align: String?,
+    val average: String?,
+    val largest: Any?,
+    val Licence_URL: String?,
+    val noCommas: String?,
+    val non_null: Number?,
+    val precisionStyle: String?,
+    val Re_user_Guidelines: String?,
+    val smallest: Any?,
+    val sum: String?,
+    val table: Boolean?,
+    val top: Array<Top>?,
+    val Update_Frequency: String?,
+    val view: String?
 )
 
-data class Publication(val Update_Frequency: String)
+data class Largest(val latitude: String, val longitude: String)
 
-data class Visible(val table: Boolean)
+data class Top(val count: Number, val item: Any)
+
+data class Item(val latitude: String, val longitude: String)
