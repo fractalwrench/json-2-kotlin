@@ -15,7 +15,6 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDel
      */
     override fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) { // FIXME not ll, generify?
         val fieldValues = levelQueue.filter { it.isJsonObject }.toMutableList()
-        fieldValues.forEach { println(it) } // TODO add verbose flag to config, default to false
 
         jsonFieldGrouper.groupCommonFieldValues(fieldValues)
                 .flatMap { convertFieldsToTypes(it) }

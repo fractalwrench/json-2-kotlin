@@ -94,7 +94,6 @@ internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate) : Traversal
     private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
 
     private fun handleLevel(level: Int, levelQueue: LinkedList<TypedJsonElement>) {
-        println("Processing level $level")
         processTreeLevel(levelQueue)
     }
 
