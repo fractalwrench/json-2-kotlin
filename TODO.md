@@ -10,6 +10,7 @@ Ordered roughly in priority:
 
 - Make website tool prettier
 - Throttle website tool/prepare for HN
+- Code style check
 - Docs + writeup
 
 - Unit tests for individual methods (once codebase a bit less volatile)

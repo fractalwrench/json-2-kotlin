@@ -70,7 +70,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrate
     }
 
     private fun buildClass(commonElements: List<TypedJsonElement>, fields: Collection<String>): TypeSpec.Builder {
-        val identifier = commonElements.last().kotlinIdentifier // FIXME should only pass in one if that's all that's needed!
+        val identifier = commonElements.last().kotlinIdentifier
         val classBuilder = TypeSpec.classBuilder(identifier.capitalize())
         val constructor = FunSpec.constructorBuilder()
 

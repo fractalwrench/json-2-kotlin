@@ -23,9 +23,11 @@ internal class SourceFileWriter {
             sourceFile.addType(stack.pop())
         }
 
-        val bufferedWriter = BufferedWriter(OutputStreamWriter(output))
-        sourceFile.build().writeTo(bufferedWriter)
-        bufferedWriter.flush()
+        BufferedWriter(OutputStreamWriter(output)).use {
+            sourceFile.build().writeTo(it)
+            it.flush()
+        }
+
     }
 
 }

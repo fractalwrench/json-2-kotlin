@@ -9,7 +9,9 @@ import java.util.HashSet
 
 internal class JsonTypeDetector {
     
-    internal fun typeForJsonField(jsonElement: JsonElement, key: String, jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
+    internal fun typeForJsonField(jsonElement: JsonElement,
+                                  key: String,
+                                  jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
         with(jsonElement) {
             return when {
                 isJsonPrimitive -> typeForJsonPrimitive(asJsonPrimitive)
@@ -21,7 +23,7 @@ internal class JsonTypeDetector {
         }
     }
 
-    internal fun typeForJsonPrimitive(primitive: JsonPrimitive): TypeName {
+    private fun typeForJsonPrimitive(primitive: JsonPrimitive): TypeName {
         return when {
             primitive.isBoolean -> Boolean::class
             primitive.isNumber -> Number::class
@@ -30,41 +32,48 @@ internal class JsonTypeDetector {
         }.asTypeName()
     }
 
-
-    // FIXME feels really messy from here on out
-
-
-    internal fun typeForJsonObject(jsonObject: JsonObject, key: String, jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
+    private fun typeForJsonObject(jsonObject: JsonObject,
+                                   key: String,
+                                   jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
         val existingTypeName = jsonElementMap[jsonObject]
-        if (existingTypeName != null) {
-            return ClassName.bestGuess(existingTypeName.name!!)
-        }
-
-        val identifier = key.toKotlinIdentifier().capitalize()
+        val identifier = existingTypeName?.name ?: key.toKotlinIdentifier().capitalize()
         return ClassName.bestGuess(identifier)
     }
 
-    internal fun typeForJsonArray(jsonArray: JsonArray, key: String, jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
+    private fun typeForJsonArray(jsonArray: JsonArray,
+                                  key: String,
+                                  jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
+        val pair = findAllArrayTypes(jsonArray, key, jsonElementMap)
+        val arrayTypes = pair.first
+        val nullable = pair.second
+        val arrayType = deduceArrayType(arrayTypes, nullable)
+        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), arrayType)
+    }
+
+    private fun findAllArrayTypes(jsonArray: JsonArray,
+                                  key: String,
+                                  jsonElementMap: Map<JsonElement, TypeSpec>): Pair<HashSet<TypeName>, Boolean> {
         val arrayTypes = HashSet<TypeName>()
         var nullable = false
 
         jsonArray.withIndex().forEach {
             val sanitisedName = key.toKotlinIdentifier()
+            val fieldKey = nameForArrayField(it.index, sanitisedName)
+
             with(it.value) {
                 when {
                     isJsonPrimitive -> arrayTypes.add(typeForJsonPrimitive(asJsonPrimitive))
-                    isJsonArray -> arrayTypes.add(typeForJsonArray(asJsonArray, nameForArrayField(it.index, sanitisedName), jsonElementMap))
-                    isJsonObject -> arrayTypes.add(typeForJsonObject(asJsonObject, nameForArrayField(it.index, sanitisedName), jsonElementMap))
+                    isJsonArray -> arrayTypes.add(typeForJsonArray(asJsonArray, fieldKey, jsonElementMap))
+                    isJsonObject -> arrayTypes.add(typeForJsonObject(asJsonObject, fieldKey, jsonElementMap))
                     isJsonNull -> nullable = true
                     else -> throw IllegalStateException("Unexpected state in array")
                 }
             }
         }
-        val arrayType = deduceArrayType(arrayTypes, nullable)
-        return ParameterizedTypeName.get(Array<Any>::class.asClassName(), arrayType)
+        return Pair(arrayTypes, nullable)
     }
 
-    internal fun deduceArrayType(arrayTypes: HashSet<TypeName>, nullable: Boolean): TypeName {
+    private fun deduceArrayType(arrayTypes: HashSet<TypeName>, nullable: Boolean): TypeName {
         val hasMultipleType = arrayTypes.size > 1 || arrayTypes.isEmpty()
         val arrayTypeName = when {
             hasMultipleType -> Any::class.asTypeName()

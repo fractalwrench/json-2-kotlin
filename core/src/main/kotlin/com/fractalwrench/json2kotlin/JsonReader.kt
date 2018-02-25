@@ -18,13 +18,14 @@ class JsonReader(private val jsonParser: JsonParser) {
      * Reads a JSON string using GSON.
      */
     internal fun readJsonTree(input: InputStream, args: ConversionArgs): JsonObject {
-        // TODO check IO is closed properly everywhere!
 
-        with(jsonParser.parse(BufferedReader(InputStreamReader(input)))) {
-            return when {
-                isJsonObject -> asJsonObject
-                isJsonArray -> addRootWrapper(asJsonArray, args.rootClassName)
-                else -> throw IllegalStateException("Failed to read json object")
+        BufferedReader(InputStreamReader(input)).use {
+            with(jsonParser.parse(it)) {
+                return when {
+                    isJsonObject -> asJsonObject
+                    isJsonArray -> addRootWrapper(asJsonArray, args.rootClassName)
+                    else -> throw IllegalStateException("Failed to read json object")
+                }
             }
         }
     }
