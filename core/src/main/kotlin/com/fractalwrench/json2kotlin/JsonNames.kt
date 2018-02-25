@@ -1,12 +1,8 @@
 package com.fractalwrench.json2kotlin
 
 
-// TODO move to a symbol pool class (or equivalent)
-
 internal fun nameForArrayField(index: Int, identifier: String): String =
         if (index == 0) identifier else "$identifier${index + 1}"
-
-// TODO move to a symbol pool class (or equivalent)
 
 // FIXME pattern compilation
 

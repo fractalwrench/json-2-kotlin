@@ -59,7 +59,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrate
         }
 
         val classType = buildClass(commonElements, fields.sortedBy {
-            it.toKotlinIdentifier().toLowerCase() // FIXME check symbol pool!
+            it.toKotlinIdentifier().toLowerCase()
         }).build()
 
         return commonElements.filterNot { // reuse any types which already exist in the map
@@ -71,7 +71,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrate
 
     private fun buildClass(commonElements: List<TypedJsonElement>, fields: Collection<String>): TypeSpec.Builder {
         val identifier = commonElements.last().kotlinIdentifier // FIXME should only pass in one if that's all that's needed!
-        val classBuilder = TypeSpec.classBuilder(identifier.capitalize()) // FIXME check symbol pool!
+        val classBuilder = TypeSpec.classBuilder(identifier.capitalize())
         val constructor = FunSpec.constructorBuilder()
 
         if (fields.isEmpty()) { // FIXME misses delegate!

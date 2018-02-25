@@ -9,7 +9,7 @@ class TypedJsonElement : JsonElement {
     val jsonElement: JsonElement
     val jsonKey: String
     val level: Int
-    val kotlinIdentifier: String // FIXME symbol pooling
+    val kotlinIdentifier: String
 
     constructor(jsonElement: JsonElement, jsonKey: String, level: Int) : super() {
         this.jsonElement = jsonElement

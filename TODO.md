@@ -4,7 +4,6 @@
 Ordered roughly in priority:
 
 - Add more real world payloads
-- Symbol pool for class names
 - General cleanup of weird/disgusting code areas
 - Address all FIXME/TODOs
 - Write Contributing guide

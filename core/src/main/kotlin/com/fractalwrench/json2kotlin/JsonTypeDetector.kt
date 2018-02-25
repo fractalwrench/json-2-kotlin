@@ -40,7 +40,7 @@ internal class JsonTypeDetector {
             return ClassName.bestGuess(existingTypeName.name!!)
         }
 
-        val identifier = key.toKotlinIdentifier().capitalize() // FIXME check symbol pool!
+        val identifier = key.toKotlinIdentifier().capitalize()
         return ClassName.bestGuess(identifier)
     }
 
@@ -49,7 +49,7 @@ internal class JsonTypeDetector {
         var nullable = false
 
         jsonArray.withIndex().forEach {
-            val sanitisedName = key.toKotlinIdentifier() // FIXME check symbol pool!
+            val sanitisedName = key.toKotlinIdentifier()
             with(it.value) {
                 when {
                     isJsonPrimitive -> arrayTypes.add(typeForJsonPrimitive(asJsonPrimitive))
