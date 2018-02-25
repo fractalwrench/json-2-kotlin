@@ -1,6 +1,7 @@
 package com.fractalwrench.json2kotlin
 
 import com.google.gson.*
+import java.io.InputStream
 import java.io.OutputStream
 
 /**
@@ -17,12 +18,8 @@ class Kotlin2JsonConverter(val buildDelegate: SourceBuildDelegate = GsonBuildDel
     /**
      * Converts a JSON string to Kotlin, writing it to the OutputStream.
      */
-    fun convert(input: String, output: OutputStream, args: ConversionArgs) { // FIXME should take an InputStream as input
+    fun convert(input: InputStream, output: OutputStream, args: ConversionArgs) {
         try {
-            if (input.isEmpty()) {
-                throw IllegalArgumentException("Json input empty")
-            }
-
             val jsonRoot = jsonReader.readJsonTree(input, args)
             val stack = traverser.traverse(jsonRoot, args.rootClassName)
             val typeHolder = ClassTypeHolder(buildDelegate, ::defaultGroupingStrategy)

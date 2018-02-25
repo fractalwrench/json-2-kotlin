@@ -8,6 +8,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.InputStream
 import java.util.*
 
 @RunWith(Parameterized::class)
@@ -15,11 +16,11 @@ open class JsonConverterTest(val expectedFilename: String, val jsonFilename: Str
 
     private val fileReader = ResourceFileReader()
     private val jsonConverter = Kotlin2JsonConverter()
-    internal lateinit var json: String
+    internal lateinit var json: InputStream
 
     @Before
     fun setUp() {
-        json = fileReader.readContents(jsonFilename)
+        json = fileReader.inputStream(jsonFilename)
     }
 
     companion object {

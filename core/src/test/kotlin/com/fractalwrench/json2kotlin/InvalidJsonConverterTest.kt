@@ -25,9 +25,9 @@ class InvalidJsonConverterTest(val jsonFilename: String) {
     /**
      * Takes a JSON file and converts it into the equivalent Kotlin class, then compares to expected output.
      */
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = RuntimeException::class)
     fun testJsonToKotlinConversion() {
-        val json = fileReader.readContents(jsonFilename)
+        val json = fileReader.inputStream(jsonFilename)
         val outputStream = ByteArrayOutputStream()
         val args = ConversionArgs(jsonFilename.replace(".kt", ""))
         jsonConverter.convert(json, outputStream, args)

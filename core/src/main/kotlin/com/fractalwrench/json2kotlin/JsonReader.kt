@@ -3,6 +3,9 @@ package com.fractalwrench.json2kotlin
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import java.io.BufferedReader
+import java.io.InputStream
+import java.io.InputStreamReader
 
 /**
  * Reads and serialises a JSON string to a JSONElement, using GSON.
@@ -14,8 +17,10 @@ class JsonReader(private val jsonParser: JsonParser) {
     /**
      * Reads a JSON string using GSON.
      */
-    internal fun readJsonTree(input: String, args: ConversionArgs): JsonObject {
-        with(jsonParser.parse(input)) {
+    internal fun readJsonTree(input: InputStream, args: ConversionArgs): JsonObject {
+        // TODO check IO is closed properly everywhere!
+
+        with(jsonParser.parse(BufferedReader(InputStreamReader(input)))) {
             return when {
                 isJsonObject -> asJsonObject
                 isJsonArray -> addRootWrapper(asJsonArray, args.rootClassName)

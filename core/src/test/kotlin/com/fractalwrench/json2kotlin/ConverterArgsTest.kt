@@ -17,7 +17,7 @@ class ConverterArgsTest {
     fun testPackageName() {
         val jsonFilename = "args/Package.json"
         val expectedFilename = "args/PackageExample.kt"
-        val json = fileReader.readContents(jsonFilename)
+        val json = fileReader.inputStream(jsonFilename)
 
         val outputStream = ByteArrayOutputStream()
         jsonConverter.convert(json, outputStream, ConversionArgs("PackageExample", "com.fractalwrench.foo"))
