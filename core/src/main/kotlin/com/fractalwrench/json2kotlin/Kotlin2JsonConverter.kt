@@ -10,7 +10,7 @@ class Kotlin2JsonConverter(val buildDelegate: SourceBuildDelegate = GsonBuildDel
 
     // TODO (general: update KDocs!)
 
-    // TODO expose grouping class as a parameter, add to config
+    // TODO expose grouping class as a parameter
 
     private val jsonReader = JsonReader(JsonParser())
     private val sourceFileWriter = SourceFileWriter()

@@ -14,7 +14,8 @@ internal class SourceFileWriter { // TODO rename once functionality has changed
      * Writes a collection of types to a source file OutputStream.
      */
     fun writeSourceFile(stack: Stack<TypeSpec>, args: ConversionArgs, output: OutputStream) {
-        val sourceFile = FileSpec.builder("", args.rootClassName) // FIXME set package name
+        val packageName = args.packageName ?: ""
+        val sourceFile = FileSpec.builder(packageName, args.rootClassName)
 
         while (stack.isNotEmpty()) {
             sourceFile.addType(stack.pop())

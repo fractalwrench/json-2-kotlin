@@ -56,9 +56,6 @@ internal class ReverseJsonTreeTraverser {
                 .map { TypedJsonElement(it.value, it.key, depth) }
     }
 
-    private fun nameForArrayField(index: Int, identifier: String): String =
-            if (index == 0) identifier else "$identifier${index + 1}" // FIXME duplication
-
     private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
 
 }

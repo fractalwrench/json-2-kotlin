@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.*
 import java.util.*
 
 
-internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDelegate { // TODO rename, bad ontology
+internal class ClassTypeHolder(val delegate: SourceBuildDelegate) { // TODO rename, bad ontology
 
     internal val stack = Stack<TypeSpec>()
     private val jsonProcessor = JsonProcessor()
@@ -38,7 +38,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDel
     /**
      * Processes a single level in the tree
      */
-    override fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) { // FIXME not ll, generify?
+    fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) { // FIXME not ll, generify?
         val fieldValues = levelQueue.filter { it.isJsonObject }.toMutableList()
 
         jsonFieldGrouper.groupCommonFieldValues(fieldValues)
