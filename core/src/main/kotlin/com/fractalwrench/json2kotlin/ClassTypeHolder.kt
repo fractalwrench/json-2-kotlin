@@ -4,11 +4,11 @@ import com.squareup.kotlinpoet.*
 import java.util.*
 
 
-internal class ClassTypeHolder(val delegate: SourceBuildDelegate) { // TODO rename, bad ontology
+internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrategy: GroupingStrategy) { // TODO rename, bad ontology
 
     internal val stack = Stack<TypeSpec>()
     private val jsonProcessor = JsonProcessor()
-    private val jsonFieldGrouper = JsonFieldGrouper()
+    private val jsonFieldGrouper = JsonFieldGrouper(groupingStrategy)
 
 
     /**
@@ -23,14 +23,14 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) { // TODO rena
             val pop = bfsStack.pop()
 
             if (level != -1 && pop.level != level) {
-                handleLevel(level, levelQueue)
+                handleLevel(levelQueue)
             }
             levelQueue.add(pop)
             level = pop.level
         }
-        handleLevel(level, levelQueue)
+        handleLevel(levelQueue)
     }
-    private fun handleLevel(level: Int, levelQueue: LinkedList<TypedJsonElement>) {
+    private fun handleLevel(levelQueue: LinkedList<TypedJsonElement>) {
         processTreeLevel(levelQueue)
     }
 
@@ -38,7 +38,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) { // TODO rena
     /**
      * Processes a single level in the tree
      */
-    fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) { // FIXME not ll, generify?
+    fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) {
         val fieldValues = levelQueue.filter { it.isJsonObject }.toMutableList()
 
         jsonFieldGrouper.groupCommonFieldValues(fieldValues)

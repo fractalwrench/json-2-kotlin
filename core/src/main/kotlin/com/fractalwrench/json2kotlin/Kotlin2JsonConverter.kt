@@ -10,8 +10,6 @@ class Kotlin2JsonConverter(val buildDelegate: SourceBuildDelegate = GsonBuildDel
 
     // TODO (general: update KDocs!)
 
-    // TODO expose grouping class as a parameter
-
     private val jsonReader = JsonReader(JsonParser())
     private val sourceFileWriter = SourceFileWriter()
     private val traverser = ReverseJsonTreeTraverser()
@@ -27,7 +25,7 @@ class Kotlin2JsonConverter(val buildDelegate: SourceBuildDelegate = GsonBuildDel
 
             val jsonRoot = jsonReader.readJsonTree(input, args)
             val stack = traverser.traverse(jsonRoot, args.rootClassName)
-            val typeHolder = ClassTypeHolder(buildDelegate)
+            val typeHolder = ClassTypeHolder(buildDelegate, ::defaultGroupingStrategy)
             typeHolder.processQueue(stack)
 
             sourceFileWriter.writeSourceFile(typeHolder.stack, args, output)
