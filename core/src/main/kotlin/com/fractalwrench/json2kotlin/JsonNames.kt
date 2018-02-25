@@ -1,15 +1,10 @@
 package com.fractalwrench.json2kotlin
 
-import com.google.gson.JsonElement
 
 // TODO move to a symbol pool class (or equivalent)
 
-internal fun nameForArrayField(sanitisedName: String) = "${sanitisedName}Array"
-
-internal fun nameForObjectInArray(it: IndexedValue<JsonElement>, sanitisedName: String): String {
-    return if (it.index > 0) "$sanitisedName${it.index + 1}" else sanitisedName
-}
-
+internal fun nameForArrayField(index: Int, identifier: String): String =
+        if (index == 0) identifier else "$identifier${index + 1}"
 
 // TODO move to a symbol pool class (or equivalent)
 

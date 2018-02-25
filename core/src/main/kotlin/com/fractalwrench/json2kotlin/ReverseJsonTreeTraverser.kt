@@ -61,5 +61,4 @@ internal class ReverseJsonTreeTraverser {
 
     private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
 
-
 }

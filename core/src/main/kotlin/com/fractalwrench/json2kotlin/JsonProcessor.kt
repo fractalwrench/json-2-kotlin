@@ -82,8 +82,8 @@ internal class JsonProcessor { // TODO crappy name
             with(it.value) {
                 when {
                     isJsonPrimitive -> arrayTypes.add(typeForJsonPrimitive(asJsonPrimitive))
-                    isJsonArray -> arrayTypes.add(typeForJsonArray(asJsonArray, nameForArrayField(sanitisedName)))
-                    isJsonObject -> arrayTypes.add(typeForJsonObject(asJsonObject, nameForObjectInArray(it, sanitisedName)))
+                    isJsonArray -> arrayTypes.add(typeForJsonArray(asJsonArray, nameForArrayField(it.index, sanitisedName)))
+                    isJsonObject -> arrayTypes.add(typeForJsonObject(asJsonObject, nameForArrayField(it.index, sanitisedName)))
                     isJsonNull -> nullable = true
                     else -> throw IllegalStateException("Unexpected state in array")
                 }

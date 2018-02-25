@@ -28,7 +28,7 @@ class JsonReader(private val jsonParser: JsonParser) {
      * Adds an object as root which wraps the array
      */
     private fun addRootWrapper(jsonArray: JsonArray, className: String): JsonObject {
-        return JsonObject().apply { add(nameForArrayField(className).decapitalize(), jsonArray) }
+        return JsonObject().apply { add(nameForArrayField(0, "${className}Array").decapitalize(), jsonArray) }
     }
 
 }
