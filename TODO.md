@@ -8,7 +8,6 @@ Ordered roughly in priority:
 - General cleanup of weird/disgusting code areas
 - Address all FIXME/TODOs
 - Write Contributing guide
-- Setup CI
 
 - Make website tool prettier
 - Throttle website tool/prepare for HN

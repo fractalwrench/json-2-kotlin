@@ -4,7 +4,7 @@ import com.google.gson.*
 import java.math.BigDecimal
 import java.math.BigInteger
 
-internal class TypedJsonElement : JsonElement {
+class TypedJsonElement : JsonElement {
 
     val jsonElement: JsonElement
     val jsonKey: String

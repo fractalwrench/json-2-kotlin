@@ -7,7 +7,7 @@ import java.util.*
 internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrategy: GroupingStrategy) { // TODO rename, bad ontology
 
     internal val stack = Stack<TypeSpec>()
-    private val jsonProcessor = JsonProcessor()
+    private val jsonProcessor = JsonProcessor(JsonTypeDetector())
     private val jsonFieldGrouper = JsonFieldGrouper(groupingStrategy)
 
 
@@ -38,7 +38,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrate
     /**
      * Processes a single level in the tree
      */
-    fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) {
+    private fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) {
         val fieldValues = levelQueue.filter { it.isJsonObject }.toMutableList()
 
         jsonFieldGrouper.groupCommonFieldValues(fieldValues)
