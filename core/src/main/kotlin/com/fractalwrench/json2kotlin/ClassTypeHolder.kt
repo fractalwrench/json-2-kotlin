@@ -74,15 +74,13 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrate
         val classBuilder = TypeSpec.classBuilder(identifier.capitalize())
         val constructor = FunSpec.constructorBuilder()
 
-        if (fields.isEmpty()) { // FIXME misses delegate!
-            return classBuilder
+        if (fields.isNotEmpty()) {
+            val fieldTypeMap = jsonProcessor.findDistinctTypesForFields(fields, commonElements)
+            fields.forEach { addProperty(it, fieldTypeMap, classBuilder, constructor) }
+            classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
+            classBuilder.primaryConstructor(constructor.build())
         }
 
-        val fieldTypeMap = jsonProcessor.findDistinctTypesForFields(fields, commonElements)
-        fields.forEach { addProperty(it, fieldTypeMap, classBuilder, constructor) }
-
-        classBuilder.addModifiers(KModifier.DATA) // non-empty classes allow data modifier
-        classBuilder.primaryConstructor(constructor.build())
         delegate.prepareClass(classBuilder, identifier, commonElements.last())
         return classBuilder
     }
