@@ -1,5 +1,6 @@
 package com.fractalwrench.json2kotlin
 
+import com.google.gson.JsonParser
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -7,6 +8,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.*
 
 @RunWith(Parameterized::class)
 open class JsonConverterTest(val expectedFilename: String, val jsonFilename: String) {
@@ -17,7 +19,7 @@ open class JsonConverterTest(val expectedFilename: String, val jsonFilename: Str
 
     @Before
     fun setUp() {
-        json = ""
+        json = fileReader.readContents(jsonFilename)
     }
 
     companion object {
@@ -58,8 +60,7 @@ open class JsonConverterTest(val expectedFilename: String, val jsonFilename: Str
      * Takes a JSON file and converts it into the equivalent Kotlin class, then compares to expected output.
      */
     @Test
-    open fun testJsonToKotlinConversion() {
-        json = fileReader.readContents(jsonFilename)
+    fun testJsonToKotlinConversion() {
         val outputStream = ByteArrayOutputStream()
         val rootClassName = classNameForFile(expectedFilename)
         jsonConverter.convert(json, outputStream, ConversionArgs(rootClassName))
@@ -70,6 +71,19 @@ open class JsonConverterTest(val expectedFilename: String, val jsonFilename: Str
         Assert.assertEquals(msg, expectedContents, generatedSource)
     }
 
-    internal fun classNameForFile(filename: String): String
+    @Test
+    fun testStackOrder() {
+        val readJsonTree = JsonReader(JsonParser()).readJsonTree(json, ConversionArgs())
+        val stack = ReverseJsonTreeTraverser().traverse(readJsonTree, "Foo")
+        var maxLevel = 0
+        stack.forEach {
+            if (maxLevel > it.level) {
+                Assert.fail("Stack is not in correct order: $it")
+            }
+            maxLevel = it.level
+        }
+    }
+
+    private fun classNameForFile(filename: String): String
             = filename.replace(".kt", "").substringAfterLast(File.separator)
 }

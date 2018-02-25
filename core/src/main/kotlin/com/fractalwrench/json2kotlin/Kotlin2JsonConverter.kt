@@ -6,7 +6,7 @@ import java.io.OutputStream
 /**
  * Converts JSON to Kotlin
  */
-class Kotlin2JsonConverter(buildDelegate: SourceBuildDelegate = GsonBuildDelegate()) {
+class Kotlin2JsonConverter(val buildDelegate: SourceBuildDelegate = GsonBuildDelegate()) {
 
     // TODO (general: update KDocs!)
 
@@ -14,8 +14,7 @@ class Kotlin2JsonConverter(buildDelegate: SourceBuildDelegate = GsonBuildDelegat
 
     private val jsonReader = JsonReader(JsonParser())
     private val sourceFileWriter = SourceFileWriter()
-    private val typeHolder = ClassTypeHolder(buildDelegate)
-    private val traverser = ReverseJsonTreeTraverser(typeHolder)
+    private val traverser = ReverseJsonTreeTraverser()
 
     /**
      * Converts a JSON string to Kotlin, writing it to the OutputStream.
@@ -27,7 +26,10 @@ class Kotlin2JsonConverter(buildDelegate: SourceBuildDelegate = GsonBuildDelegat
             }
 
             val jsonRoot = jsonReader.readJsonTree(input, args)
-            traverser.traverse(jsonRoot, args.rootClassName)
+            val stack = traverser.traverse(jsonRoot, args.rootClassName)
+            val typeHolder = ClassTypeHolder(buildDelegate)
+            typeHolder.processQueue(stack)
+
             sourceFileWriter.writeSourceFile(typeHolder.stack, args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)

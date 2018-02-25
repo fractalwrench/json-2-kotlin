@@ -10,6 +10,31 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate) : TraversalDel
     private val jsonProcessor = JsonProcessor()
     private val jsonFieldGrouper = JsonFieldGrouper()
 
+
+    /**
+     * Processes JSON nodes in a reverse level order traversal,
+     * by building class types for each level of the tree.
+     */
+    fun processQueue(bfsStack: Stack<TypedJsonElement>) { // TODO split into two separate classes, as separate responsibilities.
+        var level = -1
+        val levelQueue = LinkedList<TypedJsonElement>()
+
+        while (bfsStack.isNotEmpty()) {
+            val pop = bfsStack.pop()
+
+            if (level != -1 && pop.level != level) {
+                handleLevel(level, levelQueue)
+            }
+            levelQueue.add(pop)
+            level = pop.level
+        }
+        handleLevel(level, levelQueue)
+    }
+    private fun handleLevel(level: Int, levelQueue: LinkedList<TypedJsonElement>) {
+        processTreeLevel(levelQueue)
+    }
+
+
     /**
      * Processes a single level in the tree
      */

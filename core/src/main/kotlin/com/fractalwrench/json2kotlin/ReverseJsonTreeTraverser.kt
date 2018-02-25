@@ -9,31 +9,19 @@ import java.util.*
 /**
  * Traverses a JSON tree from the bottom up in level order.
  */
-internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate) : TraversalDelegate by delegate {
+internal class ReverseJsonTreeTraverser {
 
-    private val bfsStack: Stack<TypedJsonElement> = Stack()
-
-    fun traverse(element: JsonElement, rootName: String) { // TODO should return a stack instead and not use a delegate
-        buildStack(element, rootName)
-        validateStackOrder()
-        processQueue()
-    }
-
-    private fun validateStackOrder() { // TODO add to a test instead (perf)
-        var maxLevel = 0
-        bfsStack.forEach {
-            if (maxLevel > it.level) {
-                throw IllegalStateException("Stack is not in correct order: $it")
-            }
-            maxLevel = it.level
-        }
+    fun traverse(element: JsonElement, rootName: String): Stack<TypedJsonElement> {
+        val bfsStack: Stack<TypedJsonElement> = Stack()
+        buildStack(bfsStack, element, rootName)
+        return bfsStack
     }
 
     /**
      * Adds the JSON nodes to a stack using BFS. This permits a reverse level order traversal, which is used to build
      * class types from the bottom up.
      */
-    private fun buildStack(parent: JsonElement, key: String?) {
+    private fun buildStack(bfsStack: Stack<TypedJsonElement>, parent: JsonElement, key: String?) {
         val queue = LinkedList<TypedJsonElement>()
         queue.add(TypedJsonElement(parent, key!!, 0))
 
@@ -50,26 +38,6 @@ internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate) : Traversal
             }
             queue.addAll(complexChildren)
         }
-    }
-
-    /**
-     * Processes JSON nodes in a reverse level order traversal,
-     * by building class types for each level of the tree.
-     */
-    private fun processQueue() { // TODO split into two separate classes, as separate responsibilities.
-        var level = -1
-        val levelQueue = LinkedList<TypedJsonElement>()
-
-        while (bfsStack.isNotEmpty()) {
-            val pop = bfsStack.pop()
-
-            if (level != -1 && pop.level != level) {
-                handleLevel(level, levelQueue)
-            }
-            levelQueue.add(pop)
-            level = pop.level
-        }
-        handleLevel(level, levelQueue)
     }
 
     private fun convertParent(jsonArray: JsonArray, key: String?, depth: Int): List<TypedJsonElement> {
@@ -93,8 +61,5 @@ internal class ReverseJsonTreeTraverser(delegate: TraversalDelegate) : Traversal
 
     private fun shouldAddToStack(element: JsonElement) = element.isJsonArray || element.isJsonObject
 
-    private fun handleLevel(level: Int, levelQueue: LinkedList<TypedJsonElement>) {
-        processTreeLevel(levelQueue)
-    }
 
 }
