@@ -1,5 +1,6 @@
 package com.fractalwrench.json2kotlin
 
+import com.google.gson.JsonElement
 import com.squareup.kotlinpoet.*
 import java.util.*
 
@@ -9,7 +10,8 @@ import java.util.*
 internal class TypeSpecGenerator(private val delegate: SourceBuildDelegate,
                                  groupingStrategy: GroupingStrategy) {
 
-    private val jsonProcessor = JsonProcessor(JsonTypeDetector())
+    private val jsonElementMap = HashMap<JsonElement, TypeSpec>()
+    private val typeReducer = TypeReducer(JsonTypeDetector())
     private val jsonFieldGrouper = JsonFieldGrouper(groupingStrategy)
 
     /**
@@ -69,11 +71,9 @@ internal class TypeSpecGenerator(private val delegate: SourceBuildDelegate,
             it.toKotlinIdentifier().toLowerCase()
         }).build()
 
-        // FIXME encapsulation broken from this point
-        return commonElements.filterNot {
-            // reuse any types which already exist in the map
-            val containsValue = jsonProcessor.jsonElementMap.containsValue(classType)
-            jsonProcessor.jsonElementMap.put(it.jsonElement, classType)
+        return commonElements.filterNot { // reuse any types which already exist in the map
+            val containsValue = jsonElementMap.containsValue(classType)
+            jsonElementMap.put(it.jsonElement, classType)
             containsValue
         }.map { classType }
     }
@@ -87,7 +87,7 @@ internal class TypeSpecGenerator(private val delegate: SourceBuildDelegate,
         val constructor = FunSpec.constructorBuilder()
 
         if (fields.isNotEmpty()) {
-            val fieldTypeMap = jsonProcessor.findDistinctTypesForFields(fields, commonElements)
+            val fieldTypeMap = typeReducer.findDistinctTypes(fields, commonElements, jsonElementMap)
             fields.forEach {
                 buildProperty(it, fieldTypeMap, commonElements, classBuilder, constructor)
             }
