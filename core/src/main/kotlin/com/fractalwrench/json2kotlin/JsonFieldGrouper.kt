@@ -1,21 +1,30 @@
 package com.fractalwrench.json2kotlin
 
-internal class JsonFieldGrouper(val groupingStrategy: GroupingStrategy) {
+/**
+ * Determines whether multiple JsonObjects share any commonality (i.e. whether they should be
+ * represented by the same type).
+ *
+ * The strategy used to determine commonality can be supplied as a constructor parameter.
+ */
+internal class JsonFieldGrouper(private val groupingStrategy: GroupingStrategy = ::defaultGroupingStrategy) {
 
-    fun groupCommonFieldValues(allObjects: MutableList<TypedJsonElement>): List<List<TypedJsonElement>> {
+    /**
+     * Recursively groups a List of JSONElementstogether by any commonality (i.e. whether they should be
+     * represented by the same type)
+     */
+    fun groupJsonObjects(jsonElements: MutableList<TypedJsonElement>): List<List<TypedJsonElement>> {
         val allTypes: MutableList<MutableList<TypedJsonElement>> = mutableListOf()
 
-        while (allObjects.isNotEmpty()) {
+        while (jsonElements.isNotEmpty()) {
             val typeList = mutableListOf<TypedJsonElement>()
             allTypes.add(typeList)
-            findCommonTypesForElement(allObjects.first(), allObjects, typeList)
+            findCommonTypesForElement(jsonElements.first(), jsonElements, typeList)
         }
         return allTypes
     }
 
     /**
-     * Recursively finds any commonality between types in a collection of JSON objects. Commonality between
-     * two objects is defined as them sharing one or more key value.
+     * Recursively finds any commonality between types in a collection of JSON objects.
      *
      * Recursion is necessary to detect transitive relationships. For example, an object that only contains a
      * key of "foo" may be the same type as an object that only contains a key of "bar", if another object exists

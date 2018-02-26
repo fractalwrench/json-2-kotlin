@@ -16,6 +16,8 @@ class JsonReader(private val jsonParser: JsonParser) {
 
     /**
      * Reads a JSON string using GSON.
+     *
+     * If the root value is an array, a wrapper element will be added to the tree.
      */
     internal fun readJsonTree(input: InputStream, args: ConversionArgs): JsonObject {
 
@@ -34,7 +36,10 @@ class JsonReader(private val jsonParser: JsonParser) {
      * Adds an object as root which wraps the array
      */
     private fun addRootWrapper(jsonArray: JsonArray, className: String): JsonObject {
-        return JsonObject().apply { add(nameForArrayField(0, "${className}Array").decapitalize(), jsonArray) }
+        return JsonObject().apply {
+            val identifier = nameForArrayField(0, "${className}Array").decapitalize()
+            add(identifier, jsonArray)
+        }
     }
 
 }

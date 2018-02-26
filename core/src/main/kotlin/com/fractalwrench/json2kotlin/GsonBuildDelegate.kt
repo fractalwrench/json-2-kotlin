@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-
+// TODO docs
 class GsonBuildDelegate: SourceBuildDelegate {
 
     private val regex = "%".toRegex()

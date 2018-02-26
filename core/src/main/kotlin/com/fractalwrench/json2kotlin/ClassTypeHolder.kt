@@ -3,7 +3,7 @@ package com.fractalwrench.json2kotlin
 import com.squareup.kotlinpoet.*
 import java.util.*
 
-
+// TODO docs
 internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrategy: GroupingStrategy) { // TODO rename, bad ontology
 
     internal val stack = Stack<TypeSpec>()
@@ -41,7 +41,7 @@ internal class ClassTypeHolder(val delegate: SourceBuildDelegate, groupingStrate
     private fun processTreeLevel(levelQueue: LinkedList<TypedJsonElement>) {
         val fieldValues = levelQueue.filter { it.isJsonObject }.toMutableList()
 
-        jsonFieldGrouper.groupCommonFieldValues(fieldValues)
+        jsonFieldGrouper.groupJsonObjects(fieldValues)
                 .flatMap { convertFieldsToTypes(it) }
                 .sortedByDescending { it.name }
                 .forEach { stack += it }

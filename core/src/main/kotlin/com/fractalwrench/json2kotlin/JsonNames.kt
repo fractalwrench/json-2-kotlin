@@ -1,6 +1,6 @@
 package com.fractalwrench.json2kotlin
 
-
+// TODO docs
 internal fun nameForArrayField(index: Int, identifier: String): String =
         if (index == 0) identifier else "$identifier${index + 1}"
 

@@ -27,7 +27,6 @@ internal class SourceFileWriter {
             sourceFile.build().writeTo(it)
             it.flush()
         }
-
     }
 
 }

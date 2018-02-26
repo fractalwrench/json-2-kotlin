@@ -7,11 +7,24 @@ import com.google.gson.JsonPrimitive
 import com.squareup.kotlinpoet.*
 import java.util.HashSet
 
+/**
+ * Deduces the TypeName for a JSON field value. For a primitive such as a String, this is a simple operation.
+ * For complex values such as Arrays, Objects, and Nulls, this requires various considerations,
+ * some of which are enumerated below:
+ *
+ * - Whether the type already exists
+ * - Nullability of other elements
+ * - Generic Parameters
+ * - Object nesting
+ */
 internal class JsonTypeDetector {
-    
-    internal fun typeForJsonField(jsonElement: JsonElement,
-                                  key: String,
-                                  jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
+
+    /**
+     * Determines an returns the TypeName for a JSONElement
+     */
+    internal fun typeForJsonElement(jsonElement: JsonElement,
+                                    key: String,
+                                    jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
         with(jsonElement) {
             return when {
                 isJsonPrimitive -> typeForJsonPrimitive(asJsonPrimitive)

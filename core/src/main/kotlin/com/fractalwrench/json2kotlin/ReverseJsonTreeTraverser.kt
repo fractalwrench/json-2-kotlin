@@ -7,13 +7,17 @@ import java.util.*
 
 
 /**
- * Traverses a JSON tree from the bottom up in level order.
+ * Traverses a JSON tree in level order (BFS starting from the top) and adds each element to a
+ * Stack, with additional metadata.
  */
 internal class ReverseJsonTreeTraverser {
 
-    fun traverse(element: JsonElement, rootName: String): Stack<TypedJsonElement> {
+    /**
+     * Traverses a JSON tree in level order (BFS starting from the top)
+     */
+    fun traverse(element: JsonElement, rootElementName: String): Stack<TypedJsonElement> {
         val bfsStack: Stack<TypedJsonElement> = Stack()
-        buildStack(bfsStack, element, rootName)
+        buildStack(bfsStack, element, rootElementName)
         return bfsStack
     }
 

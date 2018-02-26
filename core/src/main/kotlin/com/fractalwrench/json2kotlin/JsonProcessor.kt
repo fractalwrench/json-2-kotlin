@@ -4,7 +4,7 @@ import com.google.gson.JsonElement
 import com.squareup.kotlinpoet.*
 import java.util.HashMap
 
-
+// TODO docs
 internal class JsonProcessor(private val typeDetector: JsonTypeDetector) { // TODO crappy name
 
     internal val jsonElementMap = HashMap<JsonElement, TypeSpec>() // FIXME feels wrong having this exposed, return instead?
@@ -24,7 +24,7 @@ internal class JsonProcessor(private val typeDetector: JsonTypeDetector) { // TO
     private fun findDistinctTypesForField(commonElements: List<TypedJsonElement>, key: String): List<TypeName?> {
         return commonElements.map {
             val fieldValue = it.asJsonObject.get(key)
-            if (fieldValue != null) typeDetector.typeForJsonField(fieldValue, key, jsonElementMap) else null
+            if (fieldValue != null) typeDetector.typeForJsonElement(fieldValue, key, jsonElementMap) else null
         }.distinct()
     }
 

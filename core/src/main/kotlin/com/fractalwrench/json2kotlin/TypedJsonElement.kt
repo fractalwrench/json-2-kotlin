@@ -4,19 +4,13 @@ import com.google.gson.*
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class TypedJsonElement : JsonElement {
+/**
+ * Decorated class which wraps a JsonElement with additional information, such as its level in
+ * the tree, and a sanitised kotlin identifier.
+ */
+class TypedJsonElement(val jsonElement: JsonElement, val jsonKey: String, val level: Int) : JsonElement() {
 
-    val jsonElement: JsonElement
-    val jsonKey: String
-    val level: Int
-    val kotlinIdentifier: String
-
-    constructor(jsonElement: JsonElement, jsonKey: String, level: Int) : super() {
-        this.jsonElement = jsonElement
-        this.jsonKey = jsonKey
-        this.level = level
-        this.kotlinIdentifier = jsonKey.toKotlinIdentifier()
-    }
+    val kotlinIdentifier: String = jsonKey.toKotlinIdentifier()
 
     override fun isJsonNull(): Boolean = jsonElement.isJsonNull
 

@@ -7,16 +7,14 @@ import java.io.OutputStream
 /**
  * Converts JSON to Kotlin
  */
-class Kotlin2JsonConverter(val buildDelegate: SourceBuildDelegate = GsonBuildDelegate()) {
-
-    // TODO (general: update KDocs!)
+class Kotlin2JsonConverter(private val buildDelegate: SourceBuildDelegate = GsonBuildDelegate()) {
 
     private val jsonReader = JsonReader(JsonParser())
     private val sourceFileWriter = SourceFileWriter()
     private val traverser = ReverseJsonTreeTraverser()
 
     /**
-     * Converts a JSON string to Kotlin, writing it to the OutputStream.
+     * Converts an InputStream of JSON to Kotlin source code, writing the result to the OutputStream.
      */
     fun convert(input: InputStream, output: OutputStream, args: ConversionArgs) {
         try {
