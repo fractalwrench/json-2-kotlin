@@ -3,17 +3,12 @@
 
 Ordered roughly in priority:
 
-- Add more real world payloads
-- General cleanup of weird/disgusting code areas
-- Address all FIXME/TODOs
 - Write Contributing guide
-
+- Add license
+- Test command line tool
 - Make website tool prettier
 - Throttle website tool/prepare for HN
-- Code style check
-- Docs + writeup
-
-- Unit tests for individual methods (once codebase a bit less volatile)
+- Writeup
 
 ## Rough architecture
 

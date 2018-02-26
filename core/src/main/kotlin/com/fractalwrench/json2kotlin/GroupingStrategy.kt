@@ -15,10 +15,13 @@ internal typealias GroupingStrategy = (lhs: TypedJsonElement, rhs: TypedJsonElem
 internal fun defaultGroupingStrategy(lhs: TypedJsonElement, rhs: TypedJsonElement): Boolean {
     val lhsKeys = lhs.asJsonObject.keySet()
     val rhsKeys = rhs.asJsonObject.keySet()
+    val lhsSize = lhsKeys.size
+    val rhsSize = rhsKeys.size
     val emptyClasses = (lhsKeys.isEmpty() || rhsKeys.isEmpty())
 
-    val keySize = if (lhsKeys.size > rhsKeys.size) lhsKeys.size else rhsKeys.size
+    val maxKeySize = if (lhsSize > rhsSize) lhsSize else rhsSize
     val commonKeyCount = if (emptyClasses) 1 else lhsKeys.intersect(rhsKeys).size
-    return (commonKeyCount * 5) >= keySize // at least a fifth of keys must match
-} // FIXME should also consider relative size of objects (if lhs has 99 keys, and rhs has 1 key, then they shouldn't match)
+
+    return (commonKeyCount * 5) >= maxKeySize // at least a fifth of keys must match
+}
 

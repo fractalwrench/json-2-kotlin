@@ -1,7 +1,6 @@
 package com.fractalwrench.json2kotlin
 
 import org.apache.commons.cli.*
-import org.apache.commons.cli.HelpFormatter
 import java.io.File
 import java.nio.file.Paths
 
@@ -22,7 +21,7 @@ fun main(args: Array<String>) {
 
             if (inputFile.exists()) {
                 val outputFile = findOutputFile(inputFile)
-                Kotlin2JsonConverter().convert(inputFile.readText(), outputFile.outputStream(), ConversionArgs())
+                Kotlin2JsonConverter().convert(inputFile.inputStream(), outputFile.outputStream(), ConversionArgs())
                 println("Generated source available at '$outputFile'")
             } else {
                 println("Failed to find file '$inputFile'")
@@ -45,13 +44,17 @@ private fun printHelp(options: Options) {
 }
 
 private fun prepareOptions(): Options {
-    val options = Options()
-    options.addOption(Option.builder("input")
-            .desc("The JSON file input")
-            .numberOfArgs(1)
-            .build())
-    options.addOption(Option.builder("help")
-            .desc("Displays help on available commands")
-            .build())
-    return options
+    return with(Options()) {
+        addOption(Option.builder("input")
+                .desc("The JSON file input")
+                .numberOfArgs(1)
+                .build())
+        addOption(Option.builder("packageName")
+                .desc("The package name for the generated Kotlin file")
+                .numberOfArgs(1)
+                .build())
+        addOption(Option.builder("help")
+                .desc("Displays help on available commands")
+                .build())
+    }
 }

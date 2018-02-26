@@ -2,7 +2,8 @@ package com.fractalwrench.json2kotlin.gson
 
 import com.fractalwrench.json2kotlin.valid.WeatherExample
 import com.google.gson.Gson
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class WeatherGsonSerialisationTest : AbstractSerialisationTest() {
@@ -12,38 +13,40 @@ class WeatherGsonSerialisationTest : AbstractSerialisationTest() {
     @Test
     override fun testGsonSerialisation() {
         val weather = Gson().fromJson(json, WeatherExample::class.java)
-        Assert.assertNotNull(weather)
+        assertNotNull(weather)
 
-        Assert.assertEquals(139, weather.coord.lon.toInt())
-        Assert.assertEquals(35, weather.coord.lat.toInt())
+        assertEquals(1, weather.weather.size)
+        assertEquals(804, weather.weather[0].id.toInt())
+        assertEquals("clouds", weather.weather[0].main)
+        assertEquals("overcast clouds", weather.weather[0].description)
+        assertEquals("04n", weather.weather[0].icon)
 
-        Assert.assertEquals("JP", weather.sys.country)
-        Assert.assertEquals(1369769524, weather.sys.sunrise.toInt())
-        Assert.assertEquals(1369821049, weather.sys.sunset.toInt())
+        with(weather) {
+            assertEquals(139, coord.lon.toInt())
+            assertEquals(35, coord.lat.toInt())
 
-        Assert.assertEquals(1, weather.weather.size)
-        Assert.assertEquals(804, weather.weather[0].id.toInt())
-        Assert.assertEquals("clouds", weather.weather[0].main)
-        Assert.assertEquals("overcast clouds", weather.weather[0].description)
-        Assert.assertEquals("04n", weather.weather[0].icon)
+            assertEquals("JP", sys.country)
+            assertEquals(1369769524, sys.sunrise.toInt())
+            assertEquals(1369821049, sys.sunset.toInt())
 
-        Assert.assertEquals(289.5, weather.main.temp.toDouble(), 0.01)
-        Assert.assertEquals(89, weather.main.humidity.toInt())
-        Assert.assertEquals(1013, weather.main.pressure.toInt())
-        Assert.assertEquals(287.04, weather.main.temp_min.toDouble(), 0.01)
-        Assert.assertEquals(292.04, weather.main.temp_max.toDouble(), 0.01)
+            assertEquals(289.5, main.temp.toDouble(), 0.01)
+            assertEquals(89, main.humidity.toInt())
+            assertEquals(1013, main.pressure.toInt())
+            assertEquals(287.04, main.temp_min.toDouble(), 0.01)
+            assertEquals(292.04, main.temp_max.toDouble(), 0.01)
 
-        Assert.assertEquals(7.31, weather.wind.speed.toDouble(), 0.01)
-        Assert.assertEquals(187.002, weather.wind.deg.toDouble(), 0.01)
+            assertEquals(7.31, wind.speed.toDouble(), 0.01)
+            assertEquals(187.002, wind.deg.toDouble(), 0.01)
 
-        Assert.assertEquals(5, weather.rain._3h.toInt())
+            assertEquals(5, rain._3h.toInt())
 
-        Assert.assertEquals(92, weather.clouds.all.toInt())
+            assertEquals(92, clouds.all.toInt())
 
-        Assert.assertEquals(1369824698, weather.dt.toInt())
-        Assert.assertEquals(1851632, weather.id.toInt())
-        Assert.assertEquals("Shuzenji", weather.name)
-        Assert.assertEquals(200, weather.cod.toInt())
+            assertEquals(1369824698, dt.toInt())
+            assertEquals(1851632, id.toInt())
+            assertEquals("Shuzenji", name)
+            assertEquals(200, cod.toInt())
+        }
     }
 
 }

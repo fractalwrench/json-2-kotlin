@@ -9,7 +9,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation project(":core")
     implementation "commons-cli:commons-cli:1.4"
-
 }
 
 mainClassName = "com.fractalwrench.json2kotlin.AppKt"

@@ -9,7 +9,7 @@ fun String.standardiseNewline(): String {
 
 fun String.toKotlinIdentifier(): String {
     return when {
-        KEYWORDS.contains(this) -> "`$this`" // escape
+        keywords.contains(this) -> "`$this`" // escape
         else -> {
             val sanitisedOutput = this.replace("[^0-9A-Za-z_]+".toRegex(), "_")
             val regex = "^[^A-Za-z_].*".toRegex()
@@ -22,7 +22,7 @@ fun String.toKotlinIdentifier(): String {
     }
 }
 
-private val KEYWORDS = listOf(
+private val keywords = listOf(
         "as",
         "as?",
         "break",

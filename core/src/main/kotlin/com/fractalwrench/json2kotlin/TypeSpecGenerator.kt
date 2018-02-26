@@ -87,7 +87,8 @@ internal class TypeSpecGenerator(private val delegate: SourceBuildDelegate,
         val constructor = FunSpec.constructorBuilder()
 
         if (fields.isNotEmpty()) {
-            val fieldTypeMap = typeReducer.findDistinctTypes(fields, commonElements, jsonElementMap)
+            val fieldTypeMap
+                    = typeReducer.findDistinctTypes(fields, commonElements, jsonElementMap)
             fields.forEach {
                 buildProperty(it, fieldTypeMap, commonElements, classBuilder, constructor)
             }

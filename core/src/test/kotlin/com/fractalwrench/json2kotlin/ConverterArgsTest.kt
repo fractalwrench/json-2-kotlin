@@ -3,7 +3,6 @@ package com.fractalwrench.json2kotlin
 import org.junit.Assert
 import org.junit.Test
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 class ConverterArgsTest {
 
@@ -20,7 +19,8 @@ class ConverterArgsTest {
         val json = fileReader.inputStream(jsonFilename)
 
         val outputStream = ByteArrayOutputStream()
-        jsonConverter.convert(json, outputStream, ConversionArgs("PackageExample", "com.fractalwrench.foo"))
+        val args = ConversionArgs("PackageExample", "com.fractalwrench.foo")
+        jsonConverter.convert(json, outputStream, args)
 
         val generatedSource = String(outputStream.toByteArray()).standardiseNewline()
         val expectedContents = fileReader.readContents(expectedFilename).standardiseNewline()

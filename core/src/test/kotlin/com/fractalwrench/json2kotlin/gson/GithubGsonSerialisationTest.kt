@@ -2,7 +2,8 @@ package com.fractalwrench.json2kotlin.gson
 
 import com.fractalwrench.json2kotlin.valid.GithubProjectExample
 import com.google.gson.Gson
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class GithubGsonSerialisationTest : AbstractSerialisationTest() {
@@ -12,37 +13,39 @@ class GithubGsonSerialisationTest : AbstractSerialisationTest() {
     @Test
     override fun testGsonSerialisation() {
         val gson = Gson().fromJson(json, GithubProjectExample::class.java)
-        Assert.assertNotNull(gson)
+        assertNotNull(gson)
 
-        Assert.assertEquals("https://api.github.com/repos/api-playground/projects-test", gson.owner_url)
-        Assert.assertEquals("https://api.github.com/projects/1002604", gson.url)
-        Assert.assertEquals("https://github.com/api-playground/projects-test/projects/12", gson.html_url)
-        Assert.assertEquals("https://api.github.com/projects/1002604/columns", gson.columns_url)
-        Assert.assertEquals(1002604, gson.id.toInt())
-        Assert.assertEquals("Projects Documentation", gson.name)
-        Assert.assertEquals("Developer documentation project for the developer site.", gson.body)
-        Assert.assertEquals(1, gson.number.toInt())
-        Assert.assertEquals("open", gson.state)
-        Assert.assertEquals("2011-04-10T20:09:31Z", gson.created_at)
-        Assert.assertEquals("2014-03-03T18:58:10Z", gson.updated_at)
+        with (gson) {
+            assertEquals("https://api.github.com/repos/api-playground/projects-test", owner_url)
+            assertEquals("https://api.github.com/projects/1002604", url)
+            assertEquals("https://github.com/api-playground/projects-test/projects/12", html_url)
+            assertEquals("https://api.github.com/projects/1002604/columns", columns_url)
+            assertEquals(1002604, id.toInt())
+            assertEquals("Projects Documentation", name)
+            assertEquals("Developer documentation project for the developer site.", body)
+            assertEquals(1, number.toInt())
+            assertEquals("open", state)
+            assertEquals("2011-04-10T20:09:31Z", created_at)
+            assertEquals("2014-03-03T18:58:10Z", updated_at)
 
-        Assert.assertEquals("octocat", gson.creator.login)
-        Assert.assertEquals(1, gson.creator.id.toInt())
-        Assert.assertEquals("https://github.com/images/error/octocat_happy.gif", gson.creator.avatar_url)
-        Assert.assertEquals("", gson.creator.gravatar_id)
-        Assert.assertEquals("https://api.github.com/users/octocat", gson.creator.url)
-        Assert.assertEquals("https://github.com/octocat", gson.creator.html_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/followers", gson.creator.followers_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/following{/other_user}", gson.creator.following_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/gists{/gist_id}", gson.creator.gists_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/starred{/owner}{/repo}", gson.creator.starred_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/subscriptions", gson.creator.subscriptions_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/orgs", gson.creator.organizations_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/repos", gson.creator.repos_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/events{/privacy}", gson.creator.events_url)
-        Assert.assertEquals("https://api.github.com/users/octocat/received_events", gson.creator.received_events_url)
-        Assert.assertEquals("User", gson.creator.type)
-        Assert.assertEquals(false, gson.creator.site_admin)
+            assertEquals("octocat", creator.login)
+            assertEquals(1, creator.id.toInt())
+            assertEquals("https://github.com/images/error/octocat_happy.gif", creator.avatar_url)
+            assertEquals("", creator.gravatar_id)
+            assertEquals("https://api.github.com/users/octocat", creator.url)
+            assertEquals("https://github.com/octocat", creator.html_url)
+            assertEquals("https://api.github.com/users/octocat/followers", creator.followers_url)
+            assertEquals("https://api.github.com/users/octocat/following{/other_user}", creator.following_url)
+            assertEquals("https://api.github.com/users/octocat/gists{/gist_id}", creator.gists_url)
+            assertEquals("https://api.github.com/users/octocat/starred{/owner}{/repo}", creator.starred_url)
+            assertEquals("https://api.github.com/users/octocat/subscriptions", creator.subscriptions_url)
+            assertEquals("https://api.github.com/users/octocat/orgs", creator.organizations_url)
+            assertEquals("https://api.github.com/users/octocat/repos", creator.repos_url)
+            assertEquals("https://api.github.com/users/octocat/events{/privacy}", creator.events_url)
+            assertEquals("https://api.github.com/users/octocat/received_events", creator.received_events_url)
+            assertEquals("User", creator.type)
+            assertEquals(false, creator.site_admin)
+        }
     }
 
 }
