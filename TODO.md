@@ -4,7 +4,7 @@
 Ordered roughly in priority:
 
 - Write Contributing guide
-- Add license
+- Add GH topics/description
 - Test command line tool
 - Make website tool prettier
 - Throttle website tool/prepare for HN
