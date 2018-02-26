@@ -3,7 +3,7 @@
 
 Ordered roughly in priority:
 
-- Write Contributing guide
+- Write Readme
 - Add GH topics/description
 - Test command line tool
 - Make website tool prettier
