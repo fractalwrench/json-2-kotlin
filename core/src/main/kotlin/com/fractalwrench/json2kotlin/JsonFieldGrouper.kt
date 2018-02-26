@@ -12,7 +12,7 @@ internal class JsonFieldGrouper(private val groupingStrategy: GroupingStrategy =
      * Recursively groups a List of JSONElementstogether by any commonality (i.e. whether they should be
      * represented by the same type)
      */
-    fun groupJsonObjects(jsonElements: MutableList<TypedJsonElement>): List<List<TypedJsonElement>> {
+    fun groupCommonJsonObjects(jsonElements: MutableList<TypedJsonElement>): List<List<TypedJsonElement>> {
         val allTypes: MutableList<MutableList<TypedJsonElement>> = mutableListOf()
 
         while (jsonElements.isNotEmpty()) {

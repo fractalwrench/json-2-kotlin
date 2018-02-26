@@ -1,8 +1,11 @@
 package com.fractalwrench.json2kotlin
 
 import com.google.gson.JsonElement
-import com.squareup.kotlinpoet.*
-import java.util.HashMap
+import com.squareup.kotlinpoet.ParameterizedTypeName
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
+import java.util.*
 
 // TODO docs
 internal class JsonProcessor(private val typeDetector: JsonTypeDetector) { // TODO crappy name

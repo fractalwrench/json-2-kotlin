@@ -1,6 +1,7 @@
 package com.fractalwrench.json2kotlin
 
-import com.google.gson.*
+import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -11,7 +12,7 @@ class Kotlin2JsonConverter(private val buildDelegate: SourceBuildDelegate = Gson
 
     private val jsonReader = JsonReader(JsonParser())
     private val sourceFileWriter = SourceFileWriter()
-    private val traverser = ReverseJsonTreeTraverser()
+    private val treeTraverser = ReverseJsonTreeTraverser()
 
     /**
      * Converts an InputStream of JSON to Kotlin source code, writing the result to the OutputStream.
@@ -19,11 +20,10 @@ class Kotlin2JsonConverter(private val buildDelegate: SourceBuildDelegate = Gson
     fun convert(input: InputStream, output: OutputStream, args: ConversionArgs) {
         try {
             val jsonRoot = jsonReader.readJsonTree(input, args)
-            val stack = traverser.traverse(jsonRoot, args.rootClassName)
-            val typeHolder = ClassTypeHolder(buildDelegate, ::defaultGroupingStrategy)
-            typeHolder.processQueue(stack)
-
-            sourceFileWriter.writeSourceFile(typeHolder.stack, args, output)
+            val jsonStack = treeTraverser.traverse(jsonRoot, args.rootClassName)
+            val generator = TypeSpecGenerator(buildDelegate, ::defaultGroupingStrategy)
+            val typeSpecs = generator.generateTypeSpecs(jsonStack)
+            sourceFileWriter.writeSourceFile(typeSpecs, args, output)
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
         }

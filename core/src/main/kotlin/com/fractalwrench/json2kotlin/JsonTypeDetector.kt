@@ -5,7 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.squareup.kotlinpoet.*
-import java.util.HashSet
+import java.util.*
 
 /**
  * Deduces the TypeName for a JSON field value. For a primitive such as a String, this is a simple operation.
@@ -46,16 +46,16 @@ internal class JsonTypeDetector {
     }
 
     private fun typeForJsonObject(jsonObject: JsonObject,
-                                   key: String,
-                                   jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
+                                  key: String,
+                                  jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
         val existingTypeName = jsonElementMap[jsonObject]
         val identifier = existingTypeName?.name ?: key.toKotlinIdentifier().capitalize()
         return ClassName.bestGuess(identifier)
     }
 
     private fun typeForJsonArray(jsonArray: JsonArray,
-                                  key: String,
-                                  jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
+                                 key: String,
+                                 jsonElementMap: Map<JsonElement, TypeSpec>): TypeName {
         val pair = findAllArrayTypes(jsonArray, key, jsonElementMap)
         val arrayTypes = pair.first
         val nullable = pair.second
