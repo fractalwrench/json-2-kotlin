@@ -12,7 +12,7 @@ import java.io.InputStreamReader
  *
  * If the root element is an array, a wrapper object will be added to the tree.
  */
-class JsonReader(private val jsonParser: JsonParser) {
+internal class JsonReader(private val jsonParser: JsonParser) {
 
     /**
      * Reads a JSON string using GSON.

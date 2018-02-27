@@ -3,12 +3,12 @@
 
 Ordered roughly in priority:
 
+- Writeup
+- Test command line tool
+- Make website tool prettier/better
+- Throttle website tool/prepare for HN
 - Write Readme
 - Add GH topics/description
-- Test command line tool
-- Make website tool prettier
-- Throttle website tool/prepare for HN
-- Writeup
 
 ## Rough architecture
 

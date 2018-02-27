@@ -3,11 +3,11 @@ package com.fractalwrench.json2kotlin
 internal fun nameForArrayField(index: Int, identifier: String): String =
         if (index == 0) identifier else "$identifier${index + 1}"
 
-fun String.standardiseNewline(): String {
+internal fun String.standardiseNewline(): String {
     return this.replace("\r\n", "\n")
 }
 
-fun String.toKotlinIdentifier(): String {
+internal fun String.toKotlinIdentifier(): String {
     return when {
         keywords.contains(this) -> "`$this`" // escape
         else -> {

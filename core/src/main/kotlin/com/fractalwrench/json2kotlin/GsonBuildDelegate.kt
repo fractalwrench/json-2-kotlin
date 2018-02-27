@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.TypeSpec
 /**
  * A build delegate which alters the generated source code to include GSON annotations
  */
-class GsonBuildDelegate : SourceBuildDelegate {
+internal class GsonBuildDelegate : SourceBuildDelegate {
 
     private val regex = "%".toRegex()
 
