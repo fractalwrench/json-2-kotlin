@@ -25,15 +25,25 @@
 </head>
 <body>
 <div class="container" style="text-align:center">
-    <h1>Convert JSON to Kotlin Data Class</h1>
-    <form id="jsonForm" action="#" th:action="@{/}" th:object="${conversionForm}"
-          method="post" onsubmit="return validateForm()">
-        <textarea placeholder="Paste JSON here..." cols="40" th:field="*{json}"></textarea>
-        <p><input type="reset" value="Reset"/> <input type="submit" value="Convert"/></p>
-    </form>
-    <h2>Results</h2>
-    <textarea th:text="${kotlin}"></textarea>
-</div>
+    <div class="j2kcontainer">
+        <h1>Convert JSON to Kotlin Data Class</h1>
+        <form id="jsonForm" action="#" th:action="@{/}" th:object="${conversionForm}"
+              method="post" onsubmit="return validateForm()">
+            <textarea maxlength="10000" placeholder="Paste JSON here..." th:field="*{json}"></textarea>
+            <p><input type="reset" value="Reset"/> <input type="submit" value="Convert"/></p>
+        </form>
+    </div>
+    <div class="j2kcontainer" th:if="${kotlin != null}">
+        <h2 id="results">Generated Kotlin</h2>
+        <pre><code class="language-kotlin hljs" th:text="${kotlin}"></code></pre>
+
+        <form id="downloadForm" action="#" method="post" onsubmit="return validateForm()">
+            <p><input type="button" value="Copy to Clipboard"/> <input type="button" value="Download"/></p>
+        </form>
+    </div>
+    <div class="j2kcontainer">
+        <!-- TODO -->
+    </div>
 <footer>
     <div>
         <ul class="list-inline">
@@ -55,6 +65,7 @@
 </footer>
 <link rel="stylesheet" type="text/css" href="/main.css"/>
 <link rel="stylesheet" type="text/css" href="/fonticons.css"/>
+
 <script type="text/javascript">
     function validateForm() {
         var json = document.forms["jsonForm"]["json"].value;
@@ -65,7 +76,19 @@
             return false;
         }
     }
+
+
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/>
+<script> hljs.initHighlightingOnLoad(); </script>
+
+<script type="text/javascript" th:if="${kotlin != null}">
+window.location = '#results'; // autoscroll to results
+
+</script>
+
 </body>
 </html>
 <!-- TODO GA -->

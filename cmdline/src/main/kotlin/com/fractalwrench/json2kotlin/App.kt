@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
 
             if (inputFile.exists()) {
                 val outputFile = findOutputFile(inputFile)
-                Kotlin2JsonConverter().convert(inputFile.inputStream(), outputFile.outputStream(), ConversionArgs())
+                Kotlin2JsonConverter().convert(inputFile.inputStream(), outputFile.outputStream(), ConversionArgs()) // FIXME respect package name
                 println("Generated source available at '$outputFile'")
             } else {
                 println("Failed to find file '$inputFile'")
