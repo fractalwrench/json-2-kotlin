@@ -35,15 +35,20 @@
     </div>
     <div class="j2kcontainer" th:if="${kotlin != null}">
         <h2 id="results">Generated Kotlin</h2>
-        <pre><code class="language-kotlin hljs" th:text="${kotlin}"></code></pre>
+        <textarea id="kotlinText" th:text="${kotlin}"></textarea>
 
         <form id="downloadForm" action="#" method="post" onsubmit="return validateForm()">
-            <p><input type="button" value="Copy to Clipboard"/> <input type="button" value="Download"/></p>
+            <p>
+                <input type="button" value="Copy to Clipboard"
+                      onclick="copyToClipboard()" />
+                <input type="button" value="Download"/>
+            </p>
         </form>
     </div>
     <div class="j2kcontainer">
         <!-- TODO -->
     </div>
+</div>
 <footer>
     <div>
         <ul class="list-inline">
@@ -77,7 +82,11 @@
         }
     }
 
-
+    function copyToClipboard() {
+        var kotlinSource = document.getElementById("kotlinText");
+        kotlinSource.select();
+        document.execCommand("Copy");
+    }
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
@@ -88,7 +97,6 @@
 window.location = '#results'; // autoscroll to results
 
 </script>
-
 </body>
 </html>
 <!-- TODO GA -->

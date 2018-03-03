@@ -19,9 +19,6 @@ class ConversionController {
     @Autowired
     lateinit var conversionService: KotlinConversionService
 
-
-
-
     @GetMapping("/")
     fun displayConversionForm(model: Model): String {
         if (!model.containsAttribute(formKey)) {

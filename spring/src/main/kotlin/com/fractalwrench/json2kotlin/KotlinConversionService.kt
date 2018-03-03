@@ -1,5 +1,6 @@
 package com.fractalwrench.json2kotlin
 
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
