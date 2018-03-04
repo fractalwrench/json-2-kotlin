@@ -32,6 +32,7 @@ class ConversionController {
         val os = conversionService.convert(conversionForm.json)
         model.addAttribute(formKey, conversionForm)
         model.addAttribute("kotlin", String(os.toByteArray()))
+        model.addAttribute("filename", "Foo.kt") // FIXME!
         return displayConversionForm(model)
     }
 

@@ -35,15 +35,16 @@
     </div>
     <div class="j2kcontainer" th:if="${kotlin != null}">
         <h2 id="results">Generated Kotlin</h2>
+
+        <input type="hidden" id="filename" th:value="${filename}"/>
         <textarea id="kotlinText" th:text="${kotlin}"></textarea>
 
-        <form id="downloadForm" action="#" method="post" onsubmit="return validateForm()">
-            <p>
-                <input type="button" value="Copy to Clipboard"
-                      onclick="copyToClipboard()" />
-                <input type="button" value="Download"/>
-            </p>
-        </form>
+        <p>
+            <input id="copyBtn" type="button" value="Copy to Clipboard"
+                  onclick="copyToClipboard()" />
+            <input type="button" value="Download" onclick="downloadAsFile()"/>
+        </p>
+
     </div>
     <div class="j2kcontainer">
         <!-- TODO -->
@@ -71,23 +72,7 @@
 <link rel="stylesheet" type="text/css" href="/main.css"/>
 <link rel="stylesheet" type="text/css" href="/fonticons.css"/>
 
-<script type="text/javascript">
-    function validateForm() {
-        var json = document.forms["jsonForm"]["json"].value;
-        try {
-            JSON.parse(json);
-        } catch (e) {
-            alert("Input was not interpreted as valid JSON.");
-            return false;
-        }
-    }
-
-    function copyToClipboard() {
-        var kotlinSource = document.getElementById("kotlinText");
-        kotlinSource.select();
-        document.execCommand("Copy");
-    }
-</script>
+<script src="/main.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/>
