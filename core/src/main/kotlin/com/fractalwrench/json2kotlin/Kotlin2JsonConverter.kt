@@ -17,13 +17,17 @@ class Kotlin2JsonConverter(private val buildDelegate: SourceBuildDelegate = Gson
     /**
      * Converts an InputStream of JSON to Kotlin source code, writing the result to the OutputStream.
      */
-    fun convert(input: InputStream, output: OutputStream, args: ConversionArgs) {
+    fun convert(input: InputStream, output: OutputStream, args: ConversionArgs): ConversionInfo {
         try {
             val jsonRoot = jsonReader.readJsonTree(input, args)
             val jsonStack = treeTraverser.traverse(jsonRoot, args.rootClassName)
             val generator = TypeSpecGenerator(buildDelegate, ::defaultGroupingStrategy)
             val typeSpecs = generator.generateTypeSpecs(jsonStack)
+
+            val name = typeSpecs.peek().name
+            val conversionInfo = ConversionInfo("$name.kt")
             sourceFileWriter.writeSourceFile(typeSpecs, args, output)
+            return conversionInfo
         } catch (e: JsonSyntaxException) {
             throw IllegalArgumentException("Invalid JSON supplied", e)
         }

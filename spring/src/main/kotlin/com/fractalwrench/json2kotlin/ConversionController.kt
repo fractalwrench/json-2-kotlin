@@ -29,10 +29,10 @@ class ConversionController {
 
     @PostMapping("/")
     fun convertToKotlin(model: Model, @ModelAttribute conversionForm: ConversionForm): String {
-        val os = conversionService.convert(conversionForm.json)
+        val pair = conversionService.convert(conversionForm.json)
         model.addAttribute(formKey, conversionForm)
-        model.addAttribute("kotlin", String(os.toByteArray()))
-        model.addAttribute("filename", "Foo.kt") // FIXME!
+        model.addAttribute("kotlin", String(pair.first.toByteArray()))
+        model.addAttribute("filename", pair.second)
         return displayConversionForm(model)
     }
 

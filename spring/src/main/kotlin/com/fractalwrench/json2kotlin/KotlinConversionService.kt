@@ -12,7 +12,7 @@ class KotlinConversionService {
         val maxPayloadSize = 10000
     }
 
-    fun convert(json: String): ByteArrayOutputStream {
+    fun convert(json: String): Pair<ByteArrayOutputStream, String> {
         val os = ByteArrayOutputStream()
 
         if (json.length > maxPayloadSize) {
@@ -20,8 +20,7 @@ class KotlinConversionService {
         }
 
         val inputStream = ByteArrayInputStream(json.toByteArray())
-
-        Kotlin2JsonConverter().convert(inputStream, os, ConversionArgs())
-        return os
+        val conversionInfo = Kotlin2JsonConverter().convert(inputStream, os, ConversionArgs())
+        return Pair(os, conversionInfo.filename)
     }
 }
