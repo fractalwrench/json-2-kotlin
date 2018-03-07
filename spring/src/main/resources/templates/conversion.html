@@ -23,33 +23,45 @@
     <meta property="og:type" content="website"/>
     <meta property="og:site_name" content="Fractalwrench"/>
 </head>
+
+<!-- Slightly ashamed of this JavaScript/CSS but it works ¯\_(ツ)_/¯ -->
+
 <body>
-<div class="container" style="text-align:center">
-    <div class="j2kcontainer">
-        <h1 id="home">Convert JSON to Kotlin Data Class</h1>
-        <form id="jsonForm" action="#" th:action="@{/}" th:object="${conversionForm}"
-              method="post" onsubmit="return validateForm()">
-            <textarea maxlength="10000" placeholder="Paste JSON here..." th:field="*{json}"></textarea>
-            <p><input type="reset" value="Reset"/> <input type="submit" value="Convert"/></p>
-        </form>
-    </div>
-    <div class="j2kcontainer" th:if="${kotlin != null}">
-        <h2 id="results">Generated Kotlin</h2>
-
-        <input type="hidden" id="filename" th:value="${filename}"/>
-        <textarea id="kotlinText" th:text="${kotlin}"></textarea>
-
+<h1 class="title" id="home">Convert JSON to Kotlin Data Class</h1>
+<div class="j2kcontainer" style="background:#3F51B5">
+    <form id="jsonForm" action="#" th:action="@{/}" th:object="${conversionForm}"
+          method="post" onsubmit="return validateForm()">
+        <textarea maxlength="10000" placeholder="Paste JSON here..." th:field="*{json}"></textarea>
         <p>
-            <input id="copyBtn" type="button" value="Copy to Clipboard"
-                  onclick="copyToClipboard()" />
-            <input type="button" value="Download" onclick="downloadAsFile()"/>
+            <input class="button" type="reset" value="Reset"/>
+            <input class="button" type="submit" value="Convert"/>
         </p>
+    </form>
+</div>
+<h2 th:if="${kotlin != null}" class="title" id="results">Generated Kotlin Data Classes</h2>
+<div class="j2kcontainer" style="background:#4CAF50" th:if="${kotlin != null}">
 
-    </div>
-    <div class="j2kcontainer">
-        <h2 id="about">About</h2>
-        <p>TODO WORDS from README, link to blog post, github, twitter</p>
-    </div>
+    <input type="hidden" id="filename" th:value="${filename}"/>
+    <textarea id="kotlinText" th:text="${kotlin}"></textarea>
+
+    <p>
+        <input class="button" id="copyBtn" type="button" value="Copy to Clipboard"
+               onclick="copyToClipboard()"/>
+        <input class="button" type="button" value="Download" onclick="downloadAsFile()"/>
+    </p>
+
+</div>
+<h2 class="title" id="about">About</h2>
+<div class="j2kcontainer" style="padding-top:0px;">
+    <p>As you've probably guessed by now, this project automatically converts JSON to Kotlin source files.
+        The <a href="https://github.com/fractalwrench/json-2-kotlin">tool itself</a> is implemented 100% in Kotlin,
+        and makes heavy use of Square's excellent
+        <a href="https://github.com/square/kotlinpoet">KotlinPoet</a> library.</p>
+    <br></br>
+
+    <p>Read the blog post which covers how this multi-platform tool was written.</p> <!-- TODO link it! -->
+    <p>View <a href="https://github.com/fractalwrench/json-2-kotlin">the source on Github</a> to grab the command line tool, or suggest improvements.</p>
+    <p>Get in touch <a href="https://twitter.com/fractalwrench">on Twitter</a> if you have questions, comments, or simply enjoy high-quality cat gifs.</p>
 </div>
 <footer>
     <div>
@@ -81,8 +93,7 @@
 
 <script type="text/javascript" th:if="${kotlin != null}">
 window.location = '#results'; // autoscroll to results
-
 </script>
+
 </body>
 </html>
-<!-- TODO GA -->
