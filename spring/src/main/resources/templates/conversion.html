@@ -26,7 +26,7 @@
 <body>
 <div class="container" style="text-align:center">
     <div class="j2kcontainer">
-        <h1>Convert JSON to Kotlin Data Class</h1>
+        <h1 id="home">Convert JSON to Kotlin Data Class</h1>
         <form id="jsonForm" action="#" th:action="@{/}" th:object="${conversionForm}"
               method="post" onsubmit="return validateForm()">
             <textarea maxlength="10000" placeholder="Paste JSON here..." th:field="*{json}"></textarea>
@@ -47,7 +47,8 @@
 
     </div>
     <div class="j2kcontainer">
-        <!-- TODO -->
+        <h2 id="about">About</h2>
+        <p>TODO WORDS from README, link to blog post, github, twitter</p>
     </div>
 </div>
 <footer>
@@ -85,4 +86,3 @@ window.location = '#results'; // autoscroll to results
 </body>
 </html>
 <!-- TODO GA -->
-<!-- TODO link to GH -->
