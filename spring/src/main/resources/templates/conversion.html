@@ -27,7 +27,7 @@
 <!-- Slightly ashamed of this JavaScript/CSS but it works ¯\_(ツ)_/¯ -->
 
 <body>
-<h1 class="title" id="home">Convert JSON to Kotlin Data Class</h1>
+<h1 class="title" id="home">Convert JSON to Kotlin</h1>
 <div class="j2kcontainer" style="background:#3F51B5">
     <form id="jsonForm" action="#" th:action="@{/}" th:object="${conversionForm}"
           method="post" onsubmit="return validateForm()">
@@ -38,7 +38,7 @@
         </p>
     </form>
 </div>
-<h2 th:if="${kotlin != null}" class="title" id="results">Generated Kotlin Data Classes</h2>
+<h2 th:if="${kotlin != null}" class="title" id="results">Generated Kotlin Source Code</h2>
 <div class="j2kcontainer" style="background:#4CAF50" th:if="${kotlin != null}">
 
     <input type="hidden" id="filename" th:value="${filename}"/>
