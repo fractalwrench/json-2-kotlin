@@ -5,7 +5,7 @@ apply plugin: 'org.springframework.boot'
 
 jar {
     baseName = 'json2kotlin'
-    version = '0.2.0'
+    version = '0.2.1'
     manifest {
         attributes 'Main-Class': 'AppKt'
     }
@@ -36,6 +36,7 @@ dependencies {
     compile project(":core")
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
     testCompile('org.springframework.boot:spring-boot-starter-test')
     compile 'com.google.code.gson:gson:2.8.2' // FIXME
     compile 'com.squareup:kotlinpoet:0.7.0'
