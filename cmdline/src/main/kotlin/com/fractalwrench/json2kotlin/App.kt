@@ -1,11 +1,13 @@
 package com.fractalwrench.json2kotlin
 
+import com.bugsnag.Bugsnag
 import org.apache.commons.cli.*
 import java.io.File
 import java.nio.file.Paths
 
 
 fun main(args: Array<String>) {
+    Bugsnag("36024661eca71fb467ceddbaeeff35c3")
 
     val options = prepareOptions()
     val parser = DefaultParser()
@@ -21,7 +23,7 @@ fun main(args: Array<String>) {
 
             if (inputFile.exists()) {
                 val outputFile = findOutputFile(inputFile)
-                Kotlin2JsonConverter().convert(inputFile.inputStream(), outputFile.outputStream(), ConversionArgs()) // FIXME respect package name
+                Kotlin2JsonConverter().convert(inputFile.inputStream(), outputFile.outputStream(), ConversionArgs())
                 println("Generated source available at '$outputFile'")
             } else {
                 println("Failed to find file '$inputFile'")
