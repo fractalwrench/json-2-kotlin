@@ -1,18 +1,12 @@
-
 ## Task list
 
 Ordered roughly in priority:
 
-- Writeup
 - Test command line tool
-- Make website tool prettier/better
-- Throttle website tool/prepare for HN
 - Write Readme
 - Add GH topics/description
 
 ## Rough architecture
-
-
 1. Enqueue each element in a Queue using BFS, recording the level of each element.
 Each parent node should have direct access to its children, to allow it to retrieve their calculated type.
 
