@@ -1,6 +1,6 @@
 # Json2Kotlin
 
-View the project in action at [json2kotlin.co.uk](http://json2kotlin.co.uk/)
+Converts a JSON string into Kotlin data classes.
 
 ## About
 
